@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { MetaHead } from '../components/MetaHead';
 import { PostCard } from '../components/PostCard';
 import { SkeletonCard } from '../components/SkeletonCard';
