@@ -25,23 +25,32 @@ export const DonationWidget: React.FC = () => {
                 <a href="https://ko-fi.com/nyanpyon" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
                     <button style={{
                         padding: '12px 25px',
-                        background: '#FF5E5B', /* Ko-fi Color */
+                        background: '#FF9F43', /* Neko Can Orange */
                         border: 'none',
-                        borderRadius: '25px',
+                        borderRadius: '50px',
                         fontWeight: 'bold',
                         color: 'white',
                         cursor: 'pointer',
-                        boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
+                        boxShadow: '0 4px 10px rgba(255, 159, 67, 0.4)',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '8px',
+                        gap: '12px',
                         fontSize: '1rem',
-                        transition: 'transform 0.2s'
+                        transition: 'all 0.2s',
+                        borderBottom: '4px solid #E67E22'
                     }}
-                        onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
-                        onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                        onMouseOver={(e) => {
+                            e.currentTarget.style.transform = 'translateY(2px)';
+                            e.currentTarget.style.borderBottom = '2px solid #E67E22';
+                            e.currentTarget.style.boxShadow = '0 2px 5px rgba(255, 159, 67, 0.4)';
+                        }}
+                        onMouseOut={(e) => {
+                            e.currentTarget.style.transform = 'translateY(0)';
+                            e.currentTarget.style.borderBottom = '4px solid #E67E22';
+                            e.currentTarget.style.boxShadow = '0 4px 10px rgba(255, 159, 67, 0.4)';
+                        }}
                     >
-                        <span style={{ fontSize: '1.2rem' }}>☕</span> Support Me on Ko-fi
+                        <span style={{ fontSize: '1.4rem' }}>🥫</span> 猫缶を贈る (Ko-fi)
                     </button>
                 </a>
             </div>
