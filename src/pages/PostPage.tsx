@@ -155,14 +155,14 @@ export const PostPage = ({ posts }: PostPageProps) => {
                 {/* Affiliate Block */}
                 <AffiliateBlock />
 
-                {/* Donation Widget */}
-                <DonationWidget />
-
                 {/* Mascot Chat Area */}
                 <MascotChat />
 
                 {/* Comment Section */}
                 <CommentSection postId={post.id} />
+
+                {/* Donation Widget */}
+                <DonationWidget />
 
                 {/* Article Bottom Ad */}
                 <AdSenseDisplay slot="0987654321" style={{ height: '250px' }} />
