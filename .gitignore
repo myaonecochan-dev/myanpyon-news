@@ -30,3 +30,5 @@ __pycache__/
 # Environment
 .env
 .env.production
+
+.vercel
