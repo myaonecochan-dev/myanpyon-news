@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, Link } from 'react-router-dom';
 import { type Post, type Category } from './data/posts';
 import { supabase } from './lib/supabaseClient';
 import { Sidebar } from './components/Sidebar';
@@ -120,13 +120,13 @@ const AppContent = () => {
     <div className="app-container">
       <header className="app-header">
         <div className="header-inner">
-          <div className="header-branding">
+          <Link to="/" className="header-branding" style={{ textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center', gap: '15px' }}>
             <img src="/mascot_cat.png" alt="Mofu" className="header-mascot" style={{ height: '50px', width: 'auto' }} />
             <div className="header-text">
               <h1>{getHeaderTitle(category)}</h1>
               <span className="subtitle">{getHeaderSubtitle(category)}</span>
             </div>
-          </div>
+          </Link>
 
           <nav className="category-nav">
             <button
@@ -181,7 +181,7 @@ const AppContent = () => {
             <Route path="/admin/create" element={<AdminPostEditor />} />
           </Routes>
         </div>
-        {!location.pathname.startsWith('/admin') && <Sidebar />}
+        {!location.pathname.startsWith('/admin') && <Sidebar posts={allPosts} />}
       </div>
 
       <footer className="app-footer">

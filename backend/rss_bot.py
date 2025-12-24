@@ -1,9 +1,12 @@
+
 import os
 import time
 import ssl
 import urllib.request
 import xml.etree.ElementTree as ET
+import uuid
 from supabase import create_client, Client
+from thumbnail_gen import generate_thumbnail
 
 # --- Configuration ---
 SUPABASE_URL = "https://ufawzveswbnaqvfvezbb.supabase.co"
@@ -75,6 +78,17 @@ def parse_and_insert(xml_content, category, source):
                 print(f"Skipping existing: {title[:20]}...")
                 continue
 
+            # Generate Thumbnail
+            try:
+                # Create a unique filename
+                filename = f"thumb_{uuid.uuid4()}.png"
+                # Generate!
+                print(f"Generating thumbnail for: {title[:20]}...")
+                thumb_url = generate_thumbnail(title, filename)
+            except Exception as e:
+                print(f"Thumbnail generation failed: {e}")
+                thumb_url = "/mascot_cat.png" # Fallback to mascot
+
             # Insert
             post_data = {
                 "title": title,
@@ -83,11 +97,8 @@ def parse_and_insert(xml_content, category, source):
                 "platform": "article",
                 "description": f"Starting from {source}: {description[:100]}...",
                 "content": f"<p>{description}</p><p><a href='{link}' target='_blank'>続きを読む ({source})</a></p>",
-                "image_url": "https://via.placeholder.com/640x360.png?text=News" # Default placeholder
+                "image_url": thumb_url
             }
-            
-            # Try to find an image in content:encoded or enclosure (simple check)
-            # This is complex with just xml.etree, skipping for now.
 
             try:
                 supabase.table("posts").insert(post_data).execute()

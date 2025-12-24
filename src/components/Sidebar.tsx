@@ -1,9 +1,18 @@
-import React from 'react';
-
+import { Link } from 'react-router-dom';
+import { type Post } from '../data/posts';
 import { AdSenseDisplay } from './AdSenseDisplay';
 import './Sidebar.css';
 
-export const Sidebar: React.FC = () => {
+interface SidebarProps {
+    posts?: Post[];
+}
+
+export const Sidebar: React.FC<SidebarProps> = ({ posts = [] }) => {
+    // Simple logic: Use the first 3 posts as "Daily Ranking" and next 3 as "Monthly"
+    // In a real app, this would be based on view counts.
+    const dailyRanking = posts.slice(0, 3);
+    const monthlyRanking = posts.slice(3, 6);
+
     return (
         <aside className="app-sidebar">
             {/* Profile Widget (Mascot) */}
@@ -28,63 +37,53 @@ export const Sidebar: React.FC = () => {
             {/* Daily Ranking Widget */}
             <div className="sidebar-widget">
                 <h3 className="widget-title">デイリーランキング</h3>
-                <ul className="ranking-list">
-                    <li className="ranking-item">
-                        <span className="rank-number rank-1">1</span>
-                        <img src="/trend.png" alt="Rank 1" className="rank-thumbnail" style={{ objectPosition: '0 0' }} />
-                        <div className="rank-content">
-                            <p className="rank-title">【時代】AIアイドル「ネオンちゃん」がレコ大新人賞を受賞！</p>
-                            <span className="rank-meta">1025 comments</span>
-                        </div>
-                    </li>
-                    <li className="ranking-item">
-                        <span className="rank-number rank-2">2</span>
-                        <img src="/trend.png" alt="Rank 2" className="rank-thumbnail" />
-                        <div className="rank-content">
-                            <p className="rank-title">【炎上】人気YouTuber、行き過ぎたドッキリで警察沙汰に</p>
-                            <span className="rank-meta">856 comments</span>
-                        </div>
-                    </li>
-                    <li className="ranking-item">
-                        <span className="rank-number rank-3">3</span>
-                        <img src="https://img.youtube.com/vi/4W2qYq6f3Y8/mqdefault.jpg" alt="Rank 3" className="rank-thumbnail" />
-                        <div className="rank-content">
-                            <p className="rank-title">【癒し】初めて雪を見た子犬の反応が可愛すぎると話題に</p>
-                            <span className="rank-meta">612 comments</span>
-                        </div>
-                    </li>
-                </ul>
+                {posts.length > 0 ? (
+                    <ul className="ranking-list">
+                        {dailyRanking.map((post, index) => (
+                            <li key={post.id} className="ranking-item">
+                                <Link to={`/post/${post.id}`} className="ranking-link" style={{ display: 'flex', textDecoration: 'none', color: 'inherit', width: '100%' }}>
+                                    <span className={`rank-number rank-${index + 1}`}>{index + 1}</span>
+                                    {post.imageUrl ? (
+                                        <img src={post.imageUrl} alt={post.title} className="rank-thumbnail" />
+                                    ) : (
+                                        <div className="rank-thumbnail placeholder" />
+                                    )}
+                                    <div className="rank-content">
+                                        <p className="rank-title">{post.title}</p>
+                                        <span className="rank-meta">{(Math.random() * 1000).toFixed(0)} comments</span>
+                                    </div>
+                                </Link>
+                            </li>
+                        ))}
+                    </ul>
+                ) : (
+                    <p style={{ padding: '10px', fontSize: '0.9rem', color: '#666' }}>集計中...</p>
+                )}
             </div>
 
             {/* Monthly Ranking Widget */}
             <div className="sidebar-widget">
                 <h3 className="widget-title">月間ランキング</h3>
-                <ul className="ranking-list">
-                    <li className="ranking-item">
-                        <span className="rank-number rank-1">1</span>
-                        <img src="/trend.png" alt="Rank 1" className="rank-thumbnail" />
-                        <div className="rank-content">
-                            <p className="rank-title">【伝説】新入社員さん、入社式から3時間で退職代行を使ってバックレるｗｗｗｗｗ</p>
-                            <span className="rank-meta">5012 comments</span>
-                        </div>
-                    </li>
-                    <li className="ranking-item">
-                        <span className="rank-number rank-2">2</span>
-                        <img src="/trend.png" alt="Rank 2" className="rank-thumbnail" />
-                        <div className="rank-content">
-                            <p className="rank-title">【速報】空中に映像が出るスマホ「X-Phone 16」発表！SFが現実に</p>
-                            <span className="rank-meta">3400 comments</span>
-                        </div>
-                    </li>
-                    <li className="ranking-item">
-                        <span className="rank-number rank-3">3</span>
-                        <img src="https://img.youtube.com/vi/dQw4w9WgXcQ/mqdefault.jpg" alt="Rank 3" className="rank-thumbnail" />
-                        <div className="rank-content">
-                            <p className="rank-title">【感動】ロンドン駅で突然始まったフラッシュモブ</p>
-                            <span className="rank-meta">2890 comments</span>
-                        </div>
-                    </li>
-                </ul>
+                {posts.length > 0 ? (
+                    <ul className="ranking-list">
+                        {monthlyRanking.map((post, index) => (
+                            <li key={post.id} className="ranking-item">
+                                <Link to={`/post/${post.id}`} className="ranking-link" style={{ display: 'flex', textDecoration: 'none', color: 'inherit', width: '100%' }}>
+                                    <span className={`rank-number rank-${index + 1}`}>{index + 1}</span>
+                                    {post.imageUrl ? (
+                                        <img src={post.imageUrl} alt={post.title} className="rank-thumbnail" />
+                                    ) : (
+                                        <div className="rank-thumbnail placeholder" />
+                                    )}
+                                    <div className="rank-content">
+                                        <p className="rank-title">{post.title}</p>
+                                        <span className="rank-meta">{(Math.random() * 5000).toFixed(0)} comments</span>
+                                    </div>
+                                </Link>
+                            </li>
+                        ))}
+                    </ul>
+                ) : null}
             </div>
 
             {/* Categories Widget */}
