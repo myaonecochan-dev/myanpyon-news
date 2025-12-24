@@ -26,8 +26,8 @@
 
 /* Mascot Icon */
 .chat-mascot-icon {
-    width: 120px;
-    height: 120px;
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
     border: 3px solid white;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -106,7 +106,13 @@
     }
 
     .chat-mascot-icon {
-        width: 90px;
-        height: 90px;
+        width: 60px;
+        height: 60px;
     }
+}
+
+/* Specific zoom for Myan to balance with Pyon */
+.myan-icon {
+    transform: scale(1.4);
+    transform-origin: center center;
 }
