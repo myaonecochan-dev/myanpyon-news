@@ -45,6 +45,51 @@ def fetch_rss(url):
         print(f"Error fetching {url}: {e}")
         return None
 
+def get_ai_image_url(text):
+    """
+    Analyzes text and returns a Pollinations.ai URL for a generating a matching image.
+    """
+    text_lower = text.lower()
+    prompt = "technology abstract wallpaper 4k" # Default
+    
+    keywords = {
+        "iphone": "iphone 15 pro max titanium sleek cinematic lighting",
+        "android": "android smartphone futuristic interface glow",
+        "google": "google seamless colorful abstract shapes",
+        "apple": "apple macbook pro elegant desk setup",
+        "ai": "artificial intelligence brain neural network glowing blue cyber",
+        "robot": "cute futuristic robot white clean design",
+        "drone": "drone flying in sky 4k realistic",
+        "game": "gaming setup neon lights cyber controller",
+        "nintendo": "nintendo switch gaming bright pop colors",
+        "ps5": "playstation 5 console futuristic white blue light",
+        "twitter": "smartphone social media app icons floating glassmorphism",
+        "sns": "smartphone social media app icons floating glassmorphism",
+        "camera": "professional dslr camera lens reflection",
+        "space": "galaxy stars nebula cosmic 4k",
+        "car": "luxury electric car future concept road",
+        "cat": "cute cat fluffy high quality photo",
+        "dog": "cute puppy high quality photo",
+    }
+    
+    found_key = None
+    for key, p in keywords.items():
+        if key in text_lower:
+            prompt = p
+            found_key = key
+            break
+    
+    # Encode prompt
+    import urllib.parse
+    encoded_prompt = urllib.parse.quote(prompt)
+    
+    print(f"  -> Context detected: {found_key if found_key else 'default'} (Prompt: {prompt[:20]}...)")
+    
+    # Use Pollinations AI (free, no key)
+    # nologo=true hides standard logo if supported, or crop later. 
+    # model=flux is safer for quality if available, or just default.
+    return f"https://image.pollinations.ai/prompt/{encoded_prompt}?width=1200&height=630&nologo=true&model=flux"
+
 def parse_and_insert(xml_content, category, source):
     if not xml_content:
         return
@@ -104,6 +149,10 @@ def parse_and_insert(xml_content, category, source):
                 if img_match:
                     image_source_url = img_match.group(1)
 
+            # 4. Context-Aware Fallback (Pollinations AI)
+            if not image_source_url:
+                image_source_url = get_ai_image_url(title + " " + description)
+
             # Generate Thumbnail
             try:
                 # Create a unique filename
@@ -111,12 +160,13 @@ def parse_and_insert(xml_content, category, source):
                 # Generate!
                 print(f"Generating thumbnail for: {title[:20]}...")
                 
-                # Pass header image if found
+                # Pass header image (from RSS or AI)
                 thumb_url = generate_thumbnail(title, filename, bg_image_url=image_source_url)
                 
             except Exception as e:
                 print(f"Thumbnail generation failed: {e}")
                 thumb_url = "/mascot_cat.png" # Fallback to mascot
+
 
             # Insert
             post_data = {
