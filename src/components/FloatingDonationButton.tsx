@@ -39,8 +39,8 @@ export const FloatingDonationButton: React.FC = () => {
                 e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)';
             }}
         >
-            <span role="img" aria-label="coffee" style={{ fontSize: '20px' }}>☕</span>
-            <span>支援する</span>
+            <span role="img" aria-label="cat-can" style={{ fontSize: '20px' }}>🥫</span>
+            <span>猫缶を贈る</span>
         </a>
     );
 };
