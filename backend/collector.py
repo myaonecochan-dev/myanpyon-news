@@ -101,69 +101,38 @@ def generate_content_with_gemini(trend_item):
         Topic: "{topic}"
         Context: "{trend_item.get('description', '')}"
 
-        Characters:
-        Characters:
-        1. Myan (Cat): Male. Mischievous, curious, and energetic. He is the reader's avatar asking "Why?" or "What's the point?". Tone: Casual male speech (ore-sama style but friendly). NO weird sentence endings like "da ora". Calls partner "ぴょん" (in Hiragana).
-        2. Pyon (Bunny): Female. Intelligent, calm, and cool. She explains the news logically. Tone: Polite, analytical, "Ara ara" vibes. Ends with "ですわ" or "ですね". Calls partner "みゃん" (in Hiragana).
+        Characters (ENFORCE THESE PERSONALITIES):
+        1. Myan (Cat): Male. Selfish, lazy, and rough but curious. He's often looking for the "lazy" angle (e.g. "Will this mean more food for me?" or "Humans are annoying"). 
+           Tone: Young male cat ("〜だぜ", "〜かよ", "〜かもな"). Rough but not violent.
+           Calls partner "ぴょん".
+        2. Pyon (Bunny): Female. High-spec, analytical, and slightly "toxic" or "cold" (S-character). She explains things logically but often insults Myan's intelligence.
+           Tone: Intellectual, elegant yet sharp ("〜ですわ", "〜ですよ"). "Ara ara" vibes when pitying Myan.
+           Calls partner "みゃん".
 
         CRITICAL INSTRUCTIONS:
-        - **DO NOT** say "Check the link for details" or "Read the news". The reader wants to know EVERYTHING here.
-        - **EXPLAIN** the background, reasons, and implications deeply. Use your knowledge base to supplement the context.
-        - If it's a complex topic (politics, economy), simplify it but keep the detail.
-        - Make the conversation long enough (6-8 turns) to cover the topic well.
-        - **IMPORTANT**: Keep bullet points in "30-second summary" MODERATE length (around 40-50 chars). Not too short, not too long.
-        - **IMPORTANT**: In dialogue, use natural pauses (punctuation) to help text wrapping.
-        - **SNS CONTENT**: Generate a short, casual tweet (under 140 chars) from **Myan's perspective ONLY**.
-          - Do NOT include "Myan:" prefix. Just the text.
-          - **WARM-UP MODE**: DO NOT include any URL. Just state the impression or shock.
-          - Tone: Casual, rough, spoken like a young male cat ("〜だぜ", "〜なのか？", "マジかよ").
-          - Example: "診療報酬上がるのかよ... 給料増えるのはいいけど保険料上がるのは勘弁だぜ #News"
+        - **DO NOT** say "Check the link for details". The reader wants EVERYTHING here.
+        - **EXPLAIN** background, reasons, and implications deeply.
+        - **NETIZEN REACTIONS**: Generate 5-8 simulated "Netizen comments" reacting to this news. 
+          - Make them feel like a Japanese BBS (2ch/5ch). 
+          - Mix of: Enthusiastic, critical, cynical, and weird/funny.
+        - **POLL**: Suggest a 2-option poll question relevant to the news.
+        - **SNS CONTENT**: Generate a short, rough, lazy tweet from Myan. (NO URL).
 
         Format:
-        Return ONLY valid JSON with keys: "title", "content", "description", "tweet_text".
+        Return ONLY valid JSON with keys: "title", "content", "description", "tweet_text", "reactions", "poll".
         
-        "title": Catchy Japanese title (start with 【話題】).
-        "tweet_text": The casual tweet content (NO URL).
-        "description": A short summary of the news (2-3 sentences).
-        "content": HTML format.
-           
-           <!-- 1. Summary Box -->
-           <div class="news-summary-box">
-             <h3>30秒でわかるポイント</h3>
-             <ul>
-               <li>Point 1 (Key fact)</li>
-               <li>Point 2 (Background/Reason)</li>
-               <li>Point 3 (Conclusion/Impact)</li>
-             </ul>
-           </div>
-
-           <!-- 1.5 Intro Text -->
-           <div class="intro-text">
-             (Write a compelling 2-3 sentence introduction here. E.g. "The budget has swelled to... What is the 'Takaichi Color'? We explain thoroughly below.")
-           </div>
-
-           <!-- 2. Dialogue -->
-           <div class="chat-row chat-pyon">
-             <div class="chat-avatar"><img src="/mascot_bunny.png"></div>
-             <div class="chat-bubble">Pyon's line</div>
-           </div>
-           <div class="chat-row chat-myan">
-             <div class="chat-avatar"><img src="/mascot_cat.png"></div>
-             <div class="chat-bubble">Myan's line</div>
-           </div>
-           Structure:
-        1. Myan (Cat) brings up the topic with curiosity or a misunderstanding.
-        2. Pyon (Bunny) corrects him and explains the details calmly.
-        3. Myan asks a sharp or naive question ("Is that actually good?").
-        4. Pyon gives a deep insight or conclusion.
-        5. Include <h2> headlines for sections if needed.
-
+        "title": Catchy title starting with 【話題】.
+        "tweet_text": Myan's lazy tweet.
+        "description": Short news summary.
+        "reactions": List of objects: [{"name": "名無しさん", "text": "...", "color": "green/blue/red"}]
+        "poll": {"question": "...", "option_a": "...", "option_b": "..."}
+        "content": HTML format (Summary Box + Character Dialogue). Use <div class="news-summary-box"> and <div class="chat-row chat-myan/pyon">.
         """
         
         response = model.generate_content(prompt)
         text = response.text
         
-        # Simple cleanup if the model returns markdown code blocks
+        # Simple cleanup
         if "```json" in text:
             text = text.replace("```json", "").replace("```", "")
         
@@ -172,41 +141,16 @@ def generate_content_with_gemini(trend_item):
 
     except Exception as e:
         import traceback
-        print(f"AI Generation skipped/failed. Error: {e}")
+        print(f"AI Generation failed. Error: {e}")
         traceback.print_exc()
-        
-        # Fallback content
-        return {
-            "title": f"【話題】{topic}",
-            "description": f"現在、ニュースで「{topic}」が話題になっています。詳細をチェックしましょう。",
-            "content": f"""
-            <div class="news-summary-box">
-             <h3>30秒でわかるポイント</h3>
-             <ul>
-               <li>{topic}が話題になっています</li>
-               <li>詳細な情報は現在調査中です</li>
-               <li>新しい情報が入り次第更新します</li>
-             </ul>
-           </div>
-            <div class="chat-row chat-pyon">
-                <div class="chat-avatar"><img src="/mascot_bunny.png"></div>
-                <div class="chat-bubble">わあ！ {topic} だって！ すごいニュースだぴょん！</div>
-            </div>
-            <div class="chat-row chat-myan">
-               <div class="chat-avatar"><img src="/mascot_cat.png"></div>
-               <div class="chat-bubble">ふーん、まあ悪くないニュースだにゃ。詳細はリンク先を確認するにゃ。</div>
-            </div>
-            <p><strong>ソース:</strong> News</p>
-            """
-        }
+        return None
 
-def insert_post_to_supabase(post_data):
+def insert_post_to_supabase(post_data, poll_data=None):
     """
-    Inserts the generated post into Supabase 'posts' table.
+    Inserts post and optional poll.
     """
     try:
-        # Convert keys to match DB columns (camelCase -> snake_case)
-        # imageUrl -> image_url, videoId -> video_id
+        # 1. Insert Post
         db_data = {
             "title": post_data["title"],
             "description": post_data["description"],
@@ -215,12 +159,27 @@ def insert_post_to_supabase(post_data):
             "type": post_data["type"],
             "platform": post_data["platform"],
             "image_url": post_data["imageUrl"],
-            "tweet_text": post_data.get("tweet_text", ""), # Add tweet text
+            "tweet_text": post_data.get("tweet_text", ""),
+            "reactions": post_data.get("reactions", []), # New Reactions column
             "created_at": post_data["created_at"]
         }
         
-        data, count = supabase.table("posts").insert(db_data).execute()
-        print(f"Successfully inserted post to Supabase: {post_data['title']}")
+        res = supabase.table("posts").insert(db_data).execute()
+        new_post = res.data[0]
+        post_id = new_post["id"]
+        print(f"Inserted post: {post_id}")
+
+        # 2. Insert Poll if exists
+        if poll_data:
+            poll_db = {
+                "post_id": post_id,
+                "question": poll_data["question"],
+                "option_a": poll_data["option_a"],
+                "option_b": poll_data["option_b"]
+            }
+            supabase.table("polls").insert(poll_db).execute()
+            print("Inserted poll.")
+
     except Exception as e:
         print(f"Error inserting to Supabase: {e}")
         # Could fallback to local JSON here if needed, but for now just log error
@@ -269,13 +228,16 @@ def main():
         "title": post_title,
         "description": ai_content.get("description", ""),
         "content": ai_content.get("content", ""),
+        "reactions": ai_content.get("reactions", []), # Extract reactions
         "category": "trend",
         "type": "article",
         "platform": "article",
         "imageUrl": thumb_url, 
-        "tweet_text": ai_content.get("tweet_text", ""), # Add tweet text
+        "tweet_text": ai_content.get("tweet_text", ""),
         "created_at": datetime.datetime.now().isoformat()
     }
+    
+    poll_data = ai_content.get("poll") # Extract poll
     
     # Debug: Print Tweet
     if post["tweet_text"]:
@@ -285,7 +247,7 @@ def main():
         post_tweet(post["tweet_text"])
 
     # 5. Save
-    insert_post_to_supabase(post)
+    insert_post_to_supabase(post, poll_data=poll_data)
     print("--- Done ---")
 
 if __name__ == "__main__":

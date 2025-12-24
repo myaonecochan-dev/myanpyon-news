@@ -17,6 +17,7 @@ export interface Post {
   // Article/Thread specific
   content?: string; // HTML or Markdown body
   imageUrl?: string; // Thumbnail or main image
+  reactions?: { name: string; text: string; color?: string }[];
   created_at: string; // ISO Date string
 }
 

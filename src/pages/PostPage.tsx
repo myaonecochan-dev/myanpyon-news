@@ -7,6 +7,8 @@ import { DonationWidget } from '../components/DonationWidget';
 import { AffiliateBlock } from '../components/AffiliateBlock';
 import { CommentSection } from '../components/CommentSection';
 import { MascotChat } from '../components/MascotChat';
+import { PollWidget } from '../components/PollWidget';
+import { NetizenReactions } from '../components/NetizenReactions';
 import './PostPage.css';
 
 interface PostPageProps {
@@ -149,7 +151,11 @@ export const PostPage = ({ posts }: PostPageProps) => {
                 <div className="post-body">
                     {renderContent()}
 
-                    {/* Description Block Removed - Now part of content */}
+                    {/* Interactive Poll */}
+                    <PollWidget postId={post.id} />
+
+                    {/* Netizen Reactions */}
+                    {post.reactions && <NetizenReactions reactions={post.reactions} />}
                 </div>
 
                 {/* Affiliate Block */}
@@ -165,7 +171,7 @@ export const PostPage = ({ posts }: PostPageProps) => {
                 <DonationWidget />
 
                 {/* Article Bottom Ad */}
-                <AdSenseDisplay slot="0987654321" style={{ height: '250px' }} />
+                <AdSenseDisplay slot="0987654321" style={{ height: '250px', marginTop: '30px' }} />
 
                 <div className="post-footer">
                     <h3>この記事をシェアする</h3>
