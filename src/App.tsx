@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useLocation, Link } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, Link, useSearchParams } from 'react-router-dom';
 import { type Post, type Category } from './data/posts';
 import { supabase } from './lib/supabaseClient';
 import { Sidebar } from './components/Sidebar';
@@ -14,7 +14,10 @@ import { FloatingDonationButton } from './components/FloatingDonationButton';
 
 // Wrapper to handle global title/meta logic if needed
 const AppContent = () => {
-  const [category, setCategory] = useState<Category | 'all'>('all');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const categoryRaw = searchParams.get('cat') || 'all';
+  const category = (['all', 'trend', 'surprise', 'animals', 'flame'].includes(categoryRaw) ? categoryRaw : 'all') as Category | 'all';
+
   const [allPosts, setAllPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
@@ -80,9 +83,9 @@ const AppContent = () => {
   // Scroll to top on route change
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [location.pathname]);
+  }, [location.pathname, category]);
 
-  // Update theme based on category (Simple version: only updates on explicit category text change)
+  // Update theme based on category
   useEffect(() => {
     const root = document.documentElement;
     if (category === 'surprise') {
@@ -116,6 +119,14 @@ const AppContent = () => {
     return '話題の動画・ニュースまとめサイト';
   };
 
+  const handleCategoryChange = (newCat: string) => {
+    setSearchParams({ cat: newCat });
+  };
+
+  const displayedPosts = category === 'all'
+    ? allPosts
+    : allPosts.filter(p => p.category === category);
+
   return (
     <div className="app-container">
       <header className="app-header">
@@ -131,31 +142,31 @@ const AppContent = () => {
           <nav className="category-nav">
             <button
               className={category === 'all' ? 'active' : ''}
-              onClick={() => setCategory('all')}
+              onClick={() => handleCategoryChange('all')}
             >
               すべて
             </button>
             <button
               className={category === 'animals' ? 'active' : ''}
-              onClick={() => setCategory('animals')}
+              onClick={() => handleCategoryChange('animals')}
             >
               癒やし
             </button>
             <button
               className={category === 'surprise' ? 'active' : ''}
-              onClick={() => setCategory('surprise')}
+              onClick={() => handleCategoryChange('surprise')}
             >
               驚き
             </button>
             <button
               className={category === 'flame' ? 'active' : ''}
-              onClick={() => setCategory('flame')}
+              onClick={() => handleCategoryChange('flame')}
             >
               炎上
             </button>
             <button
               className={category === 'trend' ? 'active' : ''}
-              onClick={() => setCategory('trend')}
+              onClick={() => handleCategoryChange('trend')}
             >
               トレンド
             </button>
@@ -168,9 +179,9 @@ const AppContent = () => {
           <Routes>
             <Route path="/" element={
               <HomePage
-                posts={allPosts}
+                posts={displayedPosts}
                 onLoadMore={loadMore}
-                hasMore={hasMore}
+                hasMore={hasMore && category === 'all'} // Only show load more on 'all' because filtering reduces count
                 loading={loading}
               />
             } />

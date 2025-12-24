@@ -11,16 +11,12 @@ interface HomePageProps {
     loading: boolean;
 }
 
+// HomePage.tsx (Simplified)
 export const HomePage = ({ posts, onLoadMore, hasMore, loading }: HomePageProps) => {
-    const [filter, setFilter] = useState('all');
-
-    const filteredPosts = filter === 'all'
-        ? posts
-        : posts.filter(post => post.category === filter);
+    // No local filter state needed anymore
 
     const isInitialLoading = loading && posts.length === 0;
 
-    // Scroll to top when filter changes
     useEffect(() => {
         if (typeof window !== 'undefined') window.scrollTo(0, 0);
     }, []);
@@ -44,13 +40,7 @@ export const HomePage = ({ posts, onLoadMore, hasMore, loading }: HomePageProps)
                 </p>
             </div>
 
-            <div className="filter-bar">
-                <button className={filter === 'all' ? 'active' : ''} onClick={() => setFilter('all')}>All</button>
-                <button className={filter === 'trend' ? 'active' : ''} onClick={() => setFilter('trend')}>Trend</button>
-                <button className={filter === 'surprise' ? 'active' : ''} onClick={() => setFilter('surprise')}>Surprise</button>
-                <button className={filter === 'animals' ? 'active' : ''} onClick={() => setFilter('animals')}>Animals</button>
-                <button className={filter === 'flame' ? 'active' : ''} onClick={() => setFilter('flame')}>Flame</button>
-            </div>
+            {/* Filter Bar Removed - Handled by Header & App */}
 
             <div className="video-grid">
                 {isInitialLoading ? (
@@ -60,11 +50,11 @@ export const HomePage = ({ posts, onLoadMore, hasMore, loading }: HomePageProps)
                         </div>
                     ))
                 ) : (
-                    filteredPosts.map((post, index) => (
+                    posts.map((post, index) => (
                         <PostCard
                             key={post.id}
                             post={post}
-                            className={index < 4 && filter === 'all' ? 'featured-post' : ''}
+                            className={index < 4 ? 'featured-post' : ''}
                         />
                     ))
                 )}

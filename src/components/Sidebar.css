@@ -219,20 +219,37 @@
     border-bottom: none;
 }
 
-.category-list a {
-    display: block;
+.category-link {
+    display: flex;
+    align-items: center;
     padding: 12px 8px;
     color: var(--text-main);
     font-size: 0.95rem;
     transition: all 0.2s;
     border-radius: 4px;
+    text-decoration: none;
+    width: 100%;
 }
 
-.category-list a:hover {
+.category-link:hover {
     background-color: rgba(0, 0, 0, 0.02);
     color: var(--primary);
     padding-left: 12px;
-    /* Slide effect */
+}
+
+.cat-icon {
+    margin-right: 10px;
+    font-size: 1.1rem;
+}
+
+.cat-label {
+    flex: 1;
+}
+
+.cat-count {
+    color: #999;
+    font-size: 0.85rem;
+    font-weight: 500;
 }
 
 /* Mobile Responsive */

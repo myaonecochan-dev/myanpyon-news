@@ -90,10 +90,30 @@ export const Sidebar: React.FC<SidebarProps> = ({ posts = [] }) => {
             <div className="sidebar-widget">
                 <h3 className="widget-title">Categories</h3>
                 <ul className="category-list">
-                    <li><a href="#">Surprise Videos (42)</a></li>
-                    <li><a href="#">Animal Healing (156)</a></li>
-                    <li><a href="#">Funny Fails (89)</a></li>
-                    <li><a href="#">Amazing Talents (34)</a></li>
+                    {[
+                        { id: 'trend', label: 'トレンド', icon: '📈' },
+                        { id: 'surprise', label: '驚き', icon: '😲' },
+                        { id: 'animals', label: '癒やし', icon: '🐱' },
+                        { id: 'flame', label: '炎上', icon: '🔥' }
+                    ].map(cat => {
+                        const count = posts.filter(p => p.category === cat.id).length;
+                        return (
+                            <li key={cat.id}>
+                                <Link to={`/?cat=${cat.id}`} className="category-link">
+                                    <span className="cat-icon">{cat.icon}</span>
+                                    <span className="cat-label">{cat.label}</span>
+                                    <span className="cat-count">({count})</span>
+                                </Link>
+                            </li>
+                        );
+                    })}
+                    <li>
+                        <Link to="/?cat=all" className="category-link">
+                            <span className="cat-icon">📂</span>
+                            <span className="cat-label">すべて</span>
+                            <span className="cat-count">({posts.length})</span>
+                        </Link>
+                    </li>
                 </ul>
             </div>
 
