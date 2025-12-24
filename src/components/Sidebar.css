@@ -11,7 +11,7 @@
 .sidebar-widget {
     background-color: var(--bg-card);
     border-radius: 16px;
-    padding: 20px;
+    padding: 12px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
     border: 1px solid transparent;
 }
@@ -121,9 +121,9 @@
 
 .ranking-link {
     display: grid;
-    grid-template-columns: 32px 80px 1fr;
+    grid-template-columns: 24px 65px 1fr;
     /* Rank / Thumb / Content */
-    gap: 12px;
+    gap: 8px;
     align-items: center;
     text-decoration: none;
     color: var(--text-main);
@@ -140,7 +140,7 @@
 
 .rank-number {
     font-weight: 800;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     color: #ddd;
     text-align: center;
     line-height: 1;
@@ -166,7 +166,7 @@
 
 .rank-thumbnail {
     width: 100%;
-    height: 45px;
+    height: 65px;
     border-radius: 4px;
     object-fit: cover;
     background-color: #eee;
@@ -186,7 +186,7 @@
     line-height: 1.4;
     margin: 0;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
     color: var(--text-main);
