@@ -1,0 +1,62 @@
+.donation-button {
+    position: fixed;
+    bottom: 100px;
+    right: 30px;
+    height: 50px;
+    padding: 0 20px;
+    border-radius: 25px;
+    background-color: #FF5E5B;
+    color: white;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+    font-family: "Noto Sans JP", sans-serif;
+    transition: all 0.2s ease;
+}
+
+.donation-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+.donation-icon {
+    font-size: 20px;
+}
+
+.donation-text {
+    display: inline;
+}
+
+/* Mobile Optimization: Icon only to save space */
+@media (max-width: 768px) {
+    .donation-button {
+        width: 50px;
+        /* Circular */
+        height: 50px;
+        padding: 0;
+        /* Remove padding */
+        border-radius: 50%;
+        right: 20px;
+        /* Move slightly closer to edge */
+        bottom: 90px;
+        /* Adjust vertical position */
+    }
+
+    .donation-text {
+        display: none;
+        /* Hide text */
+    }
+
+    .donation-icon {
+        font-size: 24px;
+        /* Slightly larger icon */
+    }
+}
