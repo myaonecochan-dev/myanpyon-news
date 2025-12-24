@@ -29,7 +29,9 @@ def create_gradient_image(width, height, c1, c2):
 def download_image(url):
     """Downloads an image from a URL and returns a PIL Image object."""
     try:
-        response = requests.get(url, timeout=10)
+        # User-Agent is important for some CDNs
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
+        response = requests.get(url, headers=headers, timeout=60)
         response.raise_for_status()
         return Image.open(BytesIO(response.content))
     except Exception as e:
