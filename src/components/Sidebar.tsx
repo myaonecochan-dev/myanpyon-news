@@ -41,7 +41,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ posts = [] }) => {
                     <ul className="ranking-list">
                         {dailyRanking.map((post, index) => (
                             <li key={post.id} className="ranking-item">
-                                <Link to={`/post/${post.id}`} className="ranking-link" style={{ display: 'flex', textDecoration: 'none', color: 'inherit', width: '100%' }}>
+                                <Link to={`/post/${post.id}`} className="ranking-link">
                                     <span className={`rank-number rank-${index + 1}`}>{index + 1}</span>
                                     {post.imageUrl ? (
                                         <img src={post.imageUrl} alt={post.title} className="rank-thumbnail" />
@@ -68,7 +68,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ posts = [] }) => {
                     <ul className="ranking-list">
                         {monthlyRanking.map((post, index) => (
                             <li key={post.id} className="ranking-item">
-                                <Link to={`/post/${post.id}`} className="ranking-link" style={{ display: 'flex', textDecoration: 'none', color: 'inherit', width: '100%' }}>
+                                <Link to={`/post/${post.id}`} className="ranking-link">
                                     <span className={`rank-number rank-${index + 1}`}>{index + 1}</span>
                                     {post.imageUrl ? (
                                         <img src={post.imageUrl} alt={post.title} className="rank-thumbnail" />

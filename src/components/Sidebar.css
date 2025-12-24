@@ -112,21 +112,28 @@
 }
 
 .ranking-item {
+    display: block;
+    margin-bottom: 8px;
+}
+
+.ranking-link {
     display: grid;
-    grid-template-columns: 24px 60px 1fr;
+    grid-template-columns: 32px 80px 1fr;
     /* Rank / Thumb / Content */
-    gap: 10px;
-    align-items: start;
+    gap: 12px;
+    align-items: center;
     text-decoration: none;
     color: var(--text-main);
     transition: background-color 0.2s;
-    padding: 4px;
+    padding: 8px;
     border-radius: 8px;
 }
 
-.ranking-item:hover {
+.ranking-link:hover {
     background-color: rgba(0, 0, 0, 0.02);
 }
+
+
 
 .rank-number {
     font-weight: 800;
@@ -155,9 +162,9 @@
 /* Bronze */
 
 .rank-thumbnail {
-    width: 60px;
-    height: 60px;
-    border-radius: 8px;
+    width: 100%;
+    height: 50px;
+    border-radius: 4px;
     object-fit: cover;
     background-color: #eee;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
