@@ -70,6 +70,9 @@ def get_ai_image_url(text):
         "car": "luxury electric car future concept road",
         "cat": "cute cat fluffy high quality photo",
         "dog": "cute puppy high quality photo",
+        "アプリ": "smartphone application interface ios modern ui colorful",
+        "スマホ": "modern smartphone device technology sleek",
+        "app": "smartphone application interface modern ui",
     }
     
     found_key = None
@@ -105,7 +108,7 @@ def parse_and_insert(xml_content, category, source):
 
         count = 0
         for item in items:
-            if count >= 5: # Limit to 5 per feed to avoid spamming
+            if count >= 10: # Limit to 10 per feed (total 20 for 2 feeds)
                 break
 
             title = item.find('title').text if item.find('title') is not None else "No Title"
