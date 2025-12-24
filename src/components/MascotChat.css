@@ -25,15 +25,24 @@
 }
 
 /* Mascot Icon */
-.chat-mascot-icon {
+/* Mascot Frame (Wrapper) */
+.mascot-avatar-wrapper {
     width: 80px;
     height: 80px;
     border-radius: 50%;
     border: 3px solid white;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     background: white;
+    overflow: hidden;
+    /* Clips the zoomed image */
+    flex-shrink: 0;
+}
+
+/* Mascot Image (Inner) */
+.chat-mascot-icon {
+    width: 100%;
+    height: 100%;
     object-fit: contain;
-    padding: 2px;
 }
 
 /* Speech Bubble */
@@ -105,7 +114,7 @@
         max-width: 80%;
     }
 
-    .chat-mascot-icon {
+    .mascot-avatar-wrapper {
         width: 60px;
         height: 60px;
     }

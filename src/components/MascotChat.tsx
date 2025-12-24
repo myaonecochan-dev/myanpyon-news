@@ -31,7 +31,9 @@ export const MascotChat: React.FC<MascotChatProps> = ({ myanComment, pyonComment
         <div className="mascot-chat-container">
             {/* Myan (Left) */}
             <div className="mascot-row">
-                <img src="/mascot_cat.png" alt="Myan" className="chat-mascot-icon myan-icon" />
+                <div className="mascot-avatar-wrapper">
+                    <img src="/mascot_cat.png" alt="Myan" className="chat-mascot-icon myan-icon" />
+                </div>
                 <div className="speech-bubble">
                     {myanText}
                 </div>
@@ -39,7 +41,9 @@ export const MascotChat: React.FC<MascotChatProps> = ({ myanComment, pyonComment
 
             {/* Pyon (Right) */}
             <div className="mascot-row reverse">
-                <img src="/mascot_bunny.png" alt="Pyon" className="chat-mascot-icon" />
+                <div className="mascot-avatar-wrapper">
+                    <img src="/mascot_bunny.png" alt="Pyon" className="chat-mascot-icon" />
+                </div>
                 <div className="speech-bubble">
                     {pyonText}
                 </div>
