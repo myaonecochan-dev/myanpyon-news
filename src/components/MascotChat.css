@@ -26,8 +26,8 @@
 
 /* Mascot Icon */
 .chat-mascot-icon {
-    width: 60px;
-    height: 60px;
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
     border: 3px solid white;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -106,7 +106,7 @@
     }
 
     .chat-mascot-icon {
-        width: 48px;
-        height: 48px;
+        width: 60px;
+        height: 60px;
     }
 }
