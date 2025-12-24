@@ -1,28 +1,48 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { supabase } from '../supabaseClient';
 
 interface Product {
+    id: string;
     name: string;
     price: string;
-    image: string;
-    link: string;
+    image_url: string;
+    amazon_link?: string;
+    rakuten_link?: string;
+    active: boolean;
 }
 
-const SAMPLE_PRODUCTS: Product[] = [
-    {
-        name: "Dell 4Kモニター 27インチ U2720QM",
-        price: "¥64,800",
-        image: "https://m.media-amazon.com/images/I/61yFkmwMh-L._AC_SX679_.jpg", // Placeholder or generic tech image
-        link: "https://www.amazon.co.jp/"
-    },
-    {
-        name: "Anker Soundcore Liberty 4 (ワイヤレスイヤホン)",
-        price: "¥14,990",
-        image: "https://m.media-amazon.com/images/I/51r2K-N2+HL._AC_SX679_.jpg", // Placeholder
-        link: "https://www.amazon.co.jp/"
-    }
-];
-
 export const AffiliateBlock: React.FC = () => {
+    const [products, setProducts] = useState<Product[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const { data, error } = await supabase
+                    .from('products')
+                    .select('*')
+                    .eq('active', true)
+                    .order('created_at', { ascending: false });
+
+                if (error) {
+                    console.error('Error fetching products:', error);
+                } else if (data) {
+                    setProducts(data);
+                }
+            } catch (err) {
+                console.error('Unexpected error:', err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProducts();
+    }, []);
+
+    // If loading or no products, we can hide the block or show nothing to avoid layout shifts.
+    if (loading) return null;
+    if (products.length === 0) return null;
+
     return (
         <div className="affiliate-block" style={{
             background: '#fff',
@@ -46,9 +66,8 @@ export const AffiliateBlock: React.FC = () => {
             </h4>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '15px' }}>
-                {/* In a real app, you would map this. For design, let's hardcode a robust layout */}
-                {SAMPLE_PRODUCTS.map((product, idx) => (
-                    <div key={idx} style={{
+                {products.map((product) => (
+                    <div key={product.id} style={{
                         display: 'flex',
                         gap: '15px',
                         background: '#f9f9f9',
@@ -64,49 +83,60 @@ export const AffiliateBlock: React.FC = () => {
                             alignItems: 'center',
                             justifyContent: 'center',
                             border: '1px solid #eee',
-                            flexShrink: 0
+                            flexShrink: 0,
+                            overflow: 'hidden'
                         }}>
-                            {/* Placeholder for actual product image */}
-                            <span style={{ fontSize: '2rem' }}>📦</span>
+                            {product.image_url ? (
+                                <img src={product.image_url} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                            ) : (
+                                <span style={{ fontSize: '2rem' }}>📦</span>
+                            )}
                         </div>
 
                         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                             <div style={{ fontWeight: 'bold', fontSize: '0.95rem', lineHeight: '1.4' }}>
                                 {product.name}
                             </div>
-                            <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
-                                <a href={product.link} target="_blank" rel="noopener noreferrer" style={{
-                                    flex: 1,
-                                    background: '#FF9900',
-                                    color: 'white',
-                                    textAlign: 'center',
-                                    padding: '6px',
-                                    borderRadius: '4px',
-                                    fontSize: '0.8rem',
-                                    fontWeight: 'bold',
-                                    textDecoration: 'none',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center'
-                                }}>
-                                    Amazon
-                                </a>
-                                <a href={product.link} target="_blank" rel="noopener noreferrer" style={{
-                                    flex: 1,
-                                    background: '#BF0000',
-                                    color: 'white',
-                                    textAlign: 'center',
-                                    padding: '6px',
-                                    borderRadius: '4px',
-                                    fontSize: '0.8rem',
-                                    fontWeight: 'bold',
-                                    textDecoration: 'none',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center'
-                                }}>
-                                    楽天
-                                </a>
+                            <div style={{ fontSize: '0.9rem', color: '#e74c3c', fontWeight: 'bold', marginBottom: '5px' }}>
+                                {product.price}
+                            </div>
+                            <div style={{ display: 'flex', gap: '8px', marginTop: 'auto' }}>
+                                {product.amazon_link && (
+                                    <a href={product.amazon_link} target="_blank" rel="noopener noreferrer" style={{
+                                        flex: 1,
+                                        background: '#FF9900',
+                                        color: 'white',
+                                        textAlign: 'center',
+                                        padding: '6px',
+                                        borderRadius: '4px',
+                                        fontSize: '0.8rem',
+                                        fontWeight: 'bold',
+                                        textDecoration: 'none',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center'
+                                    }}>
+                                        Amazon
+                                    </a>
+                                )}
+                                {product.rakuten_link && (
+                                    <a href={product.rakuten_link} target="_blank" rel="noopener noreferrer" style={{
+                                        flex: 1,
+                                        background: '#BF0000',
+                                        color: 'white',
+                                        textAlign: 'center',
+                                        padding: '6px',
+                                        borderRadius: '4px',
+                                        fontSize: '0.8rem',
+                                        fontWeight: 'bold',
+                                        textDecoration: 'none',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center'
+                                    }}>
+                                        楽天
+                                    </a>
+                                )}
                             </div>
                         </div>
                     </div>
