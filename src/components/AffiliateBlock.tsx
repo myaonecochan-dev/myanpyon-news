@@ -9,48 +9,112 @@ interface Product {
 
 const SAMPLE_PRODUCTS: Product[] = [
     {
-        name: "最新スマホスタンド (猫型)",
-        price: "¥1,980",
-        image: "https://via.placeholder.com/150",
-        link: "#"
+        name: "Dell 4Kモニター 27インチ U2720QM",
+        price: "¥64,800",
+        image: "https://m.media-amazon.com/images/I/61yFkmwMh-L._AC_SX679_.jpg", // Placeholder or generic tech image
+        link: "https://www.amazon.co.jp/"
     },
     {
-        name: "AIスマートスピーカー",
-        price: "¥5,400",
-        image: "https://via.placeholder.com/150",
-        link: "#"
+        name: "Anker Soundcore Liberty 4 (ワイヤレスイヤホン)",
+        price: "¥14,990",
+        image: "https://m.media-amazon.com/images/I/51r2K-N2+HL._AC_SX679_.jpg", // Placeholder
+        link: "https://www.amazon.co.jp/"
     }
 ];
 
 export const AffiliateBlock: React.FC = () => {
     return (
         <div className="affiliate-block" style={{
-            background: '#f8f9fa',
-            padding: '1.5rem',
+            background: '#fff',
+            padding: '20px',
             borderRadius: '12px',
-            marginTop: '2rem',
-            border: '1px solid #eee'
+            marginTop: '30px',
+            border: '1px solid #e0e0e0',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
         }}>
-            <h4 style={{ margin: '0 0 1rem 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ fontSize: '1.2rem' }}>🛍️</span>
-                <span>管理人のおすすめアイテム</span>
+            <h4 style={{
+                margin: '0 0 15px 0',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                fontSize: '1.1rem',
+                borderBottom: '2px solid #f0f0f0',
+                paddingBottom: '10px'
+            }}>
+                <span style={{ fontSize: '1.4rem' }}>🛍️</span>
+                <span>気になったアイテムをチェック！</span>
             </h4>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '15px' }}>
+                {/* In a real app, you would map this. For design, let's hardcode a robust layout */}
                 {SAMPLE_PRODUCTS.map((product, idx) => (
-                    <a key={idx} href={product.link} style={{ textDecoration: 'none', color: 'inherit', display: 'block', background: 'white', borderRadius: '8px', padding: '10px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
-                        <div style={{ height: '100px', background: '#ddd', borderRadius: '4px', marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#666', fontSize: '0.8rem' }}>
-                            No Image
+                    <div key={idx} style={{
+                        display: 'flex',
+                        gap: '15px',
+                        background: '#f9f9f9',
+                        padding: '10px',
+                        borderRadius: '8px'
+                    }}>
+                        <div style={{
+                            width: '80px',
+                            height: '80px',
+                            background: '#fff',
+                            borderRadius: '4px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            border: '1px solid #eee',
+                            flexShrink: 0
+                        }}>
+                            {/* Placeholder for actual product image */}
+                            <span style={{ fontSize: '2rem' }}>📦</span>
                         </div>
-                        <div style={{ fontSize: '0.9rem', fontWeight: 'bold', lineHeight: '1.4', marginBottom: '4px' }}>{product.name}</div>
-                        <div style={{ color: '#e74c3c', fontWeight: 'bold' }}>{product.price}</div>
-                        <div style={{ marginTop: '8px', textAlign: 'center' }}>
-                            <span style={{ display: 'inline-block', padding: '4px 12px', background: '#f39c12', color: 'white', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 'bold' }}>Amazonで見る</span>
+
+                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                            <div style={{ fontWeight: 'bold', fontSize: '0.95rem', lineHeight: '1.4' }}>
+                                {product.name}
+                            </div>
+                            <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                                <a href={product.link} target="_blank" rel="noopener noreferrer" style={{
+                                    flex: 1,
+                                    background: '#FF9900',
+                                    color: 'white',
+                                    textAlign: 'center',
+                                    padding: '6px',
+                                    borderRadius: '4px',
+                                    fontSize: '0.8rem',
+                                    fontWeight: 'bold',
+                                    textDecoration: 'none',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }}>
+                                    Amazon
+                                </a>
+                                <a href={product.link} target="_blank" rel="noopener noreferrer" style={{
+                                    flex: 1,
+                                    background: '#BF0000',
+                                    color: 'white',
+                                    textAlign: 'center',
+                                    padding: '6px',
+                                    borderRadius: '4px',
+                                    fontSize: '0.8rem',
+                                    fontWeight: 'bold',
+                                    textDecoration: 'none',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }}>
+                                    楽天
+                                </a>
+                            </div>
                         </div>
-                    </a>
+                    </div>
                 ))}
             </div>
-            <p style={{ fontSize: '0.75rem', color: '#999', marginTop: '10px', textAlign: 'right' }}>
-                ※ アフィリエイトリンクを含みます
+
+            <p style={{ fontSize: '0.75rem', color: '#999', marginTop: '15px', textAlign: 'right' }}>
+                ※ 当サイトはアフィリエイトプログラムに参加しています
             </p>
         </div>
     );
