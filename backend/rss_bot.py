@@ -78,13 +78,42 @@ def parse_and_insert(xml_content, category, source):
                 print(f"Skipping existing: {title[:20]}...")
                 continue
 
+            # Try to find an image
+            image_source_url = None
+            
+            # 1. Check enclosure
+            enclosure = item.find('enclosure')
+            if enclosure is not None:
+                image_source_url = enclosure.get('url')
+            
+            # 2. Check media:content / media:thumbnail (namespaces are annoying in etree)
+            if not image_source_url:
+                # Naive check for attributes in all tags if namespace parsing is hard
+                # Or use regex on the raw XML string for the item?
+                # Let's try explicit namespaces if defined, otherwise iterate
+                for child in item:
+                    if 'content' in child.tag or 'thumbnail' in child.tag:
+                         if child.get('url'):
+                             image_source_url = child.get('url')
+                             break
+
+            # 3. Regex match in description
+            if not image_source_url:
+                import re
+                img_match = re.search(r'<img[^>]+src="([^">]+)"', description or "")
+                if img_match:
+                    image_source_url = img_match.group(1)
+
             # Generate Thumbnail
             try:
                 # Create a unique filename
                 filename = f"thumb_{uuid.uuid4()}.png"
                 # Generate!
                 print(f"Generating thumbnail for: {title[:20]}...")
-                thumb_url = generate_thumbnail(title, filename)
+                
+                # Pass header image if found
+                thumb_url = generate_thumbnail(title, filename, bg_image_url=image_source_url)
+                
             except Exception as e:
                 print(f"Thumbnail generation failed: {e}")
                 thumb_url = "/mascot_cat.png" # Fallback to mascot
