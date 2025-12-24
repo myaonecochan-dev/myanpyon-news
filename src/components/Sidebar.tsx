@@ -114,6 +114,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ posts = [] }) => {
                             <span className="cat-count">({posts.length})</span>
                         </Link>
                     </li>
+                    <li style={{ marginTop: '10px', borderTop: '1px solid #eee', paddingTop: '10px' }}>
+                        <Link to="/privacy" className="category-link" style={{ fontSize: '0.85rem', color: '#999' }}>
+                            <span className="cat-icon">🔒</span>
+                            <span className="cat-label">プライバシーポリシー</span>
+                        </Link>
+                    </li>
                 </ul>
             </div>
 

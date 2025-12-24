@@ -23,16 +23,27 @@ export const AdSenseDisplay: React.FC<AdSenseDisplayProps> = ({
         ...style,
     };
 
+    // Safe AdSense loader
     useEffect(() => {
         if (!isDev) {
             try {
+                // Check if script is loaded
+                if (document.querySelectorAll('script[src*="adsbygoogle"]').length === 0) {
+                    const script = document.createElement('script');
+                    script.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX";
+                    script.async = true;
+                    script.crossOrigin = "anonymous";
+                    document.head.appendChild(script);
+                }
+
+                // Push ad
                 // @ts-ignore
                 (window.adsbygoogle = window.adsbygoogle || []).push({});
             } catch (err) {
                 console.error('AdSense error:', err);
             }
         }
-    }, [isDev]);
+    }, [isDev, slot]);
 
     if (isDev) {
         return (
@@ -40,31 +51,35 @@ export const AdSenseDisplay: React.FC<AdSenseDisplayProps> = ({
                 style={{
                     ...style,
                     display: 'flex',
+                    flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    backgroundColor: '#e9e9e9',
-                    border: '1px dashed #ccc',
-                    color: '#666',
+                    backgroundColor: '#f0f0f0',
+                    border: '2px dashed #ccc',
+                    color: '#888',
                     padding: '1rem',
                     minHeight: style.height || '250px',
-                    margin: '1rem 0'
+                    margin: '1rem 0',
+                    borderRadius: '8px'
                 }}
             >
-                <div style={{ textAlign: 'center' }}>
-                    <p style={{ fontWeight: 'bold', margin: 0 }}>AdSense Area</p>
-                    <p style={{ fontSize: '0.8rem', margin: 0 }}>Slot ID: {slot}</p>
-                    <p style={{ fontSize: '0.8rem', margin: 0 }}>(Visible in Production)</p>
+                <span style={{ fontSize: '2rem' }}>📢</span>
+                <p style={{ fontWeight: 'bold', margin: '0.5rem 0' }}>Google AdSense</p>
+                <div style={{ fontSize: '0.8rem', textAlign: 'center' }}>
+                    Slot ID: {slot}<br />
+                    Format: {format}<br />
+                    (Visible in Production)
                 </div>
             </div>
         );
     }
 
     return (
-        <div style={{ margin: '1rem 0', textAlign: 'center' }}>
+        <div className="adsense-container" style={{ margin: '1rem 0', textAlign: 'center', overflow: 'hidden' }}>
             <ins
                 className="adsbygoogle"
                 style={adStyle}
-                data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" // Replace with USER's actual client ID later
+                data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" // TODO: Replace with user's ID
                 data-ad-slot={slot}
                 data-ad-format={format}
                 data-full-width-responsive={responsive ? "true" : "false"}

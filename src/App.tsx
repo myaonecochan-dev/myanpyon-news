@@ -8,6 +8,7 @@ import { HomePage } from './pages/HomePage';
 import { PostPage } from './pages/PostPage';
 import { AdminPage } from './pages/AdminPage';
 import { AdminPostEditor } from './pages/AdminPostEditor';
+import { PrivacyPolicy } from './pages/PrivacyPolicy';
 import { ScrollToTopButton } from './components/ScrollToTopButton';
 import { FloatingDonationButton } from './components/FloatingDonationButton';
 
@@ -188,6 +189,7 @@ const AppContent = () => {
             <Route path="/post/:id" element={
               <PostPage posts={allPosts} />
             } />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/admin" element={<AdminPage />} />
             <Route path="/admin/create" element={<AdminPostEditor />} />
           </Routes>
