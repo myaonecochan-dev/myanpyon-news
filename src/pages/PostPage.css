@@ -1,0 +1,361 @@
+/* Post Page Design - Pop & Readable */
+.post-page {
+    animation: fadeIn 0.4s ease-out;
+    padding-bottom: 4rem;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+    color: var(--text-sub);
+    font-size: 0.9rem;
+    padding: 8px 16px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s;
+}
+
+.back-link:hover {
+    color: var(--primary);
+    transform: translateX(-4px);
+    box-shadow: var(--shadow-md);
+}
+
+.post-detail {
+    background: var(--bg-card);
+    border-radius: 24px;
+    padding: 3rem;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid rgba(0, 0, 0, 0.02);
+}
+
+.post-header {
+    margin-bottom: 2rem;
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 2rem;
+}
+
+.category-badge-lg {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 50px;
+    color: white;
+    font-weight: 800;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Category Colors */
+.category-badge-lg.animals {
+    background: var(--color-animals);
+}
+
+.category-badge-lg.surprise {
+    background: var(--color-surprise);
+}
+
+.category-badge-lg.trend {
+    background: var(--color-trend);
+}
+
+.category-badge-lg.flame {
+    background: var(--color-flame);
+}
+
+.post-header h1 {
+    font-size: 2rem;
+    line-height: 1.4;
+    color: var(--text-main);
+    margin-bottom: 1rem;
+}
+
+.post-meta {
+    color: var(--text-sub);
+    font-size: 0.9rem;
+}
+
+/* Body Content */
+.post-body {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #444;
+    max-width: 740px;
+    margin: 0 auto;
+    /* Japan Typography Improvements */
+    word-break: auto-phrase;
+    /* Chrome/Edge 119+ */
+    overflow-wrap: break-word;
+    text-wrap: pretty;
+    /* Prevent orphans */
+}
+
+/* Video Containers */
+.video-container {
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    margin-bottom: 2rem;
+}
+
+.video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* Image Containers */
+.image-container img {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: var(--shadow-md);
+    margin-bottom: 2rem;
+}
+
+/* Article Styling */
+.article-content h2 {
+    font-size: 1.5rem;
+    border-left: 5px solid var(--primary);
+    padding-left: 1rem;
+    margin: 2rem 0 1rem;
+    color: var(--text-main);
+}
+
+.article-content p {
+    margin-bottom: 1.5rem;
+}
+
+/* Thread Styling */
+.thread-content {
+    background: #fcfcfc;
+    padding: 1.5rem;
+    /* Increased padding */
+    border-radius: 12px;
+    border: 1px dashed var(--border-color);
+}
+
+.thread-comment {
+    border-bottom: 1px solid #eee;
+    padding: 1rem 0;
+}
+
+.thread-comment:last-child {
+    border-bottom: none;
+}
+
+.thread-comment .meta {
+    font-size: 0.85rem;
+    color: #888;
+    margin-bottom: 0.4rem;
+    font-family: 'Verdana', sans-serif;
+    /* Monospace-ish mostly for IDs */
+}
+
+.thread-comment .name {
+    font-weight: 700;
+    color: #228b22;
+    /* Forest Green - Traditional */
+    margin-right: 0.5rem;
+}
+
+.thread-comment .body {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: #111;
+    padding-left: 0.5rem;
+    white-space: pre-wrap;
+    /* Preserve newlines if any are plain text, though <br> is used */
+}
+
+/* Anchor links style */
+.thread-comment .body span[style*="color:blue"],
+.thread-comment .body a {
+    color: #1e90ff !important;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+/* Specific highlight for 1 (Res Number) */
+.thread-comment .meta::before {
+    /* content: '🔹 '; Optional decoration */
+}
+
+/* Footer & Share */
+.post-footer {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-color);
+    text-align: center;
+}
+
+/* Chat Bubble Styling for AI Content */
+.chat-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    align-items: flex-start;
+}
+
+.chat-avatar img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #eee;
+    background: #fff;
+}
+
+.chat-bubble {
+    position: relative;
+    padding: 1rem 1.25rem;
+    border-radius: 18px;
+    font-size: 1rem;
+    line-height: 1.6;
+    max-width: 80%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+/* Myan (Cat) - Left */
+.chat-myan .chat-bubble {
+    background: #f0f7ff;
+    color: #333;
+    border-top-left-radius: 4px;
+}
+
+.chat-myan .chat-avatar {
+    order: 0;
+}
+
+/* Pyon (Bunny) - Right (or Left alternate, let's keep consistent left for now or swap) */
+/* Let's make Pyon appear on the right for contrast? No, standard chat usually alternates.
+   Let's keep both left for blog readability or alternate. 
+   Let's alternate: Pyon (Right), Myan (Left) is improved for "Dialogue".
+*/
+.chat-pyon {
+    flex-direction: row-reverse;
+}
+
+.chat-pyon .chat-bubble {
+    background: #fff0f5;
+    color: #333;
+    border-top-right-radius: 4px;
+}
+
+.share-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1.5rem;
+}
+
+.share-btn {
+    padding: 10px 24px;
+    border-radius: 50px;
+    border: none;
+    font-weight: 700;
+    color: white;
+    cursor: pointer;
+    transition: transform 0.2s, filter 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1rem;
+}
+
+.share-btn:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
+
+.share-btn.twitter {
+    background: #000;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.share-btn.line {
+    background: #06c755;
+    box-shadow: 0 4px 10px rgba(6, 199, 85, 0.25);
+}
+
+
+/* News Summary Box */
+.news-summary-box {
+    background: rgba(255, 255, 255, 0.8);
+    border: 2px solid var(--primary);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.news-summary-box h3 {
+    margin-top: 0;
+    color: var(--primary);
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.news-summary-box h3::before {
+    content: '💡';
+}
+
+.news-summary-box ul {
+    padding-left: 1.5rem;
+    margin: 0;
+}
+
+.news-summary-box li {
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+    font-weight: 500;
+    color: #444;
+}
+
+/* Dark mode adjustment for summary box */
+@media (prefers-color-scheme: dark) {
+    .news-summary-box {
+        background: rgba(30, 30, 30, 0.8);
+        border-color: var(--primary);
+    }
+
+    .news-summary-box li {
+        color: #ddd;
+    }
+}
+
+/* Intro Text */
+.intro-text {
+    margin-top: 1.5rem;
+    margin-bottom: 3rem;
+    /* Spacing before dialogue */
+    font-weight: 500;
+    color: var(--text-main);
+    line-height: 1.8;
+    padding: 0 0.5rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .post-detail {
+        padding: 1.5rem;
+        border-radius: 16px;
+    }
+
+    .post-header h1 {
+        font-size: 1.5rem;
+    }
+}

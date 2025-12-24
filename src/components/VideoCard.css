@@ -1,0 +1,317 @@
+/* Card Container */
+.video-card {
+    background-color: var(--bg-card);
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    /* Subtle border */
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    /* Default keeps row for desktop list style in some views, but flex-direction is handled by media queries heavily */
+    height: 100%;
+    /* Ensure it fills container */
+    position: relative;
+    text-decoration: none;
+    color: inherit;
+
+    /* Animation Entry */
+    opacity: 0;
+    animation: fadeUp 0.6s ease-out forwards;
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Hover Effect: Lifting & Deep Shadow */
+.video-card:hover {
+    transform: translateY(-6px) scale(1.01);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+    z-index: 10;
+}
+
+.video-thumbnail-wrapper {
+    position: relative;
+    width: 100%;
+    /* Adjusted for flex layouts, usually overridden by media queries */
+    background-color: #f0f0f0;
+    overflow: hidden;
+    /* Crucial for zoom effect */
+}
+
+.video-thumbnail {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Zoom effect on hover */
+.video-card:hover .video-thumbnail {
+    transform: scale(1.08);
+    /* Moderate zoom */
+}
+
+/* Modern Pill Badges */
+.platform-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    padding: 4px 10px;
+    font-size: 0.7rem;
+    border-radius: 20px;
+    font-weight: 700;
+    color: white;
+    z-index: 2;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(4px);
+}
+
+.badge-youtube {
+    background-color: rgba(255, 0, 0, 0.9);
+}
+
+.badge-twitter {
+    background-color: rgba(0, 0, 0, 0.9);
+}
+
+.badge-tiktok {
+    background-color: rgba(254, 44, 85, 0.9);
+}
+
+.badge-trend {
+    background-color: var(--color-trend);
+}
+
+.badge-flame {
+    background-color: var(--color-flame);
+}
+
+.badge-surprise {
+    background-color: var(--color-surprise);
+}
+
+.badge-animals {
+    background-color: var(--color-animals);
+}
+
+.play-icon {
+    width: 30px;
+    height: 30px;
+    /* Font size handled in component or keep here */
+    display: flex;
+    /* Centering */
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    backdrop-filter: blur(2px);
+}
+
+.video-info {
+    flex: 1;
+    padding: 12px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.video-title {
+    font-size: 1.05rem;
+    margin-bottom: 6px;
+    color: var(--text-main);
+    font-weight: 700;
+    line-height: 1.5;
+    transition: color 0.2s;
+
+    /* Truncate */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+
+    /* Optical Alignment for Hanging Brackets 【】 */
+    padding-left: 0.6em;
+    text-indent: -0.6em;
+}
+
+.video-description {
+    font-size: 0.85rem;
+    color: var(--text-sub);
+    line-height: 1.5;
+    margin-bottom: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+
+/* Modal Content Adjustments for Vertical Content */
+.video-wrapper.twitter-embed,
+.video-wrapper.tiktok-embed {
+    background: white;
+    padding: 20px;
+    height: auto;
+    min-height: 400px;
+    /* Min height to look good */
+    max-height: 80vh;
+    /* Prevent overflowing screen vertically */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    /* Start from top */
+    overflow-y: auto;
+    /* Scroll if content is very long */
+}
+
+/* Reset iframe positioning for these custom wrappers since they aren't 16:9 absolute */
+.video-wrapper.twitter-embed iframe,
+.video-wrapper.tiktok-embed iframe {
+    position: static;
+    width: 100%;
+    max-width: 500px;
+    /* Constrain width for tweets/vertical videos */
+    height: auto;
+}
+
+/* React Router Link Wrapper */
+.video-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+@media (max-width: 600px) {
+
+    /* Regular Mobile Cards (List Style) */
+    .video-card {
+        height: auto;
+        min-height: 100px;
+        flex-direction: row !important;
+        /* Force Side-by-side for regular */
+        align-items: flex-start;
+    }
+
+    .video-thumbnail-wrapper {
+        width: 120px !important;
+        min-width: 120px !important;
+        height: 100%;
+        aspect-ratio: 16/9;
+    }
+
+    .video-info {
+        padding: 10px 12px;
+    }
+
+    .video-title {
+        font-size: 0.95rem;
+        -webkit-line-clamp: 3;
+        margin-bottom: 4px;
+    }
+
+    .video-description {
+        display: none;
+    }
+
+    /* Hero / Featured Posts on Mobile (Top 4) -> Adjusted to Compact List */
+    .video-card-link.featured-post .video-card {
+        flex-direction: row !important;
+        /* Switch back to Row for density */
+        min-height: 110px;
+        /* Slightly taller than regular 100px */
+        align-items: flex-start;
+    }
+
+    .video-card-link.featured-post .video-thumbnail-wrapper {
+        width: 150px !important;
+        /* Larger thumbnail than regular 120px */
+        min-width: 150px !important;
+        height: 100%;
+        aspect-ratio: 16/9;
+    }
+
+    .video-card-link.featured-post .video-title {
+        font-size: 1.0rem;
+        /* Slightly larger text */
+        -webkit-line-clamp: 3;
+        margin-bottom: 4px;
+    }
+
+    .video-card-link.featured-post .video-description {
+        display: none;
+        /* Hide description to save space, like regular items */
+    }
+
+    .video-card-link.featured-post .video-info {
+        padding: 10px 14px;
+    }
+}
+
+/* Featured Post Logic */
+@media (min-width: 601px) {
+    .featured-post {
+        grid-column: span 1;
+        /* Changed from span 2 to span 1 for 2-column layout */
+        grid-row: span 2;
+    }
+
+    .featured-post .video-card {
+        flex-direction: column;
+        /* Image on top */
+        height: 100%;
+        min-height: 420px;
+        /* Slightly reduced from 480px to compact text area */
+    }
+
+    .featured-post .video-thumbnail-wrapper {
+        width: 100%;
+        min-width: 100%;
+        height: 300px;
+        /* Very large thumbnail area */
+    }
+
+    .featured-post .video-info {
+        padding: 15px 20px;
+        /* Reduced vertical padding */
+    }
+
+    .featured-post .video-title {
+        font-size: 1.25rem;
+        /* Larger title */
+        -webkit-line-clamp: 2;
+        /* Limit to 2 lines */
+        margin-bottom: 8px;
+        /* Reduced margin */
+    }
+
+    .featured-post .video-description {
+        -webkit-line-clamp: 3;
+        /* Limit to 3 lines */
+        /* Allow more description */
+        font-size: 0.95rem;
+        margin-bottom: 0;
+    }
+}

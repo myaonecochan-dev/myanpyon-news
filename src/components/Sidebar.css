@@ -1,0 +1,234 @@
+/* Modern Sidebar */
+.app-sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Common Widget Style */
+.sidebar-widget {
+    background-color: var(--bg-card);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+    border: 1px solid transparent;
+}
+
+/* Profile Widget - Special Pop Style */
+.profile-widget {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(255, 240, 245, 1) 100%);
+    border: 1px solid rgba(255, 64, 129, 0.1);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.profile-header {
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 2;
+}
+
+/* Mascots Container */
+.mascot-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    height: 100px;
+    /* Fixed height for consistency */
+    margin-bottom: 10px;
+    transform: translateX(-15px);
+    /* Center visually due to overlap */
+}
+
+/* Admin Name */
+.admin-name {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--primary);
+    margin: 0;
+    letter-spacing: 0.5px;
+}
+
+.profile-bio {
+    font-size: 0.85rem;
+    color: var(--text-sub);
+    margin-bottom: 16px;
+    line-height: 1.5;
+}
+
+.social-links {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+.social-button {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: white;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.social-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-twitter {
+    background-color: #000;
+}
+
+.btn-rss {
+    background-color: #ee802f;
+}
+
+/* Ranking Widgets */
+.ranking-widget h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-main);
+    border-left: 4px solid var(--primary);
+    padding-left: 10px;
+    margin-top: 0;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+}
+
+.ranking-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.ranking-item {
+    display: grid;
+    grid-template-columns: 24px 60px 1fr;
+    /* Rank / Thumb / Content */
+    gap: 10px;
+    align-items: start;
+    text-decoration: none;
+    color: var(--text-main);
+    transition: background-color 0.2s;
+    padding: 4px;
+    border-radius: 8px;
+}
+
+.ranking-item:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.rank-number {
+    font-weight: 800;
+    font-size: 1.2rem;
+    color: #ddd;
+    text-align: center;
+    line-height: 1;
+    font-style: italic;
+}
+
+/* Top 3 Colors */
+.ranking-item:nth-child(1) .rank-number {
+    color: #ffd700;
+}
+
+/* Gold */
+.ranking-item:nth-child(2) .rank-number {
+    color: #c0c0c0;
+}
+
+/* Silver */
+.ranking-item:nth-child(3) .rank-number {
+    color: #cd7f32;
+}
+
+/* Bronze */
+
+.rank-thumbnail {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    object-fit: cover;
+    background-color: #eee;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.rank-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.rank-title {
+    font-size: 0.85rem;
+    font-weight: 500;
+    line-height: 1.4;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    color: var(--text-main);
+}
+
+.ranking-item:hover .rank-title {
+    color: var(--primary);
+}
+
+.rank-meta {
+    font-size: 0.75rem;
+    color: #999;
+    margin-top: 4px;
+    display: flex;
+    gap: 8px;
+}
+
+/* Category List Widget */
+.category-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.category-list li {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.category-list li:last-child {
+    border-bottom: none;
+}
+
+.category-list a {
+    display: block;
+    padding: 12px 8px;
+    color: var(--text-main);
+    font-size: 0.95rem;
+    transition: all 0.2s;
+    border-radius: 4px;
+}
+
+.category-list a:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+    color: var(--primary);
+    padding-left: 12px;
+    /* Slide effect */
+}
+
+/* Mobile Responsive */
+@media (max-width: 900px) {
+    .app-sidebar {
+        width: 100%;
+        /* Full width on mobile */
+    }
+}

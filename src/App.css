@@ -1,0 +1,355 @@
+/* Summary Box */
+.summary-box {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid #eee;
+}
+
+.summary-box h2 {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.summary-box ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.summary-box ul li {
+  margin-bottom: 0.8rem;
+  padding-left: 1.5rem;
+  position: relative;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+.summary-box ul li::before {
+  content: "✅";
+  position: absolute;
+  left: 0;
+  top: 2px;
+}
+
+.summary-link {
+  text-decoration: none;
+  color: var(--text-main);
+  transition: color 0.2s;
+  display: inline-block;
+}
+
+.summary-link:hover {
+  text-decoration: underline;
+  color: var(--primary);
+}
+
+.new-badge {
+  background-color: #ff4081;
+  color: white;
+  font-size: 0.75rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-right: 8px;
+  vertical-align: middle;
+  font-weight: 800;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.7;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Introduction Text */
+.intro-text-container {
+  text-align: center;
+  margin-bottom: 2.5rem;
+  animation: fadeIn 1s ease-out;
+}
+
+/* Modern Matome Header */
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border-bottom: var(--glass-border);
+  box-shadow: var(--shadow-sm);
+  padding: 0.5rem 0;
+  transition: all 0.3s ease;
+  margin-bottom: 0.5rem;
+  /* Reduced from 2rem to tight spacing */
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  /* Center the inner content wrapper */
+}
+
+.header-inner {
+  max-width: 1200px;
+  width: 100%;
+  /* Take full available width up to max */
+  margin: 0;
+  /* Margin handled by parent centering */
+  padding: 0 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-branding {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.header-branding h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.header-branding .subtitle {
+  font-size: 0.8rem;
+  color: var(--text-sub);
+  margin-top: 4px;
+  display: block;
+  margin-left: 0;
+}
+
+/* Navigation Tabs */
+.category-nav {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  /* Allow scrolling on mobile */
+  padding-bottom: 4px;
+  /* Space for scrollbar if visible */
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  /* Hide scrollbar Firefox */
+}
+
+.category-nav::-webkit-scrollbar {
+  display: none;
+  /* Hide scrollbar Chrome/Safari */
+}
+
+.category-nav button {
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: var(--text-sub);
+  transition: all 0.2s;
+  background: transparent;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  /* Prevent breaking */
+  flex-shrink: 0;
+  /* Prevent shrinking */
+}
+
+.category-nav button:hover {
+  background: rgba(0, 0, 0, 0.03);
+  color: var(--primary);
+}
+
+.category-nav button.active {
+  background: var(--primary);
+  color: white;
+  box-shadow: 0 4px 10px rgba(255, 0, 85, 0.3);
+}
+
+.main-layout {
+  flex: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 0 1rem;
+  display: flex;
+  /* Flex layout for Main + Sidebar */
+  gap: 2rem;
+  align-items: flex-start;
+  box-sizing: border-box;
+}
+
+.content-area {
+  flex: 1;
+  /* Use simple column stack or simple grid for articles */
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  /* Ensure it takes full width in flex */
+  overflow: hidden;
+  /* Prevent horizontal spill */
+}
+
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+  /* Tight 16px gap */
+  padding-bottom: 3rem;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s;
+  padding: 1rem;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-content {
+  background: white;
+  width: 100%;
+  max-width: 900px;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: background 0.2s;
+}
+
+.close-button:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.video-wrapper {
+  position: relative;
+  padding-bottom: 56.25%;
+  height: 0;
+  background: black;
+}
+
+.video-wrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.modal-info {
+  padding: 1.5rem;
+}
+
+.modal-info h2 {
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.modal-info p {
+  color: #666;
+  line-height: 1.5;
+}
+
+/* Ensure footer spans full width visually */
+.app-footer {
+  text-align: center;
+  padding: 2rem;
+  color: #888;
+  font-size: 0.8rem;
+  margin-top: 2rem;
+  background: white;
+  border-top: 1px solid #eee;
+  width: 100%;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 900px) {
+  .header-inner {
+    flex-direction: column;
+    /* Stack Title and Nav */
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .header-branding {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .header-mascot {
+    max-width: 60px;
+    /* Constrain mascot size */
+    height: auto;
+  }
+
+  .category-nav {
+    width: 100%;
+    /* Full width for scrolling */
+    justify-content: flex-start;
+  }
+
+  .main-layout {
+    flex-direction: column;
+    /* Stack Content and Sidebar */
+    gap: 3rem;
+  }
+
+  .content-area {
+    width: 100%;
+  }
+
+  /* Force Single Column Grid on Mobile */
+  .video-grid {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    /* Tight spacing for mobile list (8px) */
+  }
+}

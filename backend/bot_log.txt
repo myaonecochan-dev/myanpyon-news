@@ -1,0 +1,39 @@
+---------------------------------------------------------------- 
+[2025/12/24 19:57:48.61] Starting MyanPyon Bot... 
+--- Trend Bot Started ---
+Checking Supabase connection...
+Connection OK. Current post count: 15
+Fetching trends from https://news.yahoo.co.jp/rss/topics/top-picks.xml...
+ -> Found 8 trends.
+Generating content for: 診療報酬 全体で2.22%の上げ合意...
+Scraping OG Image from: https://news.yahoo.co.jp/pickup/6563691?source=rss
+Attempting to use background image: https://news-pctr.c.yimg.jp/t/news-topics/images/tpc/2025/12/24/ff93785ffc9ad451be568993fa3d44a2134cba48bc108dd9af30910c04a7c23d.jpg
+
+[Generated Tweet]: 診療報酬が2.22%も上がるってマジかよ！結局、病院代高くなるんじゃねーの？生活に影響あるってことだろ？ #ニュース
+
+--- X Posting Service ---
+!! Credentials missing. Switching to DRY RUN mode. !!
+[Dry Run Tweet]: 診療報酬が2.22%も上がるってマジかよ！結局、病院代高くなるんじゃねーの？生活に影響あるってことだろ？ #ニュース
+Successfully inserted post to Supabase: 【話題】診療報酬2.22%引き上げ合意！結局、俺たちの生活にどう影響するんだ？
+--- Done ---
+[2025/12/24 19:58:02.39] Finished. 
+---------------------------------------------------------------- 
+---------------------------------------------------------------- 
+[2025/12/24 22:00:00.88] Starting MyanPyon Bot... 
+--- Trend Bot Started ---
+Checking Supabase connection...
+Connection OK. Current post count: 17
+Fetching trends from https://news.yahoo.co.jp/rss/topics/top-picks.xml...
+ -> Found 8 trends.
+Generating content for: 年始の予報大きく修正 寒波到来か...
+Scraping OG Image from: https://news.yahoo.co.jp/pickup/6563696?source=rss
+Attempting to use background image: https://newsatcl-pctr.c.yimg.jp/t/iwiz-yn/rpr/sugieyuji/02482143/title-1766555512543.jpeg?exp=10800
+
+[Generated Tweet]: 年始の予報マジかよ！大雪とか勘弁してくれ～！猫ヒーターあるから大丈夫だと思ってたけど、甘かったぜ… #寒波 #天気
+
+--- X Posting Service ---
+Successfully posted to X! ID: 2003812966333055305
+Successfully inserted post to Supabase: 【話題】年始の天気予報が急転！ 寒波到来で大雪の可能性？
+--- Done ---
+[2025/12/24 22:00:15.91] Finished. 
+---------------------------------------------------------------- 

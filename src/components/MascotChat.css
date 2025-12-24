@@ -1,0 +1,112 @@
+/* Mascot Chat Container */
+.mascot-chat-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin: 3rem 0;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 20px;
+    border: 2px dashed #eee;
+}
+
+.mascot-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    opacity: 0;
+    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.mascot-row.reverse {
+    flex-direction: row-reverse;
+    animation-delay: 0.2s;
+    /* Second one comes later */
+}
+
+/* Mascot Icon */
+.chat-mascot-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background: white;
+    object-fit: contain;
+    padding: 2px;
+}
+
+/* Speech Bubble */
+.speech-bubble {
+    position: relative;
+    background: white;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    max-width: 70%;
+    color: var(--text-main);
+    font-weight: 500;
+}
+
+/* Tails */
+.mascot-row:not(.reverse) .speech-bubble {
+    border-top-left-radius: 0;
+    background: #fff0f5;
+    /* Light Pink for Myan */
+    border: 2px solid #ffbed2;
+}
+
+.mascot-row:not(.reverse) .speech-bubble::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -12px;
+    width: 0;
+    height: 0;
+    border-top: 12px solid #ffbed2;
+    border-left: 12px solid transparent;
+}
+
+.mascot-row.reverse .speech-bubble {
+    border-top-right-radius: 0;
+    background: #e0f7fa;
+    /* Light Blue for Pyon */
+    border: 2px solid #b2ebf2;
+}
+
+.mascot-row.reverse .speech-bubble::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: -12px;
+    width: 0;
+    height: 0;
+    border-top: 12px solid #b2ebf2;
+    border-right: 12px solid transparent;
+}
+
+@keyframes popIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@media (max-width: 600px) {
+    .speech-bubble {
+        font-size: 0.85rem;
+        max-width: 80%;
+    }
+
+    .chat-mascot-icon {
+        width: 48px;
+        height: 48px;
+    }
+}

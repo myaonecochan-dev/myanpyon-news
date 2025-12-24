@@ -1,0 +1,210 @@
+import { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { type Post, type Category } from './data/posts';
+import { supabase } from './lib/supabaseClient';
+import { Sidebar } from './components/Sidebar';
+import './App.css';
+import { HomePage } from './pages/HomePage';
+import { PostPage } from './pages/PostPage';
+import { AdminPage } from './pages/AdminPage';
+import { AdminPostEditor } from './pages/AdminPostEditor';
+import { ScrollToTopButton } from './components/ScrollToTopButton';
+import { FloatingDonationButton } from './components/FloatingDonationButton';
+
+
+// Wrapper to handle global title/meta logic if needed
+const AppContent = () => {
+  const [category, setCategory] = useState<Category | 'all'>('all');
+  const [allPosts, setAllPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const POSTS_PER_PAGE = 12;
+  const location = useLocation();
+
+  // Load generated posts from Supabase
+  useEffect(() => {
+    fetchSupabasePosts(0, true);
+  }, []);
+
+  const fetchSupabasePosts = async (pageIndex: number, reset: boolean = false) => {
+    if (reset) {
+      setLoading(true);
+      setAllPosts([]);
+    }
+
+    const start = pageIndex * POSTS_PER_PAGE;
+    const end = start + POSTS_PER_PAGE - 1;
+
+    try {
+      const { data, error } = await supabase
+        .from('posts')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .range(start, end);
+
+      if (error) throw error;
+
+      if (data) {
+        const formattedPosts: Post[] = data.map((item: any) => ({
+          id: item.id,
+          title: item.title,
+          description: item.description,
+          content: item.content,
+          category: item.category as Category,
+          type: item.type as any, // Cast to any or strict type if possible
+          platform: item.platform as any || 'article',
+          youtubeId: item.platform === 'youtube' ? item.video_id : undefined,
+          embedId: item.platform !== 'youtube' ? item.video_id : undefined, // Map video_id to embedId for TikTok/Twitter
+          imageUrl: item.image_url,
+          created_at: item.created_at
+        }));
+
+        console.log("Loaded generated posts from Supabase:", formattedPosts);
+        setAllPosts(prev => reset ? formattedPosts : [...prev, ...formattedPosts]);
+        setHasMore(data.length === POSTS_PER_PAGE);
+      }
+    } catch (err) {
+      console.error("Failed to load posts from Supabase:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadMore = () => {
+    const nextPage = page + 1;
+    setPage(nextPage);
+    fetchSupabasePosts(nextPage, false);
+  };
+
+  // Scroll to top on route change
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
+  // Update theme based on category (Simple version: only updates on explicit category text change)
+  useEffect(() => {
+    const root = document.documentElement;
+    if (category === 'surprise') {
+      root.style.setProperty('--primary', '#ff4081');
+      root.style.setProperty('--secondary', '#ff80ab');
+      root.style.setProperty('--accent', '#c51162');
+    } else if (category === 'trend') {
+      root.style.setProperty('--primary', '#007bff');
+      root.style.setProperty('--secondary', '#69b3ff');
+      root.style.setProperty('--accent', '#0056b3');
+    } else if (category === 'flame') {
+      root.style.setProperty('--primary', '#dc3545');
+      root.style.setProperty('--secondary', '#e4606d');
+      root.style.setProperty('--accent', '#bd2130');
+    } else {
+      root.style.setProperty('--primary', '#00bfa5');
+      root.style.setProperty('--secondary', '#64ffda');
+      root.style.setProperty('--accent', '#009688');
+    }
+  }, [category]);
+
+  const getHeaderTitle = (_cat: Category | 'all') => {
+    return 'みゃんぴょんそくまと！！';
+  };
+
+  const getHeaderSubtitle = (cat: Category | 'all') => {
+    if (cat === 'animals') return '世界中の癒し動物動画コレクション';
+    if (cat === 'surprise') return '衝撃映像・ハプニング・びっくり動画まとめ';
+    if (cat === 'trend') return '最新トレンド＆ニュース';
+    if (cat === 'flame') return 'ネットの話題・議論・炎上まとめ';
+    return '話題の動画・ニュースまとめサイト';
+  };
+
+  return (
+    <div className="app-container">
+      <header className="app-header">
+        <div className="header-inner">
+          <div className="header-branding">
+            <img src="/mascot_cat.png" alt="Mofu" className="header-mascot" style={{ height: '50px', width: 'auto' }} />
+            <div className="header-text">
+              <h1>{getHeaderTitle(category)}</h1>
+              <span className="subtitle">{getHeaderSubtitle(category)}</span>
+            </div>
+          </div>
+
+          <nav className="category-nav">
+            <button
+              className={category === 'all' ? 'active' : ''}
+              onClick={() => setCategory('all')}
+            >
+              すべて
+            </button>
+            <button
+              className={category === 'animals' ? 'active' : ''}
+              onClick={() => setCategory('animals')}
+            >
+              癒やし
+            </button>
+            <button
+              className={category === 'surprise' ? 'active' : ''}
+              onClick={() => setCategory('surprise')}
+            >
+              驚き
+            </button>
+            <button
+              className={category === 'flame' ? 'active' : ''}
+              onClick={() => setCategory('flame')}
+            >
+              炎上
+            </button>
+            <button
+              className={category === 'trend' ? 'active' : ''}
+              onClick={() => setCategory('trend')}
+            >
+              トレンド
+            </button>
+          </nav>
+        </div>
+      </header>
+
+      <div className="main-layout">
+        <div className="content-area">
+          <Routes>
+            <Route path="/" element={
+              <HomePage
+                posts={allPosts}
+                onLoadMore={loadMore}
+                hasMore={hasMore}
+                loading={loading}
+              />
+            } />
+            <Route path="/post/:id" element={
+              <PostPage posts={allPosts} />
+            } />
+            <Route path="/admin" element={<AdminPage />} />
+            <Route path="/admin/create" element={<AdminPostEditor />} />
+          </Routes>
+        </div>
+        {!location.pathname.startsWith('/admin') && <Sidebar />}
+      </div>
+
+      <footer className="app-footer">
+        <p>© 2025 Summary Site. Content for demo purposes.</p>
+      </footer>
+      <FloatingDonationButton />
+      <ScrollToTopButton />
+    </div>
+  );
+};
+
+import { HelmetProvider } from 'react-helmet-async';
+import { GoogleAnalytics } from './components/Analytics';
+
+function App() {
+  return (
+    <HelmetProvider>
+      <BrowserRouter>
+        <GoogleAnalytics />
+        <AppContent />
+      </BrowserRouter>
+    </HelmetProvider>
+  );
+}
+
+export default App;

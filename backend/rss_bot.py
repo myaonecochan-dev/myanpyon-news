@@ -1,0 +1,110 @@
+import os
+import time
+import ssl
+import urllib.request
+import xml.etree.ElementTree as ET
+from supabase import create_client, Client
+
+# --- Configuration ---
+SUPABASE_URL = "https://ufawzveswbnaqvfvezbb.supabase.co"
+# Service Role Key (Admin)
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVmYXd6dmVzd2JuYXF2ZnZlemJiIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NjU1MjQyNywiZXhwIjoyMDgyMTI4NDI3fQ.uf7mi1zUvLD9CmbAcwIgUNwHhQXUOg9cZ9Pk67C85iQ"
+
+RSS_FEEDS = [
+    {
+        "url": "https://news.yahoo.co.jp/rss/topics/it.xml",
+        "category": "trend",
+        "source": "Yahoo News"
+    },
+    {
+        "url": "https://www.gizmodo.jp/index.xml",
+        "category": "surprise",
+        "source": "Gizmodo"
+    }
+]
+
+# --- Setup Supabase ---
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+def fetch_rss(url):
+    print(f"Fetching {url}...")
+    try:
+        # Ignore SSL errors for simplicity in dev
+        ctx = ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
+        
+        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+        with urllib.request.urlopen(req, context=ctx, timeout=10) as response:
+            xml_content = response.read()
+            return xml_content
+    except Exception as e:
+        print(f"Error fetching {url}: {e}")
+        return None
+
+def parse_and_insert(xml_content, category, source):
+    if not xml_content:
+        return
+
+    try:
+        root = ET.fromstring(xml_content)
+        # Handle RSS 2.0 (channel/item) and Atom (entry) - roughly
+        items = root.findall('./channel/item')
+        if not items:
+            items = root.findall('.//{http://purl.org/rss/1.0/}item') # RSS 1.0
+
+        print(f"Found {len(items)} items.")
+
+        count = 0
+        for item in items:
+            if count >= 5: # Limit to 5 per feed to avoid spamming
+                break
+
+            title = item.find('title').text if item.find('title') is not None else "No Title"
+            link = item.find('link').text if item.find('link') is not None else ""
+            description = item.find('description').text if item.find('description') is not None else ""
+            
+            # Basic cleanup
+            if not link:
+                continue
+
+            # Check if exists (using description search as proxy for URL if schema doesn't have URL field unique)
+            # Actually we'll search by title to be safe
+            existing = supabase.table("posts").select("id").eq("title", title).execute()
+            if existing.data:
+                print(f"Skipping existing: {title[:20]}...")
+                continue
+
+            # Insert
+            post_data = {
+                "title": title,
+                "category": category,
+                "type": "article",
+                "platform": "article",
+                "description": f"Starting from {source}: {description[:100]}...",
+                "content": f"<p>{description}</p><p><a href='{link}' target='_blank'>続きを読む ({source})</a></p>",
+                "image_url": "https://via.placeholder.com/640x360.png?text=News" # Default placeholder
+            }
+            
+            # Try to find an image in content:encoded or enclosure (simple check)
+            # This is complex with just xml.etree, skipping for now.
+
+            try:
+                supabase.table("posts").insert(post_data).execute()
+                print(f"Inserted: {title[:20]}...")
+                count += 1
+            except Exception as e:
+                print(f"Insert error: {e}")
+
+    except Exception as e:
+        print(f"Parse error: {e}")
+
+def run_bot():
+    print("Starting content bot...")
+    for feed in RSS_FEEDS:
+        xml_data = fetch_rss(feed["url"])
+        parse_and_insert(xml_data, feed["category"], feed["source"])
+    print("Bot finished.")
+
+if __name__ == "__main__":
+    run_bot()
