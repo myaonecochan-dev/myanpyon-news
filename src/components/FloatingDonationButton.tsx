@@ -9,12 +9,12 @@ export const FloatingDonationButton: React.FC = () => {
             aria-label="Support on Ko-fi"
             style={{
                 position: 'fixed',
-                bottom: '100px', // Stacks above ScrollToTop (30px + 56px + gap)
+                bottom: '100px', // Stacks above ScrollToTop
                 right: '30px',
-                width: '56px',
-                height: '56px',
-                borderRadius: '50%',
-                backgroundColor: '#FF5E5B', /* Ko-fi Brand Color */
+                height: '50px', // Slightly smaller height for pill shape
+                padding: '0 20px',
+                borderRadius: '25px', // Pill shape
+                backgroundColor: '#FF5E5B',
                 color: 'white',
                 border: 'none',
                 boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
@@ -23,20 +23,24 @@ export const FloatingDonationButton: React.FC = () => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '28px',
-                transition: 'transform 0.2s, box-shadow 0.2s',
-                textDecoration: 'none'
+                gap: '8px',
+                fontSize: '16px',
+                fontWeight: 'bold',
+                transition: 'all 0.2s ease',
+                textDecoration: 'none',
+                fontFamily: '"Noto Sans JP", sans-serif'
             }}
             onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'scale(1.1)';
+                e.currentTarget.style.transform = 'translateY(-2px)';
                 e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.4)';
             }}
             onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'scale(1)';
+                e.currentTarget.style.transform = 'translateY(0)';
                 e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)';
             }}
         >
-            <span role="img" aria-label="coffee">☕</span>
+            <span role="img" aria-label="coffee" style={{ fontSize: '20px' }}>☕</span>
+            <span>支援する</span>
         </a>
     );
 };
