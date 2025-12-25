@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
- 
+
 import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation, Link, useSearchParams } from 'react-router-dom';
 import { type Post, type Category } from './data/posts';
@@ -52,7 +52,7 @@ const AppContent = () => {
       if (error) throw error;
 
       if (data) {
-         
+
         const formattedPosts: Post[] = data.map((item: any) => ({
           id: item.id,
           title: item.title,
@@ -153,7 +153,7 @@ const AppContent = () => {
           >
             <img src="/mascot_cat.png" alt="Mofu" className="header-mascot" style={{ height: '50px', width: 'auto' }} />
             <div className="header-text">
-              <h1>{getHeaderTitle(category)}</h1>
+              <h1>{getHeaderTitle()}</h1>
               <span className="subtitle">{getHeaderSubtitle(category)}</span>
             </div>
           </Link>
