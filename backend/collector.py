@@ -219,6 +219,38 @@ def generate_content_with_gemini(trend_item):
                     print(f"DEBUG: Failed to generate dedicated slug: {e}")
                     # Fallback to None, will use ID
                 
+                # --- NEW: Ensure comments exist (Retry Logic - Primary Path) ---
+                if not data.get("comment_myan") or not data.get("comment_pyon"):
+                    print("DEBUG: Comments missing in initial generation (Primary). Retrying...")
+                    try:
+                        comment_prompt = f"""
+                        The following news article needs short mascot comments.
+                        Title: {trend_data['title']}
+                        Summary: {data.get('description', '')}
+                        
+                        Characters:
+                        Myan (Cat): Energetic, dumb. "〜だぜ！" "〜にゃ！"
+                        Pyon (Bunny): Cool, sarcastic. "〜ですわ"
+
+                        Output JSON only:
+                        {{
+                            "comment_myan": "...",
+                            "comment_pyon": "..."
+                        }}
+                        """
+                        comment_resp = model.generate_content(comment_prompt)
+                        comment_text = comment_resp.text.replace("```json", "").replace("```", "")
+                        comment_json = json.loads(comment_text)
+                        
+                        data["comment_myan"] = comment_json.get("comment_myan")
+                        data["comment_pyon"] = comment_json.get("comment_pyon")
+                        print("DEBUG: Retry comments success.")
+                    except Exception as e:
+                        print(f"DEBUG: Retry comments failed: {e}")
+                        data["comment_myan"] = "今日のニュースはこれだにゃ！要チェックだぜ！"
+                        data["comment_pyon"] = "詳しくは記事を読んでくださいね。しっかり理解しましょう。"
+                # ---------------------------------------------
+                
                 return data
             else:
                 print(f"No JSON found in response: {text}")
