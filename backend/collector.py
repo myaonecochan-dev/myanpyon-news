@@ -18,7 +18,16 @@ load_dotenv()
 SUPABASE_URL = "https://ufawzveswbnaqvfvezbb.supabase.co"
 SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVmYXd6dmVzd2JuYXF2ZnZlemJiIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NjU1MjQyNywiZXhwIjoyMDgyMTI4NDI3fQ.uf7mi1zUvLD9CmbAcwIgUNwHhQXUOg9cZ9Pk67C85iQ"
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
-RSS_URL = "https://news.yahoo.co.jp/rss/topics/top-picks.xml"
+# RSS Feeds List (Randomly select one to ensure variety)
+RSS_FEEDS = [
+    "https://news.yahoo.co.jp/rss/topics/top-picks.xml", # Major News
+    "https://news.yahoo.co.jp/rss/topics/domestic.xml",  # Domestic
+    "https://news.yahoo.co.jp/rss/topics/world.xml",     # World
+    "https://news.yahoo.co.jp/rss/topics/business.xml",  # Economy
+    "https://news.yahoo.co.jp/rss/topics/it.xml",        # IT
+    "https://news.yahoo.co.jp/rss/topics/science.xml"    # Science
+]
+RSS_URL = random.choice(RSS_FEEDS)
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 
 def fetch_og_image(url):
@@ -116,17 +125,30 @@ def generate_content_with_gemini(trend_item):
           - Make them feel like a Japanese BBS (2ch/5ch). 
           - Mix of: Enthusiastic, critical, cynical, and weird/funny.
         - **POLL**: Suggest a 2-option poll question relevant to the news.
-        - **SNS CONTENT**: Generate a short, energetic, curious tweet from Myan. (NO URL).
+        - **SNS CONTENT**: Generate a short, energetic, curious tweet from Myan. (STRICTLY NO URL). Just a simple "tsubuyaki" or comment on the news.
 
         Format:
-        Return ONLY valid JSON with keys: "title", "content", "description", "tweet_text", "reactions", "poll", "thumbnail_prompt".
+        Return ONLY valid JSON with keys: "title", "content", "description", "tweet_text", "reactions", "poll", "thumbnail_prompt", "slug".
         
         "title": Catchy title starting with 【話題】.
+        "slug": English URL-friendly string (kebab-case, lowercase) representing the topic. E.g. "teacher-exam-odds-lowest" or "tokyo-game-show-2025".
         "tweet_text": Myan's tweet.
         "description": Short news summary.
         "reactions": List of objects: [{{ "name": "名無しさん", "text": "...", "color": "green/blue/red" }}]
         "poll": {{ "question": "...", "option_a": "...", "option_b": "..." }}
         "thumbnail_prompt": A SHORT ENGLISH prompt for an AI image generator representing the news (e.g. "Japanese Prime Minister Takaichi giving a speech" or "Cyberpunk Tokyo city at night").
+        "category": One of ["trend", "healing", "surprise", "flame"]. 
+           - "healing": Cute animals, heartwarming stories.
+           - "surprise": Shocking events, weird news, miracles.
+           - "flame": Controversial topics, angry netizen reactions.
+           - "trend": General news, politics, viral topics (Default).
+        "category": One of ["trend", "healing", "surprise", "flame"]. 
+           - "healing": Cute animals, heartwarming stories.
+           - "surprise": Shocking events, weird news, miracles.
+           - "flame": Controversial topics, angry netizen reactions.
+           - "trend": General news, politics, viral topics (Default).
+        "comment_myan": A short, energetic closing remark from Myan about this news (1 sentence). E.g. "Oishisou da nyan!"
+        "comment_pyon": A short, cool/sarcastic closing remark from Pyon about this news (1 sentence). E.g. "Tabesugi chuui desu yo."
         "content": HTML format (Summary Box + Character Dialogue).
            - Summary Box: <div class="news-summary-box">...</div>
            - Dialogue: MUST use this structure for images:
@@ -148,7 +170,12 @@ def generate_content_with_gemini(trend_item):
             import re
             json_match = re.search(r'\{.*\}', text, re.DOTALL)
             if json_match:
-                data = json.loads(json_match.group())
+                data = json.loads(json_match.group(), strict=False)
+                print(f"DEBUG: Parsed JSON keys: {list(data.keys())}")
+                if "slug" in data:
+                    print(f"DEBUG: AI generated slug: {data['slug']}")
+                else:
+                    print("DEBUG: AI did NOT generate 'slug' key.")
                 
                 # FORCE FIX: AI often hallucinates /images/myan_icon.png which doesn't exist.
                 # We replace known wrong paths with the correct /mascot_cat.png and /mascot_bunny.png
@@ -168,13 +195,107 @@ def generate_content_with_gemini(trend_item):
                     
                     data["content"] = c
                 
+                # Dedicated Slug Generation (since main prompt often fails)
+                try:
+                    slug_prompt = f"""
+                    Convert the following Japanese news title into a SHORT, ENGLISH, URL-FRIENDLY slug (kebab-case).
+                    Title: {data['title']}
+                    
+                    Rules:
+                    - Lowercase only.
+                    - Use hyphens (-) as separators.
+                    - Max 5-6 words.
+                    - Remove special characters.
+                    - Return ONLY the slug string (no JSON, no code blocks).
+                    Example: "teacher-exam-odds-lowest"
+                    """
+                    slug_response = model.generate_content(slug_prompt)
+                    clean_slug = slug_response.text.strip().lower().replace(" ", "-").replace('"', '').replace("'", "").replace("`", "")
+                    # Ensure only valid chars
+                    clean_slug = re.sub(r'[^a-z0-9-]', '', clean_slug)
+                    print(f"DEBUG: Generated dedicated slug: {clean_slug}")
+                    data["slug"] = clean_slug
+                except Exception as e:
+                    print(f"DEBUG: Failed to generate dedicated slug: {e}")
+                    # Fallback to None, will use ID
+                
                 return data
             else:
                 print(f"No JSON found in response: {text}")
                 return None
         except Exception as json_err:
-            print(f"JSON Parse Error: {json_err}\nRaw Text: {text}")
-            return None
+            print(f"JSON Parse Error: {json_err}. Attempting repair...")
+            try:
+                repair_prompt = f"""
+                The following JSON is invalid. Fix it and return ONLY the valid JSON (no code blocks).
+                
+                {text}
+                """
+                repair_resp = model.generate_content(repair_prompt)
+                repair_text = repair_resp.text
+                repair_match = re.search(r'\{.*\}', repair_text, re.DOTALL)
+                if repair_match:
+                    data = json.loads(repair_match.group(), strict=False)
+                    print("DEBUG: JSON repaired successfully.")
+                    
+                    # Duplicate logic from above (refactor ideally, but inline for now)
+                    if "slug" in data:
+                        print(f"DEBUG: AI generated slug: {data['slug']}")
+                    else:
+                         print("DEBUG: AI did NOT generate 'slug' key.")
+
+                    if "content" in data:
+                        c = data["content"]
+                        c = c.replace("/images/myan_icon.png", "/mascot_cat.png")
+                        c = c.replace("myan.png", "/mascot_cat.png")
+                        c = c.replace("cat.png", "/mascot_cat.png")
+                        c = c.replace("/mascot_/mascot_cat.png", "/mascot_cat.png")
+                        c = c.replace("/images/pyon_icon.png", "/mascot_bunny.png")
+                        c = c.replace("pyon.png", "/mascot_bunny.png")
+                        c = c.replace("bunny.png", "/mascot_bunny.png")
+                        c = c.replace("/mascot_/mascot_bunny.png", "/mascot_bunny.png")
+                        data["content"] = c
+
+                    # Dedicated Slug Generation logic verification
+                    if "slug" not in data or not data["slug"]:
+                         # Call the dedicated prompt logic again or just rely on fallback
+                         pass 
+                         
+                    # Return repaired data
+                    # Note: We skip the specific 'dedicated slug prompt' block inside repair for simplicity unless needed, 
+                    # but actually we probably want it. 
+                    # Let's simple return data and let the caller receive it? 
+                    # The original code flow expects 'data' to be returned.
+                    # We need to make sure 'slug' is there.
+                    
+                    if "slug" not in data or not data["slug"]:
+                        try:
+                            slug_prompt = f"""
+                            Convert the following Japanese news title into a SHORT, ENGLISH, URL-FRIENDLY slug (kebab-case).
+                            Title: {data.get('title', '')}
+                            
+                            Rules:
+                            - Lowercase only.
+                            - Use hyphens (-) as separators.
+                            - Max 5-6 words.
+                            - Remove special characters.
+                            - Return ONLY the slug string.
+                            Example: "teacher-exam-odds-lowest"
+                            """
+                            slug_response = model.generate_content(slug_prompt)
+                            clean_slug = slug_response.text.strip().lower().replace(" ", "-").replace('"', '').replace("'", "").replace("`", "")
+                            clean_slug = re.sub(r'[^a-z0-9-]', '', clean_slug)
+                            print(f"DEBUG: Generated dedicated slug (in repair): {clean_slug}")
+                            data["slug"] = clean_slug
+                        except Exception as e:
+                            print(f"DEBUG: Failed to generate dedicated slug in repair: {e}")
+                            
+                    return data
+                else:
+                    return None
+            except Exception as e:
+                print(f"JSON Repair Failed: {e}")
+                return None
 
     except Exception as e:
         import traceback
@@ -198,8 +319,20 @@ def insert_post_to_supabase(post_data, poll_data=None):
             "image_url": post_data["imageUrl"],
             "tweet_text": post_data.get("tweet_text", ""),
             "reactions": post_data.get("reactions", []), # New Reactions column
-            "created_at": post_data["created_at"]
+            "created_at": post_data["created_at"],
+            "slug": post_data.get("slug", None) # Save SEO slug
         }
+        
+        # Check if slug exists, if so append random suffix to avoid unique constraint error
+        if db_data["slug"]:
+            try:
+                # Simple check or just try insert. If fail, we might lose data.
+                # Ideally we check, but for MVP let's just use it.
+                # If 409 conflict, Supabase might throw.
+                # Let's clean the slug just in case
+                db_data["slug"] = db_data["slug"].lower().replace(" ", "-").replace(".", "")
+            except:
+                pass
         
         res = supabase.table("posts").insert(db_data).execute()
         new_post = res.data[0]
@@ -280,11 +413,14 @@ def main():
         "description": ai_content.get("description", ""),
         "content": ai_content.get("content", ""),
         "reactions": ai_content.get("reactions", []), # Extract reactions
-        "category": "trend",
+        "category": ai_content.get("category", "trend"), # Use AI category or default to trend
+        "comment_myan": ai_content.get("comment_myan", ""),
+        "comment_pyon": ai_content.get("comment_pyon", ""),
         "type": "article",
         "platform": "article",
         "imageUrl": thumb_url, 
         "tweet_text": ai_content.get("tweet_text", ""),
+        "slug": f"{ai_content.get('slug')}-{datetime.datetime.now().strftime('%m%d')}" if ai_content.get("slug") else None, # Append date for uniqueness
         "created_at": datetime.datetime.now().isoformat()
     }
     

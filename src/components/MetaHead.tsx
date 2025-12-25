@@ -5,13 +5,15 @@ interface MetaHeadProps {
     description?: string;
     image?: string; // For OGP
     type?: 'website' | 'article';
+    structuredData?: object;
 }
 
 export const MetaHead = ({
     title = 'みゃんぴょんそくまと！！ | 話題の動画・ニュースまとめ',
     description = '世界中の面白い動画、衝撃映像、トレンドニュースを毎日更新！みゃん＆ぴょんが厳選してお届けします。癒やし、びっくり、炎上、トレンドなど幅広いジャンルをカバー。',
     image = '/mascot_cat.png', // Default OGP
-    type = 'website'
+    type = 'website',
+    structuredData
 }: MetaHeadProps) => {
 
     const siteTitle = 'みゃんぴょんそくまと！！';
@@ -35,6 +37,12 @@ export const MetaHead = ({
             <meta name="twitter:title" content={fullTitle} />
             <meta name="twitter:description" content={description} />
             <meta name="twitter:image" content={image} />
+
+            {structuredData && (
+                <script type="application/ld+json">
+                    {JSON.stringify(structuredData)}
+                </script>
+            )}
         </Helmet>
     );
 };

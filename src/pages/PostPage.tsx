@@ -18,8 +18,8 @@ interface PostPageProps {
 export const PostPage = ({ posts }: PostPageProps) => {
     const { id } = useParams<{ id: string }>();
 
-    // Find post
-    const post = posts.find(p => p.id === id);
+    // Find post by ID or Slug
+    const post = posts.find(p => p.id === id || p.slug === id);
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -119,6 +119,26 @@ export const PostPage = ({ posts }: PostPageProps) => {
             ? post.content.substring(0, 100).replace(/<[^>]*>/g, '') + '...'
             : `【${post.category}】${post.title}の話題まとめ動画！`;
 
+    // JSON-LD Structured Data
+    const structuredData = {
+        "@context": "https://schema.org",
+        "@type": "NewsArticle",
+        "headline": post.title,
+        "image": post.imageUrl ? [post.imageUrl] : [],
+        "datePublished": post.created_at,
+        "dateModified": post.created_at, // TODO: Add updated_at if available
+        "author": [{
+            "@type": "Person",
+            "name": "Myan & Pyon",
+            "url": "https://myanpyon.com"
+        }],
+        "description": description,
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": `https://myanpyon.com/post/${post.slug || post.id}`
+        }
+    };
+
     return (
         <div className="post-page">
             <MetaHead
@@ -126,6 +146,7 @@ export const PostPage = ({ posts }: PostPageProps) => {
                 description={description}
                 image={post.imageUrl}
                 type="article"
+                structuredData={structuredData}
             />
             <div className="nav-area">
                 <Link to="/" className="back-link">
@@ -162,7 +183,7 @@ export const PostPage = ({ posts }: PostPageProps) => {
                 <AffiliateBlock />
 
                 {/* Mascot Chat Area */}
-                <MascotChat />
+                <MascotChat myanComment={post.comment_myan} pyonComment={post.comment_pyon} />
 
                 {/* Comment Section */}
                 <CommentSection postId={post.id} />
@@ -176,11 +197,35 @@ export const PostPage = ({ posts }: PostPageProps) => {
                 <div className="post-footer">
                     <h3>この記事をシェアする</h3>
                     <div className="share-buttons">
-                        <button className="share-btn twitter">
+                        <button
+                            className="share-btn twitter"
+                            onClick={() => {
+                                const url = `${window.location.origin}/post/${post.slug || post.id}`;
+                                const text = `${post.title} | みゃんぴょんそくまと！！`;
+                                window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+                            }}
+                        >
                             X (Twitter)
                         </button>
-                        <button className="share-btn line">
+                        <button
+                            className="share-btn line"
+                            onClick={() => {
+                                const url = `${window.location.origin}/post/${post.slug || post.id}`;
+                                window.open(`https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(url)}`, '_blank');
+                            }}
+                        >
                             LINE
+                        </button>
+                        <button
+                            className="share-btn copy"
+                            onClick={() => {
+                                const url = `${window.location.origin}/post/${post.slug || post.id}`;
+                                navigator.clipboard.writeText(url);
+                                alert('リンクをコピーしました！');
+                            }}
+                            style={{ background: '#666', color: 'white' }}
+                        >
+                            リンクをコピー
                         </button>
                     </div>
                 </div>

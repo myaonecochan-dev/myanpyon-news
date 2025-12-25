@@ -243,10 +243,11 @@
 }
 
 /* Myan (Cat) - Left */
+/* Myan (Cat) - Left */
 .chat-myan .chat-bubble {
-    background: #fff0f5;
-    /* Light Pink */
-    border: 2px solid #ffbed2;
+    background: #e0f7fa;
+    /* Light Blue */
+    border: 2px solid #b2ebf2;
     color: #333;
     border-top-left-radius: 0;
 }
@@ -258,7 +259,7 @@
     left: -14px;
     width: 0;
     height: 0;
-    border-top: 14px solid #ffbed2;
+    border-top: 14px solid #b2ebf2;
     border-left: 14px solid transparent;
 }
 
@@ -268,9 +269,9 @@
 }
 
 .chat-pyon .chat-bubble {
-    background: #e0f7fa;
-    /* Light Blue */
-    border: 2px solid #b2ebf2;
+    background: #fff0f5;
+    /* Light Pink */
+    border: 2px solid #ffbed2;
     color: #333;
     border-top-right-radius: 0;
 }
@@ -282,7 +283,7 @@
     right: -14px;
     width: 0;
     height: 0;
-    border-top: 14px solid #b2ebf2;
+    border-top: 14px solid #ffbed2;
     border-right: 14px solid transparent;
 }
 

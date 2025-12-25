@@ -27,7 +27,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post, className = '' }) => {
     }
 
     return (
-        <Link to={`/post/${post.id}`} className={`video-card-link ${className}`}>
+        <Link to={`/post/${post.slug || post.id}`} className={`video-card-link ${className}`}>
             <div className="video-card">
                 <div className="video-thumbnail-wrapper">
                     <img src={thumbnailSrc} alt={post.title} className="video-thumbnail" loading="lazy" />

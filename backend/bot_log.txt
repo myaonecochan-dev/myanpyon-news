@@ -57,3 +57,26 @@ Inserted poll.
 --- Done ---
 [2025/12/25 19:00:43.72] Finished. 
 ---------------------------------------------------------------- 
+---------------------------------------------------------------- 
+[2025/12/25 22:00:01.60] Starting MyanPyon Bot... 
+--- Trend Bot Started ---
+Checking Supabase connection...
+Connection OK. Current post count: 2
+Fetching trends from https://news.yahoo.co.jp/rss/topics/top-picks.xml...
+ -> Found 8 trends.
+Generating content for: 能登地震の関連死 98%が60歳以上...
+JSON Parse Error: Expecting ',' delimiter: line 3 column 1148 (char 1211). Attempting repair...
+DEBUG: JSON repaired successfully.
+DEBUG: AI generated slug: noto-earthquake-related-deaths-elderly
+Scraping OG Image from: https://news.yahoo.co.jp/pickup/6563829?source=rss
+Using AI generated thumbnail directly: https://image.pollinations.ai/prompt/Elderly%20Japanese%20person%20looking%20weary%20in%20a%20crowded%20school%20gymnasium%20being%20used%20as%20an%20earthquake%20shelter,%20dim%20lighting.?width=1200&height=630&nologo=true&seed=32400
+
+[Generated Tweet]: 地震そのものだけじゃなくて、その後の生活で亡くなっちゃう「関連死」ってやつ、ほとんどがおじいちゃんおばあちゃんなんだって！避難所ってそんなに大変なのか…？ なんとかしねえとだぜ！
+
+--- X Posting Service ---
+Successfully posted to X! ID: 2004175570863788383
+Inserted post: 5596e72f-3f51-4918-89fa-0cc715c42bb3
+Inserted poll.
+--- Done ---
+[2025/12/25 22:01:10.70] Finished. 
+---------------------------------------------------------------- 

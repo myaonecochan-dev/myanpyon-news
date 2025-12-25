@@ -62,9 +62,9 @@
 /* Tails */
 .mascot-row:not(.reverse) .speech-bubble {
     border-top-left-radius: 0;
-    background: #fff0f5;
-    /* Light Pink for Myan */
-    border: 2px solid #ffbed2;
+    background: #e0f7fa;
+    /* Light Blue for Myan */
+    border: 2px solid #b2ebf2;
 }
 
 .mascot-row:not(.reverse) .speech-bubble::before {
@@ -74,15 +74,15 @@
     left: -12px;
     width: 0;
     height: 0;
-    border-top: 12px solid #ffbed2;
+    border-top: 12px solid #b2ebf2;
     border-left: 12px solid transparent;
 }
 
 .mascot-row.reverse .speech-bubble {
     border-top-right-radius: 0;
-    background: #e0f7fa;
-    /* Light Blue for Pyon */
-    border: 2px solid #b2ebf2;
+    background: #fff0f5;
+    /* Light Pink for Pyon */
+    border: 2px solid #ffbed2;
 }
 
 .mascot-row.reverse .speech-bubble::before {
@@ -92,7 +92,7 @@
     right: -12px;
     width: 0;
     height: 0;
-    border-top: 12px solid #b2ebf2;
+    border-top: 12px solid #ffbed2;
     border-right: 12px solid transparent;
 }
 

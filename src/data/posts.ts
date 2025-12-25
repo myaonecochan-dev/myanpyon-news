@@ -19,6 +19,9 @@ export interface Post {
   imageUrl?: string; // Thumbnail or main image
   reactions?: { name: string; text: string; color?: string }[];
   created_at: string; // ISO Date string
+  slug?: string; // SEO friendly URL
+  comment_myan?: string;
+  comment_pyon?: string;
 }
 
 // Demo posts removed for production

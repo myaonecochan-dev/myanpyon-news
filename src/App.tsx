@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation, Link, useSearchParams } from 'react-router-dom';
 import { type Post, type Category } from './data/posts';
@@ -50,6 +52,7 @@ const AppContent = () => {
       if (error) throw error;
 
       if (data) {
+         
         const formattedPosts: Post[] = data.map((item: any) => ({
           id: item.id,
           title: item.title,
@@ -61,7 +64,10 @@ const AppContent = () => {
           youtubeId: item.platform === 'youtube' ? item.video_id : undefined,
           embedId: item.platform !== 'youtube' ? item.video_id : undefined, // Map video_id to embedId for TikTok/Twitter
           imageUrl: item.image_url,
-          created_at: item.created_at
+          created_at: item.created_at,
+          slug: item.slug,
+          comment_myan: item.comment_myan,
+          comment_pyon: item.comment_pyon
         }));
 
         console.log("Loaded generated posts from Supabase:", formattedPosts);
@@ -108,7 +114,7 @@ const AppContent = () => {
     }
   }, [category]);
 
-  const getHeaderTitle = (_cat: Category | 'all') => {
+  const getHeaderTitle = () => {
     return 'みゃんぴょんそくまと！！';
   };
 
@@ -132,7 +138,19 @@ const AppContent = () => {
     <div className="app-container">
       <header className="app-header">
         <div className="header-inner">
-          <Link to="/" className="header-branding" style={{ textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center', gap: '15px' }}>
+          <Link
+            to="/"
+            className="header-branding"
+            onClick={() => {
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+              // Force refresh if already on home or just generally
+              fetchSupabasePosts(0, true);
+              // Also clear category if needed manually, but Link to="/" does it mostly.
+              // We can ensure state reset:
+              setPage(0);
+            }}
+            style={{ textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center', gap: '15px' }}
+          >
             <img src="/mascot_cat.png" alt="Mofu" className="header-mascot" style={{ height: '50px', width: 'auto' }} />
             <div className="header-text">
               <h1>{getHeaderTitle(category)}</h1>
