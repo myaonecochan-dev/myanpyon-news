@@ -320,7 +320,8 @@ def insert_post_to_supabase(post_data, poll_data=None):
             "tweet_text": post_data.get("tweet_text", ""),
             "reactions": post_data.get("reactions", []), # New Reactions column
             "created_at": post_data["created_at"],
-            "slug": post_data.get("slug", None) # Save SEO slug
+            "slug": post_data.get("slug", None), # Save SEO slug
+            "source_url": post_data.get("source_url", None) # Save source URL for duplicate check
         }
         
         # Check if slug exists, if so append random suffix to avoid unique constraint error
@@ -375,10 +376,39 @@ def main():
         return
 
     # 2. Pick a random trend (or top one)
-    # Let's pick the top one that isn't already in our 'processed' list (simplification: just pick random top 5)
-    target_trend = trends[0] # Always picking top 1 for demo stability, or random.choice(trends[:5])
+    # Let's pick the top one that isn't already in our 'processed' list
+    # NEW: Check duplication by source_url
+    target_trend = None
+    for trend in trends:
+        # Check if source_url exists in DB
+        try:
+            # Note: We need to use quote or exact match. 
+            # supabase-py select returns object with 'data'.
+            # We assume 'source_url' column exists now.
+            res = supabase.table("posts").select("id").eq("source_url", trend['link']).execute()
+            if res.data and len(res.data) > 0:
+                print(f"Skipping duplicate: {trend['title']}")
+                continue
+            else:
+                target_trend = trend
+                break
+        except Exception as e:
+            print(f"Error checking duplicates: {e}")
+            # If check fails, maybe allow it? Or skip to be safe? 
+            # Let's try to proceed if it's just a connection blip, but risky.
+            # Assuming if column missing (user failed migration), this errors.
+            print("Assuming no duplicate (or error reading DB), proceeding...")
+            target_trend = trend
+            break
     
+    if not target_trend:
+        print("All trends processed or no valid trends found. Exiting.")
+        return
+
+    print(f"Processing target: {target_trend['title']}")
+
     # 3. Generate Content
+    # Pass 'link' to generate function if needed, but it's in target_trend
     ai_content = generate_content_with_gemini(target_trend)
     if not ai_content:
         print("AI Content generation returned None. Skipping this trend.")
@@ -392,9 +422,6 @@ def main():
     bg_image_url = fetch_og_image(news_link) if news_link else None
     
     # If AI suggested a prompt, let's use Pollinations to get a "WOW" image instead of generic news thumbnails
-    # Especially for "Takaichi PM" or specific motifs requested by user
-    # If AI suggested a prompt, let's use Pollinations to get a "WOW" image instead of generic news thumbnails
-    # Especially for "Takaichi PM" or specific motifs requested by user
     if ai_content.get("thumbnail_prompt"):
         prompt_clean = ai_content["thumbnail_prompt"].replace(" ", "%20")
         ai_thumb_url = f"https://image.pollinations.ai/prompt/{prompt_clean}?width=1200&height=630&nologo=true&seed={random.randint(0, 99999)}"
@@ -421,6 +448,7 @@ def main():
         "imageUrl": thumb_url, 
         "tweet_text": ai_content.get("tweet_text", ""),
         "slug": f"{ai_content.get('slug')}-{datetime.datetime.now().strftime('%m%d')}" if ai_content.get("slug") else None, # Append date for uniqueness
+        "source_url": target_trend.get('link'), # NEW: Save source URL
         "created_at": datetime.datetime.now().isoformat()
     }
     
@@ -430,8 +458,13 @@ def main():
     if post["tweet_text"]:
         print(f"\n[Generated Tweet]: {post['tweet_text']}\n")
         # Try to post (Dry Run if no keys)
-        from x_client import post_tweet
-        post_tweet(post["tweet_text"])
+        try:
+            from x_client import post_tweet
+            post_tweet(post["tweet_text"])
+        except ImportError:
+            print("x_client not found or failed to import.")
+        except Exception as e:
+            print(f"Tweet failed: {e}")
 
     # 5. Save
     insert_post_to_supabase(post, poll_data=poll_data)
