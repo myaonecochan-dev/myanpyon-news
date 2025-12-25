@@ -229,6 +229,16 @@ def generate_content_with_gemini(trend_item):
                 repair_prompt = f"""
                 The following JSON is invalid. Fix it and return ONLY the valid JSON (no code blocks).
                 
+                Expected matching schema:
+                {
+                    "title": "...",
+                    "content": "...",
+                    "comment_myan": "...",
+                    "comment_pyon": "...",
+                    "slug": "..."
+                }
+
+                Input:
                 {text}
                 """
                 repair_resp = model.generate_content(repair_prompt)
@@ -441,8 +451,8 @@ def main():
         "content": ai_content.get("content", ""),
         "reactions": ai_content.get("reactions", []), # Extract reactions
         "category": ai_content.get("category", "trend"), # Use AI category or default to trend
-        "comment_myan": ai_content.get("comment_myan", ""),
-        "comment_pyon": ai_content.get("comment_pyon", ""),
+        "comment_myan": ai_content.get("comment_myan") or "今日のニュースはこれだにゃ！要チェックだぜ！",
+        "comment_pyon": ai_content.get("comment_pyon") or "詳しくは記事を読んでくださいね。しっかり理解しましょう。",
         "type": "article",
         "platform": "article",
         "imageUrl": thumb_url, 
