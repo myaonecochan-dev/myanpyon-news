@@ -37,3 +37,23 @@ Successfully inserted post to Supabase: y˜b‘èz”Nn‚Ì“V‹C—\•ñ‚ª‹}“]I Š¦”g“—ˆ‚
 --- Done ---
 [2025/12/24 22:00:15.91] Finished. 
 ---------------------------------------------------------------- 
+---------------------------------------------------------------- 
+[2025/12/25 19:00:01.70] Starting MyanPyon Bot... 
+--- Trend Bot Started ---
+Checking Supabase connection...
+Connection OK. Current post count: 22
+Fetching trends from https://news.yahoo.co.jp/rss/topics/top-picks.xml...
+ -> Found 8 trends.
+Generating content for: ‹³ˆõÌ—pŒ±‚Ì”{—¦‚ª‰ß‹Å’á...
+Scraping OG Image from: https://news.yahoo.co.jp/pickup/6563805?source=rss
+Using AI generated thumbnail directly: https://image.pollinations.ai/prompt/An%20empty%20Japanese%20classroom%20at%20dusk,%20sunlight%20streaming%20through%20the%20windows,%20a%20single%20piece%20of%20chalk%20on%20the%20teacher's%20desk.%20Anime%20style.?width=1200&height=630&nologo=true&seed=59977
+
+[Generated Tweet]: æ¶‚Á‚Ä‘å•Ï‚È‚ñ‚¾‚ÈBƒIƒŒ‚Í–ˆ“ú’‹Q‚µ‚ÄA‚Ò‚å‚ñ‚É”Ñ‚ğ‚à‚ç‚¤¶Šˆ‚Å\•ª‚¾‚ºBlŠÔ‚Í‚²‹ê˜J‚È‚±‚Á‚½B
+
+--- X Posting Service ---
+Successfully posted to X! ID: 2004130159063191824
+Inserted post: 63110427-e3e0-4c60-b0d0-5a82895f93fd
+Inserted poll.
+--- Done ---
+[2025/12/25 19:00:43.72] Finished. 
+---------------------------------------------------------------- 

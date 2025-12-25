@@ -94,7 +94,7 @@ def generate_content_with_gemini(trend_item):
             
         genai.configure(api_key=GEMINI_API_KEY)
         # Use a model confirmed to exist via list_models.py
-        model = genai.GenerativeModel('gemini-2.0-flash')
+        model = genai.GenerativeModel('gemini-2.5-pro')
         
         prompt = f"""
         Act as a news commentary duo for a popular Japanese summary blog.
@@ -102,10 +102,10 @@ def generate_content_with_gemini(trend_item):
         Context: "{trend_item.get('description', '')}"
 
         Characters (ENFORCE THESE PERSONALITIES):
-        1. Myan (Cat): Male. Selfish, lazy, and rough but curious. He's often looking for the "lazy" angle (e.g. "Will this mean more food for me?" or "Humans are annoying"). 
-           Tone: Young male cat ("〜だぜ", "〜かよ", "〜かもな"). Rough but not violent.
+        1. Myan (Cat): Male. **Wanpaku (Energetic, Naughty) and Curious**. He is consistently excited, reckless, and wants to try everything. He speaks with high energy.
+           Tone: Energetic young male cat ("〜だぜ！", "〜やってみようぜ！", "〜すげえ！").
            Calls partner "ぴょん".
-        2. Pyon (Bunny): Female. High-spec, analytical, and slightly "toxic" or "cold" (S-character). She explains things logically but often insults Myan's intelligence.
+        2. Pyon (Bunny): Female. High-spec, analytical, and slightly "toxic" or "cold" (S-character). She explains things logically but often insults Myan's intelligence or recklessness.
            Tone: Intellectual, elegant yet sharp ("〜ですわ", "〜ですよ"). "Ara ara" vibes when pitying Myan.
            Calls partner "みゃん".
 
@@ -116,28 +116,65 @@ def generate_content_with_gemini(trend_item):
           - Make them feel like a Japanese BBS (2ch/5ch). 
           - Mix of: Enthusiastic, critical, cynical, and weird/funny.
         - **POLL**: Suggest a 2-option poll question relevant to the news.
-        - **SNS CONTENT**: Generate a short, rough, lazy tweet from Myan. (NO URL).
+        - **SNS CONTENT**: Generate a short, energetic, curious tweet from Myan. (NO URL).
 
         Format:
-        Return ONLY valid JSON with keys: "title", "content", "description", "tweet_text", "reactions", "poll".
+        Return ONLY valid JSON with keys: "title", "content", "description", "tweet_text", "reactions", "poll", "thumbnail_prompt".
         
         "title": Catchy title starting with 【話題】.
-        "tweet_text": Myan's lazy tweet.
+        "tweet_text": Myan's tweet.
         "description": Short news summary.
-        "reactions": List of objects: [{"name": "名無しさん", "text": "...", "color": "green/blue/red"}]
-        "poll": {"question": "...", "option_a": "...", "option_b": "..."}
-        "content": HTML format (Summary Box + Character Dialogue). Use <div class="news-summary-box"> and <div class="chat-row chat-myan/pyon">.
+        "reactions": List of objects: [{{ "name": "名無しさん", "text": "...", "color": "green/blue/red" }}]
+        "poll": {{ "question": "...", "option_a": "...", "option_b": "..." }}
+        "thumbnail_prompt": A SHORT ENGLISH prompt for an AI image generator representing the news (e.g. "Japanese Prime Minister Takaichi giving a speech" or "Cyberpunk Tokyo city at night").
+        "content": HTML format (Summary Box + Character Dialogue).
+           - Summary Box: <div class="news-summary-box">...</div>
+           - Dialogue: MUST use this structure for images:
+             <div class="chat-row chat-myan">
+               <div class="chat-avatar"><img src="/mascot_cat.png" alt="Myan"></div>
+               <div class="chat-bubble">Myan's text...</div>
+             </div>
+             <div class="chat-row chat-pyon">
+               <div class="chat-avatar"><img src="/mascot_bunny.png" alt="Pyon"></div>
+               <div class="chat-bubble">Pyon's text...</div>
+             </div>
         """
         
         response = model.generate_content(prompt)
         text = response.text
         
-        # Simple cleanup
-        if "```json" in text:
-            text = text.replace("```json", "").replace("```", "")
-        
-        data = json.loads(text)
-        return data
+        # Robust JSON extraction
+        try:
+            import re
+            json_match = re.search(r'\{.*\}', text, re.DOTALL)
+            if json_match:
+                data = json.loads(json_match.group())
+                
+                # FORCE FIX: AI often hallucinates /images/myan_icon.png which doesn't exist.
+                # We replace known wrong paths with the correct /mascot_cat.png and /mascot_bunny.png
+                if "content" in data:
+                    c = data["content"]
+                    # Fix Myan
+                    c = c.replace("/images/myan_icon.png", "/mascot_cat.png")
+                    c = c.replace("myan.png", "/mascot_cat.png")
+                    c = c.replace("cat.png", "/mascot_cat.png")
+                    c = c.replace("/mascot_/mascot_cat.png", "/mascot_cat.png") # Fix observed hallucination
+                    
+                    # Fix Pyon
+                    c = c.replace("/images/pyon_icon.png", "/mascot_bunny.png")
+                    c = c.replace("pyon.png", "/mascot_bunny.png")
+                    c = c.replace("bunny.png", "/mascot_bunny.png")
+                    c = c.replace("/mascot_/mascot_bunny.png", "/mascot_bunny.png") # Fix observed hallucination
+                    
+                    data["content"] = c
+                
+                return data
+            else:
+                print(f"No JSON found in response: {text}")
+                return None
+        except Exception as json_err:
+            print(f"JSON Parse Error: {json_err}\nRaw Text: {text}")
+            return None
 
     except Exception as e:
         import traceback
@@ -210,17 +247,31 @@ def main():
     
     # 3. Generate Content
     ai_content = generate_content_with_gemini(target_trend)
+    if not ai_content:
+        print("AI Content generation returned None. Skipping this trend.")
+        return
     
     # 3.5 Generate Thumbnail
-    post_title = ai_content.get("title", target_trend['title'])
+    post_title = ai_content.get("title") if ai_content.get("title") else target_trend['title']
     
     # Try to extract real image from the news link
     news_link = target_trend.get('link')
     bg_image_url = fetch_og_image(news_link) if news_link else None
     
-    thumb_filename = f"thumb_{uuid.uuid4()}.png"
-    # Pass bg_image_url to generator
-    thumb_url = generate_thumbnail(post_title, thumb_filename, bg_image_url=bg_image_url)
+    # If AI suggested a prompt, let's use Pollinations to get a "WOW" image instead of generic news thumbnails
+    # Especially for "Takaichi PM" or specific motifs requested by user
+    # If AI suggested a prompt, let's use Pollinations to get a "WOW" image instead of generic news thumbnails
+    # Especially for "Takaichi PM" or specific motifs requested by user
+    if ai_content.get("thumbnail_prompt"):
+        prompt_clean = ai_content["thumbnail_prompt"].replace(" ", "%20")
+        ai_thumb_url = f"https://image.pollinations.ai/prompt/{prompt_clean}?width=1200&height=630&nologo=true&seed={random.randint(0, 99999)}"
+        # Prioritize AI image over potential broken/boring news images
+        print(f"Using AI generated thumbnail directly: {ai_thumb_url}")
+        thumb_url = ai_thumb_url # Use remote URL directly!
+    else:
+        # Fallback to local generation if no AI prompt
+        thumb_filename = f"thumb_{uuid.uuid4()}.png"
+        thumb_url = generate_thumbnail(post_title, thumb_filename, bg_image_url=bg_image_url)
 
     # 4. Assembled Post Object
     post = {
