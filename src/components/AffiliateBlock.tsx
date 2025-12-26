@@ -134,7 +134,7 @@ export const AffiliateBlock: React.FC<AffiliateBlockProps> = ({ postKeywords = [
                 {products.map((product) => (
                     <div key={product.id} className="product-item">
                         {product.moshimo_html ? (
-                            <div className="moshimo-container" style={{ maxWidth: '600px', margin: '0 auto' }}>
+                            <div className="moshimo-container">
                                 <MoshimoIframe html={product.moshimo_html} />
                             </div>
                         ) : (
@@ -168,9 +168,7 @@ export const AffiliateBlock: React.FC<AffiliateBlockProps> = ({ postKeywords = [
                                     <div style={{ fontWeight: 'bold', fontSize: '0.95rem', lineHeight: '1.4' }}>
                                         {product.name}
                                     </div>
-                                    <div style={{ fontSize: '0.9rem', color: '#e74c3c', fontWeight: 'bold', marginBottom: '5px' }}>
-                                        {product.price}
-                                    </div>
+                                    {/* Price display removed for compliance */}
                                     <div style={{ display: 'flex', gap: '8px', marginTop: 'auto' }}>
                                         {product.amazon_link && (
                                             <a href={product.amazon_link} target="_blank" rel="noopener noreferrer" style={{
