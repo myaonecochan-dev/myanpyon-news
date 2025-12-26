@@ -26,7 +26,7 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
             srcDoc={srcDoc}
             style={{
                 width: '100%',
-                height: '240px',
+                height: '140px',
                 border: 'none',
                 overflow: 'hidden'
             }}
@@ -130,7 +130,7 @@ export const AffiliateBlock: React.FC<AffiliateBlockProps> = ({ postKeywords = [
                 <span>気になったアイテムをチェック！</span>
             </h4>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '15px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                 {products.map((product) => (
                     <div key={product.id} className="product-item">
                         {product.moshimo_html ? (
