@@ -7,7 +7,10 @@ interface Product {
     price: string;
     image_url: string;
     amazon_link?: string;
+    amazon_impression_url?: string;
     rakuten_link?: string;
+    rakuten_impression_url?: string;
+    moshimo_html?: string;
     active: boolean;
 }
 
@@ -67,78 +70,95 @@ export const AffiliateBlock: React.FC = () => {
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '15px' }}>
                 {products.map((product) => (
-                    <div key={product.id} style={{
-                        display: 'flex',
-                        gap: '15px',
-                        background: '#f9f9f9',
-                        padding: '10px',
-                        borderRadius: '8px'
-                    }}>
-                        <div style={{
-                            width: '80px',
-                            height: '80px',
-                            background: '#fff',
-                            borderRadius: '4px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            border: '1px solid #eee',
-                            flexShrink: 0,
-                            overflow: 'hidden'
-                        }}>
-                            {product.image_url ? (
-                                <img src={product.image_url} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                            ) : (
-                                <span style={{ fontSize: '2rem' }}>📦</span>
-                            )}
-                        </div>
+                    <div key={product.id} className="product-item">
+                        {product.moshimo_html ? (
+                            <div
+                                className="moshimo-container"
+                                dangerouslySetInnerHTML={{ __html: product.moshimo_html }}
+                                style={{ background: '#f9f9f9', padding: '10px', borderRadius: '8px' }}
+                            />
+                        ) : (
+                            <div style={{
+                                display: 'flex',
+                                gap: '15px',
+                                background: '#f9f9f9',
+                                padding: '10px',
+                                borderRadius: '8px'
+                            }}>
+                                <div style={{
+                                    width: '80px',
+                                    height: '80px',
+                                    background: '#fff',
+                                    borderRadius: '4px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    border: '1px solid #eee',
+                                    flexShrink: 0,
+                                    overflow: 'hidden'
+                                }}>
+                                    {product.image_url ? (
+                                        <img src={product.image_url} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                                    ) : (
+                                        <span style={{ fontSize: '2rem' }}>📦</span>
+                                    )}
+                                </div>
 
-                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                            <div style={{ fontWeight: 'bold', fontSize: '0.95rem', lineHeight: '1.4' }}>
-                                {product.name}
+                                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                                    <div style={{ fontWeight: 'bold', fontSize: '0.95rem', lineHeight: '1.4' }}>
+                                        {product.name}
+                                    </div>
+                                    <div style={{ fontSize: '0.9rem', color: '#e74c3c', fontWeight: 'bold', marginBottom: '5px' }}>
+                                        {product.price}
+                                    </div>
+                                    <div style={{ display: 'flex', gap: '8px', marginTop: 'auto' }}>
+                                        {product.amazon_link && (
+                                            <a href={product.amazon_link} target="_blank" rel="noopener noreferrer" style={{
+                                                flex: 1,
+                                                background: '#FF9900',
+                                                color: 'white',
+                                                textAlign: 'center',
+                                                padding: '6px',
+                                                borderRadius: '4px',
+                                                fontSize: '0.8rem',
+                                                fontWeight: 'bold',
+                                                textDecoration: 'none',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center'
+                                            }}>
+                                                Amazon
+                                            </a>
+                                        )}
+                                        {product.rakuten_link && (
+                                            <a href={product.rakuten_link} target="_blank" rel="noopener noreferrer" style={{
+                                                flex: 1,
+                                                background: '#BF0000',
+                                                color: 'white',
+                                                textAlign: 'center',
+                                                padding: '6px',
+                                                borderRadius: '4px',
+                                                fontSize: '0.8rem',
+                                                fontWeight: 'bold',
+                                                textDecoration: 'none',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center'
+                                            }}>
+                                                楽天
+                                            </a>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
-                            <div style={{ fontSize: '0.9rem', color: '#e74c3c', fontWeight: 'bold', marginBottom: '5px' }}>
-                                {product.price}
-                            </div>
-                            <div style={{ display: 'flex', gap: '8px', marginTop: 'auto' }}>
-                                {product.amazon_link && (
-                                    <a href={product.amazon_link} target="_blank" rel="noopener noreferrer" style={{
-                                        flex: 1,
-                                        background: '#FF9900',
-                                        color: 'white',
-                                        textAlign: 'center',
-                                        padding: '6px',
-                                        borderRadius: '4px',
-                                        fontSize: '0.8rem',
-                                        fontWeight: 'bold',
-                                        textDecoration: 'none',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center'
-                                    }}>
-                                        Amazon
-                                    </a>
-                                )}
-                                {product.rakuten_link && (
-                                    <a href={product.rakuten_link} target="_blank" rel="noopener noreferrer" style={{
-                                        flex: 1,
-                                        background: '#BF0000',
-                                        color: 'white',
-                                        textAlign: 'center',
-                                        padding: '6px',
-                                        borderRadius: '4px',
-                                        fontSize: '0.8rem',
-                                        fontWeight: 'bold',
-                                        textDecoration: 'none',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center'
-                                    }}>
-                                        楽天
-                                    </a>
-                                )}
-                            </div>
-                        </div>
+                        )}
+                        {/* Impression Trackers */}
+                        {product.rakuten_impression_url && (
+                            <img src={product.rakuten_impression_url} width="1" height="1" style={{ border: 'none', display: 'none' }} loading="lazy" alt="" />
+                        )}
+                        {product.amazon_impression_url && (
+                            <img src={product.amazon_impression_url} width="1" height="1" style={{ border: 'none', display: 'none' }} loading="lazy" alt="" />
+                        )}
                     </div>
                 ))}
             </div>

@@ -21,14 +21,20 @@ def add_product():
     price = input("Price (e.g., ¥1,200): ")
     image_url = input("Image URL: ")
     amazon_link = input("Amazon Affiliate Link (Optional): ")
+    amazon_impression = input("Amazon Impression URL (Optional): ")
     rakuten_link = input("Rakuten Affiliate Link (Optional): ")
+    rakuten_impression = input("Rakuten Impression URL (Optional): ")
+    moshimo_html = input("Moshimo HTML Snippet (Optional): ")
 
     data = {
         "name": name,
         "price": price,
         "image_url": image_url,
         "amazon_link": amazon_link if amazon_link else None,
+        "amazon_impression_url": amazon_impression if amazon_impression else None,
         "rakuten_link": rakuten_link if rakuten_link else None,
+        "rakuten_impression_url": rakuten_impression if rakuten_impression else None,
+        "moshimo_html": moshimo_html if moshimo_html else None,
         "active": True
     }
 
