@@ -643,17 +643,24 @@ def main():
     is_gha = os.environ.get('GITHUB_ACTIONS') == 'true'
     
     # If GHA or AI prompt exists, use a remote URL (Pollinations)
-    if ai_content.get("thumbnail_prompt") or is_gha:
-        prompt_text = ai_content.get("thumbnail_prompt", post_title)
-        import urllib.parse
-        prompt_clean = urllib.parse.quote(prompt_text)
-        ai_thumb_url = f"https://image.pollinations.ai/prompt/{prompt_clean}?width=1200&height=630&nologo=true&seed={random.randint(0, 99999)}"
-        print(f"Using remote thumbnail (GHA:{is_gha}): {ai_thumb_url}")
-        thumb_url = ai_thumb_url
-    else:
-        # Fallback to local generation if NOT in GHA and no AI prompt
-        thumb_filename = f"thumb_{uuid.uuid4()}.png"
-        thumb_url = generate_thumbnail(post_title, thumb_filename, bg_image_url=bg_image_url)
+    # FORCE REMOTE: To avoid local file path issues on live site, always use Pollinations or OgImage.
+    # If we have a good OG Image, use it? No, keeping consistent style is better.
+    # Let's use Pollinations by default for reliability unless user sets up Storage.
+    prompt_text = ai_content.get("thumbnail_prompt", post_title)
+    import urllib.parse
+    prompt_clean = urllib.parse.quote(prompt_text)
+    ai_thumb_url = f"https://image.pollinations.ai/prompt/{prompt_clean}?width=1200&height=630&nologo=true&seed={random.randint(0, 99999)}"
+    print(f"Using remote thumbnail (Forced): {ai_thumb_url}")
+    thumb_url = ai_thumb_url 
+    
+    # Ensure Fallback Poll
+    if not poll_data:
+        print("WARNING: Poll data missing. using fallback.")
+        poll_data = {
+            "question": "このニュース、どう思いますか？",
+            "option_a": "驚いた！",
+            "option_b": "想定内"
+        }
 
     # 4. Assembled Post Object
     post = {
