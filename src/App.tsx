@@ -13,6 +13,8 @@ import { AdminPostEditor } from './pages/AdminPostEditor';
 import { PrivacyPolicy } from './pages/PrivacyPolicy';
 import { Contact } from './pages/Contact';
 import { ScrollToTopButton } from './components/ScrollToTopButton';
+import { ScrollToTopButton } from './components/ScrollToTopButton';
+import { FloatingDonationButton } from './components/FloatingDonationButton';
 import { HelmetProvider } from 'react-helmet-async';
 import { GoogleAnalytics } from './components/Analytics';
 
