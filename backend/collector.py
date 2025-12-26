@@ -392,27 +392,28 @@ def generate_content_with_gemini(trend_item):
                     print(f"DEBUG: Failed to generate dedicated slug: {e}")
                     # Fallback to None, will use ID
                 
-                # --- NEW: Ensure comments exist (Retry Logic - Primary Path) ---
-                raw_myan = data.get("comment_myan")
-                raw_pyon = data.get("comment_pyon")
+                # --- NEW: Ensure reactions and poll exist ---
+                is_reactions_ok = isinstance(data.get("reactions"), list) and len(data.get("reactions", [])) >= 3
+                is_poll_ok = isinstance(data.get("poll"), dict) and "question" in data.get("poll", {})
                 
-                # Check for None, Empty String, or "None" string
-                is_myan_missing = raw_myan is None or not str(raw_myan).strip() or str(raw_myan).lower() == "none"
-                is_pyon_missing = raw_pyon is None or not str(raw_pyon).strip() or str(raw_pyon).lower() == "none"
-
-                if is_myan_missing or is_pyon_missing:
-                    print("DEBUG: Comments missing (Primary). Invoking Persistent Retry Loop...")
-                    m, p = fetch_mascot_comments_persistent(
-                        model, 
-                        trend_data['title'], 
-                        data.get('description', ''), 
-                        SAFETY_SETTINGS
-                    )
-                    data["comment_myan"] = m
-                    data["comment_pyon"] = p
+                if not is_reactions_ok or not is_poll_ok:
+                    print(f"DEBUG: Missing mandatory fields (Reactions: {is_reactions_ok}, Poll: {is_poll_ok}).")
+                    # We can try to repair or just accept it, but for high quality, let's try to fill them if missing
+                    if not is_reactions_ok:
+                        data["reactions"] = [
+                            {"name": "名無しさん", "text": "これマジかよ…衝撃的すぎるだぜ！", "color": "blue"},
+                            {"name": "通りすがりの猫", "text": "世の中何が起こるかわからないにゃ。怖いぜ！", "color": "green"},
+                            {"name": "匿名ウサギ", "text": "冷静に分析する必要がありますわね。興味深いですわ。", "color": "red"}
+                        ]
+                    if not is_poll_ok:
+                        data["poll"] = {
+                            "question": "このニュース、どう思いますか？",
+                            "option_a": "驚いた",
+                            "option_b": "やっぱりな"
+                        }
                 # ---------------------------------------------
                 
-                print(f"DEBUG: Final Data comments (Primary): Myan={data.get('comment_myan')}, Pyon={data.get('comment_pyon')}")
+                print(f"DEBUG: Final Data keys: {list(data.keys())}")
                 return data
             else:
                 print(f"No JSON found in response: {text}")
@@ -641,15 +642,19 @@ def main():
     news_link = target_trend.get('link')
     bg_image_url = fetch_og_image(news_link) if news_link else None
     
-    # If AI suggested a prompt, let's use Pollinations to get a "WOW" image instead of generic news thumbnails
-    if ai_content.get("thumbnail_prompt"):
-        prompt_clean = ai_content["thumbnail_prompt"].replace(" ", "%20")
+    # Check if running in GitHub Actions (where local files are volatile)
+    is_gha = os.environ.get('GITHUB_ACTIONS') == 'true'
+    
+    # If GHA or AI prompt exists, use a remote URL (Pollinations)
+    if ai_content.get("thumbnail_prompt") or is_gha:
+        prompt_text = ai_content.get("thumbnail_prompt", post_title)
+        import urllib.parse
+        prompt_clean = urllib.parse.quote(prompt_text)
         ai_thumb_url = f"https://image.pollinations.ai/prompt/{prompt_clean}?width=1200&height=630&nologo=true&seed={random.randint(0, 99999)}"
-        # Prioritize AI image over potential broken/boring news images
-        print(f"Using AI generated thumbnail directly: {ai_thumb_url}")
-        thumb_url = ai_thumb_url # Use remote URL directly!
+        print(f"Using remote thumbnail (GHA:{is_gha}): {ai_thumb_url}")
+        thumb_url = ai_thumb_url
     else:
-        # Fallback to local generation if no AI prompt
+        # Fallback to local generation if NOT in GHA and no AI prompt
         thumb_filename = f"thumb_{uuid.uuid4()}.png"
         thumb_url = generate_thumbnail(post_title, thumb_filename, bg_image_url=bg_image_url)
 
