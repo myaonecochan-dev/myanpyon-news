@@ -15,33 +15,46 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
                 base { target: "_blank"; }
 
                 /* CSS HACK for MOSHIMO MEDIUM SIZE */
-                /* Force it to look like the Small/Manual horizontal card */
-
+                
+                /* 1. Main Container Layout */
                 div[id^="msmaflink"] {
+                    width: 100% !important;
+                    padding: 5px !important;
+                    box-sizing: border-box !important;
+                }
+
+                /* 2. FORCE inner wrapper to be horizontal */
+                /* Moshimo often wraps content in a direct child div */
+                div[id^="msmaflink"] > div, 
+                div[class^="msm"] { 
                     display: flex !important;
                     flex-direction: row !important;
-                    align-items: flex-start !important; /* Align top so text doesn't float weirdly */
+                    align-items: center !important; /* Vertically center image and text */
+                    justify-content: flex-start !important;
+                    gap: 15px !important;
                     width: 100% !important;
-                    padding: 8px !important;
-                    box-sizing: border-box !important;
-                    gap: 10px !important;
+                    margin: 0 !important;
                 }
 
                 /* IMAGE: Force small square */
                 div[class*="image"], div[class*="img"] {
                     width: 90px !important;
-                    height: auto !important;
+                    height: 90px !important; /* Fixed height to match width */
                     flex-shrink: 0 !important;
                     margin: 0 !important;
                     float: none !important;
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
                 }
                 
                 img {
                     width: 100% !important;
-                    height: auto !important;
+                    height: 100% !important;
                     object-fit: contain !important;
                     border: 1px solid #eee !important;
                     border-radius: 4px !important;
+                    margin: 0 !important;
                 }
 
                 /* DESCRIPTION container */
@@ -49,9 +62,10 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
                     flex: 1 !important;
                     display: flex !important;
                     flex-direction: column !important;
-                    justify-content: space-between !important;
-                    height: auto !important;
-                    min-height: 80px !important; /* Ensure space for text + button */
+                    justify-content: center !important; /* Center text vertically too */
+                    min-width: 0 !important; /* CSS Grid/Flex text truncation fix */
+                    padding: 0 !important;
+                    margin: 0 !important;
                 }
 
                 /* TITLE TEXT */
@@ -111,7 +125,7 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
             srcDoc={srcDoc}
             style={{
                 width: '100%',
-                height: '140px', /* Adjusted height for Medium content */
+                height: '160px', /* Increased height to prevent cutoff */
                 border: 'none',
                 overflow: 'hidden'
             }}
