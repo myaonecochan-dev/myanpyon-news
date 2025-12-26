@@ -110,7 +110,7 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
                     height: auto !important;
                     line-height: normal !important;
                 }
-            </style>
+
                 
                 /* Hide Price (Compliance) */
                 div[class*="price"] {
