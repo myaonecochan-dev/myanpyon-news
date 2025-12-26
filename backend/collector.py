@@ -659,13 +659,13 @@ def main():
     print(f"Using remote thumbnail (Forced): {ai_thumb_url}")
     thumb_url = ai_thumb_url 
     
-    # Ensure Fallback Poll
-    if not poll_data:
-        print("WARNING: Poll data missing. using fallback.")
+    # Ensure Fallback Poll (CRITICAL FIX)
+    if not poll_data or not isinstance(poll_data, dict) or "question" not in poll_data:
+        print("WARNING: Poll data missing or invalid. Using fallback.")
         poll_data = {
             "question": "このニュース、どう思いますか？",
-            "option_a": "驚いた！",
-            "option_b": "想定内"
+            "option_a": "興味深い！",
+            "option_b": "ふーん"
         }
 
     # 4. Assembled Post Object
@@ -684,24 +684,11 @@ def main():
         "tweet_text": ai_content.get("tweet_text", ""),
         "slug": f"{ai_content.get('slug')}-{datetime.datetime.now().strftime('%m%d')}" if ai_content.get("slug") else None, # Append date for uniqueness
         "source_url": target_trend.get('link'), # NEW: Save source URL
-        "created_at": datetime.datetime.now(datetime.timezone.utc).isoformat()
+        "created_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        "product_keywords": ai_content.get("product_keywords", [])
     }
     
-    poll_data = ai_content.get("poll") # Extract poll
-    
-    # Debug: Print Tweet
-    if post["tweet_text"]:
-        print(f"\n[Generated Tweet]: {post['tweet_text']}\n")
-        # Try to post (Dry Run if no keys)
-        try:
-            from x_client import post_tweet
-            post_tweet(post["tweet_text"])
-        except ImportError:
-            print("x_client not found or failed to import.")
-        except Exception as e:
-            print(f"Tweet failed: {e}")
-
-    # 5. Save
+    # 5. Save (Pass explicitly validated poll_data)
     insert_post_to_supabase(post, poll_data=poll_data)
     
     # 6. Update sitemap
