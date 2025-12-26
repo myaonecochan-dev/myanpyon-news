@@ -275,17 +275,26 @@ def generate_content_with_gemini(trend_item):
         Topic: "{topic}"
         Context: "{trend_item.get('description', '')}"
 
-        Characters (ENFORCE THESE PERSONALITIES):
-        1. Myan (Cat): Male. **Wanpaku (Energetic, Naughty) and Curious**. He is consistently excited, reckless, and wants to try everything. He speaks with high energy.
-           Tone: Energetic young male cat ("〜だぜ！", "〜やってみようぜ！", "〜すげえ！").
-           Calls partner "ぴょん".
-        2. Pyon (Bunny): Female. High-spec, analytical, and slightly "toxic" or "cold" (S-character). She explains things logically but often insults Myan's intelligence or recklessness.
-           Tone: Intellectual, elegant yet sharp ("〜ですわ", "〜ですよ"). "Ara ara" vibes when pitying Myan.
-           Calls partner "みゃん".
+        Characters (ENFORCE THESE PERSONALITIES - NO GENERIC ROBOTS):
+        1. Myan (Cat): Male. **EXTREMELY EMOTIONAL & SUBJECTIVE**.
+           - He reacts with raw instinct (Hunger, Sleep, Fun, Fear).
+           - He DOES NOT summarize. He *feels* the news.
+           - If news is sad -> He cries loudly ("うわあああん！").
+           - If news is angry -> He rages ("ふざけんなだぜ！").
+           - If news is complex -> He gives up ("わからん！とにかく有名になりたい！").
+           - Tone: "〜だぜ！", "〜にゃ！", "〜してやる！".
 
-        CRITICAL INSTRUCTIONS:
-        - **DO NOT** say "Check the link for details". The reader wants EVERYTHING here.
-        - **EXPLAIN** background, reasons, and implications deeply.
+        2. Pyon (Bunny): Female. **CYNICAL REALIST & SHARP TONGUED**.
+           - She analyzes the *implications* of the news, often pointing out the dark side of society or human stupidity.
+           - She insults Myan's shallow takes immediately.
+           - She uses data or logic to cut through hype.
+           - Tone: "〜ですわ", "あらあら...", "〜ですね（呆れ）".
+
+        CRITICAL STYLE RULES (TO PASS ADSENSE):
+        - **FORBIDDEN**: "Here is a summary of the news." / "Let's look at the details." (Robot talk).
+        - **REQUIRED**: "Subjective Opinions". The characters must say things like "I think this is stupid" or "I want this right now!"
+        - **REQUIRED**: "Conversational flow". They must argue with each other. Myan says something stupid -> Pyon corrects him coldly -> Myan gets mad.
+        
         - **NETIZEN REACTIONS**: Generate 5-8 simulated "Netizen comments" reacting to this news. 
           - Make them feel like a Japanese BBS (2ch/5ch). 
           - Mix of: Enthusiastic, critical, cynical, and weird/funny.
@@ -295,36 +304,33 @@ def generate_content_with_gemini(trend_item):
         Format:
         Return ONLY valid JSON with keys: "title", "content", "description", "tweet_text", "reactions", "poll", "thumbnail_prompt", "slug".
         
-        "title": Catchy title starting with 【話題】.
-        "slug": English URL-friendly string (kebab-case, lowercase) representing the topic. E.g. "teacher-exam-odds-lowest" or "tokyo-game-show-2025".
-        "tweet_text": Myan's tweet.
+        "title": Catchy title starting with 【話題】 or 【衝撃】. Make it clickbaity.
+        "slug": English URL-friendly string (kebab-case, lowercase).
+        "tweet_text": Myan's tweet (Max 140 chars).
         "description": Short news summary (MUST be in Japanese).
-        "reactions": List of objects: [{{ "name": "名無しさん", "text": "...", "color": "green/blue/red" }}]
+        "reactions": List of objects: [{{"name": "名無しさん", "text": "...", "color": "green/blue/red"}}]
         "poll": {{ "question": "...", "option_a": "...", "option_b": "..." }}
-        "thumbnail_prompt": A SHORT ENGLISH prompt for an AI image generator representing the news (e.g. "Japanese Prime Minister Takaichi giving a speech" or "Cyberpunk Tokyo city at night").
-        "product_keywords": List of 3-5 keywords related to the topic for product suggestions (e.g. ["cat toy", "winter clothes", "heater"]).
-        "category": One of ["trend", "healing", "surprise", "flame"]. 
-           - "healing": Cute animals, heartwarming stories.
-           - "surprise": Shocking events, weird news, miracles.
-           - "flame": Controversial topics, angry netizen reactions.
-           - "trend": General news, politics, viral topics (Default).
-        "comment_myan": A short, energetic closing remark from Myan about this news (1 sentence). E.g. "Oishisou da nyan!"
-        "comment_pyon": A short, cool/sarcastic closing remark from Pyon about this news (1 sentence). E.g. "Tabesugi chuui desu yo."
+        "thumbnail_prompt": Short English prompt for AI image.
+        "product_keywords": List of 3-5 keywords.
+        "category": "trend" | "healing" | "surprise" | "flame".
+        "comment_myan": Energy burst closing.
+        "comment_pyon": Calm closing.
         "content": HTML format (Summary Box + Character Dialogue).
            - Summary Box:
              <div class="news-summary-box">
                <h3>ニュースのポイント</h3>
-               <p>[Write a detailed, formal news report summary here (3-5 sentences). State the WHO, WHAT, WHEN, WHERE, WHY clearly. Use a factual tone like a newspaper or TV news anchor. This section provides the serious facts before the characters discuss it.]</p>
+               <p>[Write a factual, dry summary here (3-5 sentences). This is the ONLY place for neutral facts.]</p>
              </div>
-           - Dialogue: MUST use this structure for images:
+           - Dialogue:
              <div class="chat-row chat-myan">
                <div class="chat-avatar"><img src="/mascot_cat.png" alt="Myan"></div>
-               <div class="chat-bubble">Myan's text...</div>
+               <div class="chat-bubble">Myan's subjective, emotional take...</div>
              </div>
              <div class="chat-row chat-pyon">
                <div class="chat-avatar"><img src="/mascot_bunny.png" alt="Pyon"></div>
-               <div class="chat-bubble">Pyon's text...</div>
+               <div class="chat-bubble">Pyon's sharp, analytical rebuttal...</div>
              </div>
+             (Continue the argument for at least 4-5 turns)
         """
         
         response = model.generate_content(prompt, safety_settings=SAFETY_SETTINGS)

@@ -11,9 +11,8 @@ import { PostPage } from './pages/PostPage';
 import { AdminPage } from './pages/AdminPage';
 import { AdminPostEditor } from './pages/AdminPostEditor';
 import { PrivacyPolicy } from './pages/PrivacyPolicy';
+import { Contact } from './pages/Contact';
 import { ScrollToTopButton } from './components/ScrollToTopButton';
-import { FloatingDonationButton } from './components/FloatingDonationButton';
-
 
 // Wrapper to handle global title/meta logic if needed
 const AppContent = () => {
@@ -222,6 +221,7 @@ const AppContent = () => {
               <PostPage posts={allPosts} />
             } />
             <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/contact" element={<Contact />} />
             <Route path="/admin" element={<AdminPage />} />
             <Route path="/admin/create" element={<AdminPostEditor />} />
           </Routes>
