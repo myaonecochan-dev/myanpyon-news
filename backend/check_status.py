@@ -9,20 +9,27 @@ SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 def check_status():
-    print("--- Investigating Snow Posts ---")
-    slugs = ["record-snow-hits-japan-holiday-travel-1226", "winter-storm-heavy-snow-japan-1226"]
-    res = supabase.table("posts").select("*").in_("slug", slugs).execute()
+    print("--- Investigating Incomplete Post ---")
+    slug = "child-grandparents-medicine-ingestion-1226"
+    res = supabase.table("posts").select("*").eq("slug", slug).execute()
     
     if not res.data:
-        print("Posts not found.")
+        print("Post not found.")
         return
 
-    for post in res.data:
-        print(f"Title: {post['title']}")
-        print(f"Slug: {post['slug']}")
-        print(f"Source URL: {post['source_url']}")
-        print(f"Created At: {post['created_at']}")
-        print("-" * 30)
+    post = res.data[0]
+    print(f"Title: {post['title']}")
+    print(f"image_url (DB): {post.get('image_url', 'MISSING')}")
+    print(f"reactions (DB): {post.get('reactions', 'MISSING')}")
+    print(f"Created At: {post['created_at']}")
+    
+    # Check polls
+    poll_res = supabase.table("polls").select("*").eq("post_id", post["id"]).execute()
+    if poll_res.data:
+        print(f"Poll found: {poll_res.data[0]['question']}")
+    else:
+        print("Poll NOT found.")
+    print("-" * 30)
 
 if __name__ == "__main__":
     check_status()

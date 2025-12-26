@@ -1,11 +1,7 @@
---- Investigating Snow Posts ---
-Title: 【話題】冬将軍ガチ勢！日本海側でドカ雪警報、北風ビュービューで交通マヒも？
-Slug: winter-storm-heavy-snow-japan-1226
-Source URL: None
-Created At: 2025-12-26T03:01:55.140717+00:00
-------------------------------
-Title: 【話題】北日本で記録的な大雪、年末の帰省ラッシュを直撃！「ホワイトアウトで何も見えない」「新幹線動くのか…？」と悲鳴相次ぐ
-Slug: record-snow-hits-japan-holiday-travel-1226
-Source URL: https://news.yahoo.co.jp/pickup/6563892?source=rss
-Created At: 2025-12-26T07:34:58.533408+00:00
+--- Investigating Incomplete Post ---
+Title: 【話題】「お菓子と間違えた…」子が祖父母の薬を誤飲する事故が多発、命の危険も
+image_url (DB): /thumb_4711a11b-aa1e-4004-85bf-95c584bab2ea.png
+reactions (DB): []
+Created At: 2025-12-26T07:19:38.539261+00:00
+Poll NOT found.
 ------------------------------
