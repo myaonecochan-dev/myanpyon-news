@@ -60,15 +60,23 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
                     clear: both;
                 }
 
+                /* HIDE ARROWS (Carousel navigation) */
+                div[class*="arrow"], 
+                div[class*="prev"], 
+                div[class*="next"],
+                .slick-prev, .slick-next {
+                    display: none !important;
+                }
+
                 /* TITLE TEXT */
                 p, a[class*="link"] {
-                    font-size: 13px !important;
+                    font-size: 12px !important; /* Slightly smaller text */
                     font-weight: bold !important;
                     color: #333 !important;
                     text-decoration: none !important;
                     text-align: left !important;
                     line-height: 1.4 !important;
-                    margin: 4px 0 8px 0 !important;
+                    margin: 4px 0 6px 0 !important;
                     
                     display: -webkit-box;
                     -webkit-line-clamp: 2;
@@ -83,10 +91,10 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
                     background: #BF0000 !important;
                     color: white !important;
                     text-align: center !important;
-                    padding: 8px 0 !important;
+                    padding: 6px 0 !important; /* Reduced padding */
                     border-radius: 4px !important;
                     text-decoration: none !important;
-                    font-size: 12px !important;
+                    font-size: 10px !important; /* Reduced font size */
                     font-weight: bold !important;
                     width: 100% !important;
                     margin: 0 !important;
