@@ -671,7 +671,7 @@ def main():
         "tweet_text": ai_content.get("tweet_text", ""),
         "slug": f"{ai_content.get('slug')}-{datetime.datetime.now().strftime('%m%d')}" if ai_content.get("slug") else None, # Append date for uniqueness
         "source_url": target_trend.get('link'), # NEW: Save source URL
-        "created_at": datetime.datetime.now().isoformat()
+        "created_at": datetime.datetime.now(datetime.timezone.utc).isoformat()
     }
     
     poll_data = ai_content.get("poll") # Extract poll
