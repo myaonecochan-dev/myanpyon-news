@@ -148,7 +148,7 @@ export const AffiliateBlock: React.FC<AffiliateBlockProps> = ({ postKeywords = [
                     <div key={product.id} className="product-item">
                         {product.moshimo_html ? (
                             <div className="moshimo-container">
-                                <SafeMoshimoScript html={product.moshimo_html} />
+                                <MoshimoIframe html={product.moshimo_html} />
                             </div>
                         ) : (
                             <div style={{
