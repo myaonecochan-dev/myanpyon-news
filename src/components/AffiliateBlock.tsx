@@ -15,17 +15,17 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
                 base { target: "_blank"; }
 
                 /* CSS HACK for MOSHIMO MEDIUM SIZE */
-                /* Added 'body' prefix to everything to override Moshimo defaults */
-
+                /* CONTAINER: Disable clicks on the wrapper/slider to prevent JS interception */
                 body div[id^="msmaflink"] {
                     width: 100% !important;
                     padding: 0 !important; /* Managed by body padding now */
                     box-sizing: border-box !important;
                     overflow: visible !important;
                     position: relative !important;
+                    pointer-events: none !important; /* Disable swipes/clicks on container */
                 }
 
-                /* IMAGE CONTAINER: Float Left */
+                /* IMAGE CONTAINER */
                 body div[class*="image"], body div[class*="img"] {
                     float: left !important;
                     width: 90px !important;
@@ -35,8 +35,18 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
                     display: block !important;
                     position: relative !important;
                     z-index: 1 !important;
+                    pointer-events: none !important; 
                 }
                 
+                /* Link inside image needs to be clickable */
+                body div[class*="image"] a, body div[class*="img"] a {
+                    display: block !important;
+                    width: 100% !important;
+                    height: 100% !important;
+                    pointer-events: auto !important; /* Re-enable click */
+                    cursor: pointer !important;
+                }
+
                 body img {
                     width: 90px !important;
                     height: 90px !important;
@@ -46,7 +56,7 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
                     margin: 0 !important;
                 }
 
-                /* TEXT CONTAINER: Float Right */
+                /* TEXT CONTAINER */
                 body div[class*="txt"], body div[class*="box"] {
                     float: none !important;
                     width: auto !important;
@@ -54,6 +64,7 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
                     padding: 0 !important;
                     margin: 0 !important;
                     display: block !important;
+                    pointer-events: none !important;
                 }
 
                 /* Clearfix */
@@ -63,30 +74,33 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
                     clear: both;
                 }
 
-                /* HIDE ARROWS - NUCLEAR OPTION */
+                /* HIDE ARROWS - SUPER NUCLEAR OPTION */
                 /* Target known slider arrow classes and generic absolute divs that might be overlays */
                 body div[class*="arrow"], 
                 body div[class*="prev"], 
                 body div[class*="next"],
                 body .slick-arrow,
-                body button[class*="slick"],
+                body button, /* Hide ALL buttons (usually arrows) */
                 body div[class*="nav"],
                 body div[class*="control"] {
                     display: none !important;
                     opacity: 0 !important;
                     pointer-events: none !important;
-                    width: 0 !important;
-                    height: 0 !important;
                     visibility: hidden !important;
                 }
+                
+                /* Hide images that look like arrows if they use img tags */
+                body img[src*="arrow"], body img[class*="arrow"] {
+                     display: none !important;
+                }
 
-                /* CLICKABILITY FIX */
+                /* CLICKABILITY FIX - The 'a' tag is the holy grail */
                 /* Ensure links are clickable and on top */
                 body a, body a:visited, body a:hover {
-                    pointer-events: auto !important;
+                    pointer-events: auto !important; /* Only the link captures clicks */
                     cursor: pointer !important;
                     position: relative !important;
-                    z-index: 100 !important; /* Force on top of any invisible overlays */
+                    z-index: 2147483647 !important; /* MAX INT Z-Index */
                     color: inherit !important; 
                 }
 
@@ -104,6 +118,7 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
                     -webkit-box-orient: vertical;
                     overflow: hidden;
                     white-space: normal !important;
+                    pointer-events: auto !important; /* Enable text click */
                 }
 
                 /* BUTTON */
@@ -117,15 +132,19 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
                     text-decoration: none !important;
                     font-size: 11px !important;
                     font-weight: bold !important;
-                    width: 100% !important;
-                    margin: 0 !important;
+                    
+                    /* GAP ADJUSTMENT */
+                    width: 96% !important; /* Slightly less than 100% to create right gap */
+                    margin: 0 auto 0 0 !important; /* Align left, gap on right */
+                    
                     box-shadow: none !important;
                     border: none !important;
                     position: relative !important;
-                    z-index: 101 !important; /* On top of everything */
+                    z-index: 2147483647 !important;
                     height: auto !important;
                     line-height: 1.5 !important;
                     cursor: pointer !important;
+                    pointer-events: auto !important;
                 }
 
                 
