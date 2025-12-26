@@ -1,0 +1,8 @@
+
+C:\AI\myanpyonsokumato\src\components\AffiliateBlock.tsx
+   40:28  error    Unexpected any. Specify a different type                                                                         @typescript-eslint/no-explicit-any
+   41:35  error    Unexpected any. Specify a different type                                                                         @typescript-eslint/no-explicit-any
+  117:8   warning  React Hook useEffect has a missing dependency: 'postKeywords'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+笨・3 problems (2 errors, 1 warning)
+

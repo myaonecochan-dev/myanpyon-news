@@ -134,6 +134,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ posts = [] }) => {
                         </Link>
                     </li>
                     <li style={{ marginTop: '10px', borderTop: '1px solid #eee', paddingTop: '10px' }}>
+                        <Link to="/contact" className="category-link" style={{ fontSize: '0.85rem', color: '#999' }}>
+                            <span className="cat-icon">📧</span>
+                            <span className="cat-label">お問い合わせ</span>
+                        </Link>
+                    </li>
+                    <li>
                         <Link to="/privacy" className="category-link" style={{ fontSize: '0.85rem', color: '#999' }}>
                             <span className="cat-icon">🔒</span>
                             <span className="cat-label">プライバシーポリシー</span>
