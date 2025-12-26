@@ -11,10 +11,15 @@ interface Product {
     rakuten_link?: string;
     rakuten_impression_url?: string;
     moshimo_html?: string;
+    keywords?: string[];
     active: boolean;
 }
 
-export const AffiliateBlock: React.FC = () => {
+interface AffiliateBlockProps {
+    postKeywords?: string[];
+}
+
+export const AffiliateBlock: React.FC<AffiliateBlockProps> = ({ postKeywords = [] }) => {
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -30,7 +35,31 @@ export const AffiliateBlock: React.FC = () => {
                 if (error) {
                     console.error('Error fetching products:', error);
                 } else if (data) {
-                    setProducts(data);
+                    let sortedProducts = data;
+
+                    if (postKeywords.length > 0) {
+                        // Calculate match score for each product
+                        const scoredProducts = data.map(product => {
+                            let score = 0;
+                            if (product.keywords && Array.isArray(product.keywords)) {
+                                const productKeywords = product.keywords.map((k: string) => k.toLowerCase());
+                                postKeywords.forEach(pk => {
+                                    if (productKeywords.some((k: string) => k.includes(pk.toLowerCase()) || pk.toLowerCase().includes(k))) {
+                                        score += 1;
+                                    }
+                                });
+                            }
+                            return { ...product, score };
+                        });
+
+                        // Sort by score (descending), then by date
+                        sortedProducts = scoredProducts.sort((a, b) => {
+                            if (b.score !== a.score) return b.score - a.score;
+                            return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+                        });
+                    }
+
+                    setProducts(sortedProducts);
                 }
             } catch (err) {
                 console.error('Unexpected error:', err);

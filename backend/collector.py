@@ -302,11 +302,7 @@ def generate_content_with_gemini(trend_item):
         "reactions": List of objects: [{{ "name": "名無しさん", "text": "...", "color": "green/blue/red" }}]
         "poll": {{ "question": "...", "option_a": "...", "option_b": "..." }}
         "thumbnail_prompt": A SHORT ENGLISH prompt for an AI image generator representing the news (e.g. "Japanese Prime Minister Takaichi giving a speech" or "Cyberpunk Tokyo city at night").
-        "category": One of ["trend", "healing", "surprise", "flame"]. 
-           - "healing": Cute animals, heartwarming stories.
-           - "surprise": Shocking events, weird news, miracles.
-           - "flame": Controversial topics, angry netizen reactions.
-           - "trend": General news, politics, viral topics (Default).
+        "product_keywords": List of 3-5 keywords related to the topic for product suggestions (e.g. ["cat toy", "winter clothes", "heater"]).
         "category": One of ["trend", "healing", "surprise", "flame"]. 
            - "healing": Cute animals, heartwarming stories.
            - "surprise": Shocking events, weird news, miracles.
@@ -554,7 +550,8 @@ def insert_post_to_supabase(post_data, poll_data=None):
             "reactions": post_data.get("reactions", []), # New Reactions column
             "created_at": post_data["created_at"],
             "slug": post_data.get("slug", None), # Save SEO slug
-            "source_url": post_data.get("source_url", None) # Save source URL for duplicate check
+            "source_url": post_data.get("source_url", None), # Save source URL for duplicate check
+            "product_keywords": post_data.get("product_keywords", []) # Save AI generated keywords
         }
         
         # Check if slug exists, if so append random suffix to avoid unique constraint error

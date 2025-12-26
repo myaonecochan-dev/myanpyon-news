@@ -71,7 +71,11 @@ const AppContent = () => {
         }));
 
         console.log("Loaded generated posts from Supabase:", formattedPosts);
-        setAllPosts(prev => reset ? formattedPosts : [...prev, ...formattedPosts]);
+        setAllPosts(prev => {
+          const combined = reset ? formattedPosts : [...prev, ...formattedPosts];
+          // Ensure strictly sorted by date descending for every update
+          return combined.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        });
         setHasMore(data.length === POSTS_PER_PAGE);
       }
     } catch (err) {
@@ -130,9 +134,10 @@ const AppContent = () => {
     setSearchParams({ cat: newCat });
   };
 
-  const displayedPosts = category === 'all'
+  const displayedPosts = (category === 'all'
     ? allPosts
-    : allPosts.filter(p => p.category === category);
+    : allPosts.filter(p => p.category === category))
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
   return (
     <div className="app-container">

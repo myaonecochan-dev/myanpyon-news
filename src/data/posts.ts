@@ -17,7 +17,9 @@ export interface Post {
   // Article/Thread specific
   content?: string; // HTML or Markdown body
   imageUrl?: string; // Thumbnail or main image
-  reactions?: { name: string; text: string; color?: string }[];
+  reactions?: { name: string; text: string; color: string }[];
+  poll?: { question: string; option_a: string; option_b: string };
+  product_keywords?: string[];
   created_at: string; // ISO Date string
   slug?: string; // SEO friendly URL
   comment_myan?: string;

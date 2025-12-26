@@ -25,6 +25,9 @@ def add_product():
     rakuten_link = input("Rakuten Affiliate Link (Optional): ")
     rakuten_impression = input("Rakuten Impression URL (Optional): ")
     moshimo_html = input("Moshimo HTML Snippet (Optional): ")
+    keywords_input = input("Keywords (comma separated, e.g. cat,toy,winter): ")
+    
+    keywords = [k.strip() for k in keywords_input.split(",") if k.strip()] if keywords_input else []
 
     data = {
         "name": name,
@@ -35,6 +38,7 @@ def add_product():
         "rakuten_link": rakuten_link if rakuten_link else None,
         "rakuten_impression_url": rakuten_impression if rakuten_impression else None,
         "moshimo_html": moshimo_html if moshimo_html else None,
+        "keywords": keywords,
         "active": True
     }
 

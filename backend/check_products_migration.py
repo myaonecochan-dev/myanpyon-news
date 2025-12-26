@@ -10,13 +10,21 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 def check_migration():
     print("Checking migration status for 'products' table...")
-    columns_to_check = ["rakuten_impression_url", "amazon_impression_url", "moshimo_html"]
+    columns_to_check = ["rakuten_impression_url", "amazon_impression_url", "moshimo_html", "keywords"]
+    posts_columns = ["product_keywords"]
     
     try:
         # Try to select the specific columns from the products table
         res = supabase.table("products").select(",".join(columns_to_check)).limit(1).execute()
         print("\n[SUCCESS] All expected columns exist in 'products' table:")
         for col in columns_to_check:
+            print(f" - {col}")
+            print(f" - {col}")
+            
+        print("Checking migration status for 'posts' table...")
+        res_posts = supabase.table("posts").select(",".join(posts_columns)).limit(1).execute()
+        print("[SUCCESS] All expected columns exist in 'posts' table:")
+        for col in posts_columns:
             print(f" - {col}")
     except Exception as e:
         print(f"\n[FAILURE] One or more columns are MISSING or there was an error.")

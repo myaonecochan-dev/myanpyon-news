@@ -180,7 +180,7 @@ export const PostPage = ({ posts }: PostPageProps) => {
                 </div>
 
                 {/* Affiliate Block */}
-                <AffiliateBlock />
+                <AffiliateBlock postKeywords={post.product_keywords} />
 
                 {/* Mascot Chat Area */}
                 <MascotChat myanComment={post.comment_myan} pyonComment={post.comment_pyon} />
