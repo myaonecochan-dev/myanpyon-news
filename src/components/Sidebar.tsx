@@ -132,6 +132,16 @@ export const Sidebar: React.FC<SidebarProps> = ({ posts = [] }) => {
                 </ul>
             </div>
 
+            {/* Rakuten Affiliate Banner */}
+            <div className="sidebar-widget" style={{ textAlign: 'center', padding: '15px' }}>
+                <h3 className="widget-title" style={{ marginBottom: '15px' }}>おすすめショップ</h3>
+                <a href="//af.moshimo.com/af/c/click?a_id=5317132&p_id=54&pc_id=54&pl_id=1229" rel="nofollow" referrerpolicy="no-referrer-when-downgrade" target="_blank">
+                    <img src="//image.moshimo.com/af-img/0032/000000001229.gif" width="120" height="120" style={{ border: 'none', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }} alt="楽天市場" />
+                </a>
+                <img src="//i.moshimo.com/af/i/impression?a_id=5317132&p_id=54&pc_id=54&pl_id=1229" width="1" height="1" style={{ border: 'none' }} loading="lazy" alt="" />
+                <p style={{ fontSize: '0.7rem', color: '#999', marginTop: '10px' }}>楽天市場でのお買い物はこちらから</p>
+            </div>
+
             {/* Ad Placeholder */}
             <div className="sidebar-widget ad-widget">
                 <AdSenseDisplay slot="1234567890" style={{ height: '300px' }} />
