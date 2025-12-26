@@ -9,11 +9,12 @@ SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 def check_status():
-    print("--- Latest 5 Posts Status ---")
-    res = supabase.table("posts").select("*").order("created_at", desc=True).limit(5).execute()
+    print("--- Investigating Snow Posts ---")
+    slugs = ["record-snow-hits-japan-holiday-travel-1226", "winter-storm-heavy-snow-japan-1226"]
+    res = supabase.table("posts").select("*").in_("slug", slugs).execute()
     
     if not res.data:
-        print("No posts found.")
+        print("Posts not found.")
         return
 
     for post in res.data:
