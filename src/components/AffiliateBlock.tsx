@@ -16,16 +16,17 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
 
                 /* CSS HACK for MOSHIMO MEDIUM SIZE */
                 /* Use FLOAT to force Image Left, Text Right (Robust against nesting) */
+                /* Added 'body' prefix to everything to override Moshimo defaults */
 
-                div[id^="msmaflink"] {
+                body div[id^="msmaflink"] {
                     width: 100% !important;
                     padding: 5px !important;
                     box-sizing: border-box !important;
-                    overflow: visible !important; /* Allow content to flow */
+                    overflow: visible !important;
                 }
 
                 /* IMAGE CONTAINER: Float Left */
-                div[class*="image"], div[class*="img"] {
+                body div[class*="image"], body div[class*="img"] {
                     float: left !important;
                     width: 90px !important;
                     height: 90px !important;
@@ -34,50 +35,54 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
                     display: block !important;
                 }
                 
-                img {
+                body img {
                     width: 90px !important;
                     height: 90px !important;
                     object-fit: contain !important;
                     border: 1px solid #eee !important;
                     border-radius: 4px !important;
+                    margin: 0 !important;
                 }
 
-                /* TEXT CONTAINER: Float Right (Fill remaining) */
-                div[class*="txt"], div[class*="box"] {
-                    float: none !important; /* Don't float the container itself, just let it flow? Or float right? */
-                    /* Best practice for "rest of width": overflow hidden or calc width */
+                /* TEXT CONTAINER: Float Right */
+                body div[class*="txt"], body div[class*="box"] {
+                    float: none !important;
                     width: auto !important;
-                    overflow: hidden !important; /* Triggers BFC to sit next to float */
+                    overflow: hidden !important;
                     padding: 0 !important;
                     margin: 0 !important;
-                    display: block !important; /* Override flex if present */
+                    display: block !important;
                 }
 
-                /* Clearfix for main container children if needed */
-                div[id^="msmaflink"]::after {
+                /* Clearfix */
+                body div[id^="msmaflink"]::after {
                     content: "";
                     display: table;
                     clear: both;
                 }
 
-                /* HIDE ARROWS (Carousel navigation) */
-                div[class*="arrow"], 
-                div[class*="prev"], 
-                div[class*="next"],
-                .slick-prev, .slick-next {
+                /* HIDE ARROWS (Broad targeting) */
+                body div[class*="arrow"], 
+                body div[class*="prev"], 
+                body div[class*="next"],
+                body .slick-prev, body .slick-next,
+                body button[class*="slick"] {
                     display: none !important;
+                    opacity: 0 !important;
+                    pointer-events: none !important;
+                    width: 0 !important;
+                    height: 0 !important;
                 }
 
                 /* TITLE TEXT */
-                p, a[class*="link"] {
-                    font-size: 12px !important; /* Slightly smaller text */
+                body p, body a[class*="link"] {
+                    font-size: 12px !important;
                     font-weight: bold !important;
                     color: #333 !important;
                     text-decoration: none !important;
                     text-align: left !important;
                     line-height: 1.4 !important;
                     margin: 4px 0 6px 0 !important;
-                    
                     display: -webkit-box;
                     -webkit-line-clamp: 2;
                     -webkit-box-orient: vertical;
@@ -85,23 +90,27 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
                     white-space: normal !important;
                 }
 
-                /* BUTTON */
-                div[class*="btn"], a[class*="btn"] {
+                /* BUTTON - High Specificity */
+                /* Target any block-like link that isn't the title, or class contains btn */
+                body div[class*="btn"], body a[class*="btn"], body .shop-item {
                     display: block !important;
                     background: #BF0000 !important;
                     color: white !important;
                     text-align: center !important;
-                    padding: 6px 0 !important; /* Reduced padding */
+                    padding: 4px 0 !important; /* Even smaller padding */
                     border-radius: 4px !important;
                     text-decoration: none !important;
-                    font-size: 10px !important; /* Reduced font size */
+                    font-size: 10px !important;
                     font-weight: bold !important;
                     width: 100% !important;
                     margin: 0 !important;
                     box-shadow: none !important;
                     border: none !important;
                     position: static !important;
+                    height: auto !important;
+                    line-height: normal !important;
                 }
+            </style>
                 
                 /* Hide Price (Compliance) */
                 div[class*="price"] {
