@@ -8,20 +8,14 @@ SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-def check_status():
-    print("--- Latest 5 Posts Status ---")
-    res = supabase.table("posts").select("*").order("created_at", desc=True).limit(5).execute()
-    
-    if not res.data:
-        print("No posts found.")
-        return
-
-    for post in res.data:
-        print(f"Title: {post['title']}")
-        print(f"Slug: {post['slug']}")
-        print(f"Source URL: {post['source_url']}")
-        print(f"Created At: {post['created_at']}")
-        print("-" * 30)
+def delete_duplicate():
+    slug = "why-public-private-rush-ai-1226"
+    print(f"Deleting post with slug: {slug}")
+    res = supabase.table("posts").delete().eq("slug", slug).execute()
+    if res.data:
+        print("Successfully deleted.")
+    else:
+        print("Post not found or already deleted.")
 
 if __name__ == "__main__":
-    check_status()
+    delete_duplicate()
