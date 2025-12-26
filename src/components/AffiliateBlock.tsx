@@ -2,49 +2,37 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { supabase } from '../lib/supabaseClient';
 
-const SafeMoshimoScript: React.FC<{ html: string }> = ({ html }) => {
-    const containerRef = useRef<HTMLDivElement>(null);
+const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
+    const srcDoc = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <style>
+                body { margin: 0; padding: 0; overflow: hidden; background: transparent; display: flex; justify-content: center; }
+                base { target: "_blank"; }
+            </style>
+        </head>
+        <body>
+            ${html}
+        </body>
+        </html>
+    `;
 
-    useEffect(() => {
-        if (!containerRef.current || !html) return;
-
-        // Generate a unique namespace for this instance to prevent SPA conflicts
-        const uniqueId = Math.random().toString(36).substring(2, 9);
-        const namespace = `msmaflink_${uniqueId}`;
-
-        // Replace all occurrences of 'msmaflink' with the new namespace
-        // This updates:
-        // 1. The IIFE argument (global variable name)
-        // 2. The function call (msmaflink({...}))
-        // 3. The container DIV id (id="msmaflink-...") if present
-        const namespacedHtml = html.split('msmaflink').join(namespace);
-
-        // Clear and set new HTML
-        containerRef.current.innerHTML = namespacedHtml;
-
-        // Execute the new scripts
-        const scripts = containerRef.current.getElementsByTagName('script');
-        Array.from(scripts).forEach(script => {
-            const newScript = document.createElement('script');
-            Array.from(script.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-            newScript.appendChild(document.createTextNode(script.innerHTML));
-            script.parentNode?.replaceChild(newScript, script);
-        });
-
-        // Cleanup: Remove the specific script tag and global variable to prevent leaks
-        return () => {
-            // We can try to cleanup the script tag corresponding to this namespace
-            const scriptTag = document.getElementById(namespace);
-            if (scriptTag) scriptTag.remove();
-
-            // Optional: Cleanup global object if possible, but might be tricky if external script holds ref
-            if ((window as any)[namespace]) {
-                delete (window as any)[namespace];
-            }
-        };
-    }, [html]);
-
-    return <div ref={containerRef} />;
+    return (
+        <iframe
+            title="Affiliate Link"
+            srcDoc={srcDoc}
+            style={{
+                width: '100%',
+                height: '240px',
+                border: 'none',
+                overflow: 'hidden'
+            }}
+            sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+        />
+    );
 };
 
 interface Product {
@@ -117,7 +105,6 @@ export const AffiliateBlock: React.FC<AffiliateBlockProps> = ({ postKeywords = [
         fetchProducts();
     }, []);
 
-    // If loading or no products, we can hide the block or show nothing to avoid layout shifts.
     if (loading) return null;
     if (products.length === 0) return null;
 
