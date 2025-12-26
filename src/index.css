@@ -40,6 +40,25 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+[data-theme="dark"] {
+  /* Dark Mode Colors */
+  --bg-body: #121212;
+  --bg-card: #1e1e1e;
+  --text-main: #e0e0e0;
+  --text-sub: #a0a0a0;
+  --border-color: #333333;
+
+  /* Adjust Shadows for Dark Mode (More subtle or use highlighting) */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.8);
+
+  --glass-bg: rgba(30, 30, 30, 0.85);
+  --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+
+  color-scheme: dark;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
