@@ -54,9 +54,9 @@ export const AdSenseDisplay: React.FC<AdSenseDisplayProps> = ({
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    backgroundColor: '#f0f0f0',
-                    border: '2px dashed #ccc',
-                    color: '#888',
+                    backgroundColor: 'rgba(128, 128, 128, 0.1)', // Adaptive slightly visible background
+                    border: '2px dashed var(--border-color)', // Use theme border
+                    color: 'var(--text-sub)', // Use theme text
                     padding: '1rem',
                     minHeight: style.height || '250px',
                     margin: '1rem 0',
@@ -79,7 +79,7 @@ export const AdSenseDisplay: React.FC<AdSenseDisplayProps> = ({
             <ins
                 className="adsbygoogle"
                 style={adStyle}
-                data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" // TODO: Replace with user's ID
+                data-ad-client="ca-pub-1643100321686074" // Real ID
                 data-ad-slot={slot}
                 data-ad-format={format}
                 data-full-width-responsive={responsive ? "true" : "false"}

@@ -347,12 +347,14 @@
 
 /* News Summary Box */
 .news-summary-box {
-    background: #ffffff;
+    background: var(--bg-card);
+    /* was #ffffff */
     border: 2px solid var(--primary);
     border-radius: 12px;
     padding: 1.5rem;
     margin-bottom: 2rem;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--shadow-sm);
+    /* was specific shadow */
 }
 
 .news-summary-box h3 {
@@ -378,7 +380,8 @@
     margin-bottom: 0.5rem;
     line-height: 1.6;
     font-weight: 600;
-    color: #111;
+    color: var(--text-main);
+    /* was #111 */
 }
 
 /* Dark mode adjustment for summary box */
