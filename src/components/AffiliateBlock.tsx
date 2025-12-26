@@ -10,7 +10,7 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <style>
-                body { margin: 0; padding: 0; overflow: hidden; background: transparent; display: flex; justify-content: center; }
+                body { margin: 0; padding: 0; overflow: hidden; background: transparent; }
                 base { target: "_blank"; }
             </style>
         </head>
@@ -26,7 +26,7 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
             srcDoc={srcDoc}
             style={{
                 width: '100%',
-                height: '140px',
+                height: '180px',
                 border: 'none',
                 overflow: 'hidden'
             }}
@@ -88,6 +88,12 @@ export const AffiliateBlock: React.FC<AffiliateBlockProps> = ({ postKeywords = [
 
                         // Sort by score (descending), then by date
                         sortedProducts = scoredProducts.sort((a, b) => {
+                            // Manual override: Pin 'Nintendo Switch 2' to top
+                            const isSwitchA = a.name.includes('Nintendo Switch 2');
+                            const isSwitchB = b.name.includes('Nintendo Switch 2');
+                            if (isSwitchA && !isSwitchB) return -1;
+                            if (!isSwitchA && isSwitchB) return 1;
+
                             if (b.score !== a.score) return b.score - a.score;
                             return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
                         });
@@ -134,7 +140,13 @@ export const AffiliateBlock: React.FC<AffiliateBlockProps> = ({ postKeywords = [
                 {products.map((product) => (
                     <div key={product.id} className="product-item">
                         {product.moshimo_html ? (
-                            <div className="moshimo-container">
+                            <div className="moshimo-container" style={{
+                                background: '#f9f9f9',
+                                padding: '10px',
+                                borderRadius: '8px',
+                                height: '100%',
+                                boxSizing: 'border-box'
+                            }}>
                                 <MoshimoIframe html={product.moshimo_html} />
                             </div>
                         ) : (
