@@ -68,7 +68,7 @@ export const HomePage = ({ posts, onLoadMore, hasMore, loading }: HomePageProps)
                         <PostCard
                             key={post.id}
                             post={post}
-                            className={index < 4 ? 'featured-post' : ''}
+                            className={index < 4 ? 'featured-post' : 'list-view-post'}
                         />
                     ))
                 )}

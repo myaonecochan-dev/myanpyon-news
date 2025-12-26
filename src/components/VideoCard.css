@@ -314,4 +314,43 @@
         font-size: 0.95rem;
         margin-bottom: 0;
     }
+
+    /* List View Post Logic (index >= 4) */
+    .list-view-post {
+        grid-column: 1 / -1;
+        /* Full width */
+    }
+
+    .list-view-post .video-card {
+        flex-direction: row;
+        height: auto;
+        min-height: 160px;
+        align-items: stretch;
+    }
+
+    .list-view-post .video-thumbnail-wrapper {
+        width: 180px;
+        min-width: 180px;
+        height: auto;
+        /* Fill height */
+        aspect-ratio: 1/1;
+        /* Square-ish base */
+    }
+
+    .list-view-post .video-info {
+        padding: 15px 25px;
+        justify-content: center;
+    }
+
+    .list-view-post .video-title {
+        font-size: 1.2rem;
+        -webkit-line-clamp: 2;
+        margin-bottom: 8px;
+    }
+
+    .list-view-post .video-description {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        font-size: 0.95rem;
+    }
 }
