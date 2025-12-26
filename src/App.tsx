@@ -13,6 +13,8 @@ import { AdminPostEditor } from './pages/AdminPostEditor';
 import { PrivacyPolicy } from './pages/PrivacyPolicy';
 import { Contact } from './pages/Contact';
 import { ScrollToTopButton } from './components/ScrollToTopButton';
+import { HelmetProvider } from 'react-helmet-async';
+import { GoogleAnalytics } from './components/Analytics';
 
 // Wrapper to handle global title/meta logic if needed
 const AppContent = () => {
@@ -238,8 +240,7 @@ const AppContent = () => {
   );
 };
 
-import { HelmetProvider } from 'react-helmet-async';
-import { GoogleAnalytics } from './components/Analytics';
+
 
 function App() {
   return (
