@@ -53,22 +53,31 @@ const AppContent = () => {
 
       if (data) {
 
-        const formattedPosts: Post[] = data.map((item: any) => ({
-          id: item.id,
-          title: item.title,
-          description: item.description,
-          content: item.content,
-          category: item.category as Category,
-          type: item.type as any, // Cast to any or strict type if possible
-          platform: item.platform as any || 'article',
-          youtubeId: item.platform === 'youtube' ? item.video_id : undefined,
-          embedId: item.platform !== 'youtube' ? item.video_id : undefined, // Map video_id to embedId for TikTok/Twitter
-          imageUrl: item.image_url,
-          created_at: item.created_at,
-          slug: item.slug,
-          comment_myan: item.comment_myan,
-          comment_pyon: item.comment_pyon
-        }));
+        const formattedPosts: Post[] = data.map((item: any) => {
+          // Generate fallback description if missing
+          let description = item.description;
+          if (!description && item.content) {
+            // Strip HTML tags and truncate
+            description = item.content.replace(/<[^>]*>?/gm, '').substring(0, 120) + '...';
+          }
+
+          return {
+            id: item.id,
+            title: item.title,
+            description: description,
+            content: item.content,
+            category: item.category as Category,
+            type: item.type as any, // Cast to any or strict type if possible
+            platform: item.platform as any || 'article',
+            youtubeId: item.platform === 'youtube' ? item.video_id : undefined,
+            embedId: item.platform !== 'youtube' ? item.video_id : undefined, // Map video_id to embedId for TikTok/Twitter
+            imageUrl: item.image_url,
+            created_at: item.created_at,
+            slug: item.slug,
+            comment_myan: item.comment_myan,
+            comment_pyon: item.comment_pyon
+          };
+        });
 
         console.log("Loaded generated posts from Supabase:", formattedPosts);
         setAllPosts(prev => {
