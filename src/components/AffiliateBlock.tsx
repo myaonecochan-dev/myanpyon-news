@@ -11,18 +11,18 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <style>
-                body { margin: 0; padding: 0; overflow: hidden; background: transparent; font-family: sans-serif; }
+                body { margin: 0; padding: 10px; box-sizing: border-box; overflow: hidden; background: transparent; font-family: sans-serif; }
                 base { target: "_blank"; }
 
                 /* CSS HACK for MOSHIMO MEDIUM SIZE */
-                /* Use FLOAT to force Image Left, Text Right (Robust against nesting) */
                 /* Added 'body' prefix to everything to override Moshimo defaults */
 
                 body div[id^="msmaflink"] {
                     width: 100% !important;
-                    padding: 5px !important;
+                    padding: 0 !important; /* Managed by body padding now */
                     box-sizing: border-box !important;
                     overflow: visible !important;
+                    position: relative !important;
                 }
 
                 /* IMAGE CONTAINER: Float Left */
@@ -30,9 +30,11 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
                     float: left !important;
                     width: 90px !important;
                     height: 90px !important;
-                    margin: 0 10px 0 0 !important;
+                    margin: 0 15px 0 0 !important; /* More gap */
                     padding: 0 !important;
                     display: block !important;
+                    position: relative !important;
+                    z-index: 1 !important;
                 }
                 
                 body img {
@@ -61,17 +63,31 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
                     clear: both;
                 }
 
-                /* HIDE ARROWS (Broad targeting) */
+                /* HIDE ARROWS - NUCLEAR OPTION */
+                /* Target known slider arrow classes and generic absolute divs that might be overlays */
                 body div[class*="arrow"], 
                 body div[class*="prev"], 
                 body div[class*="next"],
-                body .slick-prev, body .slick-next,
-                body button[class*="slick"] {
+                body .slick-arrow,
+                body button[class*="slick"],
+                body div[class*="nav"],
+                body div[class*="control"] {
                     display: none !important;
                     opacity: 0 !important;
                     pointer-events: none !important;
                     width: 0 !important;
                     height: 0 !important;
+                    visibility: hidden !important;
+                }
+
+                /* CLICKABILITY FIX */
+                /* Ensure links are clickable and on top */
+                body a, body a:visited, body a:hover {
+                    pointer-events: auto !important;
+                    cursor: pointer !important;
+                    position: relative !important;
+                    z-index: 100 !important; /* Force on top of any invisible overlays */
+                    color: inherit !important; 
                 }
 
                 /* TITLE TEXT */
@@ -82,7 +98,7 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
                     text-decoration: none !important;
                     text-align: left !important;
                     line-height: 1.4 !important;
-                    margin: 4px 0 6px 0 !important;
+                    margin: 4px 0 8px 0 !important;
                     display: -webkit-box;
                     -webkit-line-clamp: 2;
                     -webkit-box-orient: vertical;
@@ -90,25 +106,26 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
                     white-space: normal !important;
                 }
 
-                /* BUTTON - High Specificity */
-                /* Target any block-like link that isn't the title, or class contains btn */
+                /* BUTTON */
                 body div[class*="btn"], body a[class*="btn"], body .shop-item {
                     display: block !important;
                     background: #BF0000 !important;
                     color: white !important;
                     text-align: center !important;
-                    padding: 4px 0 !important; /* Even smaller padding */
+                    padding: 6px 0 !important;
                     border-radius: 4px !important;
                     text-decoration: none !important;
-                    font-size: 10px !important;
+                    font-size: 11px !important;
                     font-weight: bold !important;
                     width: 100% !important;
                     margin: 0 !important;
                     box-shadow: none !important;
                     border: none !important;
-                    position: static !important;
+                    position: relative !important;
+                    z-index: 101 !important; /* On top of everything */
                     height: auto !important;
-                    line-height: normal !important;
+                    line-height: 1.5 !important;
+                    cursor: pointer !important;
                 }
 
                 
