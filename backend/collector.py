@@ -115,6 +115,7 @@ def check_is_duplicate(title, link, threshold=0.7):
     Checks if a post is a duplicate based on:
     1. Exact Source URL match (Fast)
     2. Normalized Title containment or similarity
+    3. Keyword overlap (for same news with different wording)
     """
     try:
         # 1. Source URL Check 
@@ -128,7 +129,11 @@ def check_is_duplicate(title, link, threshold=0.7):
         n_title = normalize_title(title)
         if not n_title: return False
 
-        # Fetch last 50 posts to compare titles
+        # Extract "keywords" (simple: strings of 2+ chars excluding common particles)
+        # For Japanese, a simple bigram or word-like chunking can work
+        title_keywords = set(re.findall(r'[一-龠ぁ-ゔァ-ヴー]{2,}', n_title))
+
+        # Fetch last 50 posts to compare
         res = supabase.table("posts").select("title").order("created_at", desc=True).limit(50).execute()
         if not res.data:
             return False
@@ -140,18 +145,26 @@ def check_is_duplicate(title, link, threshold=0.7):
             n_db_title = normalize_title(db_title)
             if not n_db_title: continue
 
-            # Simple containment check on normalized strings
+            # A. Simple containment check
             if n_title in n_db_title or n_db_title in n_title:
                  print(f"DEBUG: Duplicate found via Normalized Title Containment: {n_db_title}")
                  return True
                  
-            # Levenshtein check on normalized strings
+            # B. Levenshtein check
             if ratio:
                 sim = ratio(n_title, n_db_title)
-                # Lowered threshold slightly for normalized strings (0.7 is usually safe)
                 if sim > threshold:
                     print(f"DEBUG: Duplicate found via Normalized Levenshtein ({sim:.2f}): {n_db_title}")
                     return True
+
+            # C. Keyword Overlap (Robust for same news, different title)
+            db_keywords = set(re.findall(r'[一-龠ぁ-ゔァ-ヴー]{2,}', n_db_title))
+            overlap = title_keywords.intersection(db_keywords)
+            
+            # If 3 or more substantial keywords (min 2 chars) overlap, it's likely the same news
+            if len(overlap) >= 3:
+                print(f"DEBUG: Duplicate found via Keyword Overlap ({list(overlap)}): {n_db_title}")
+                return True
                     
         return False
 
