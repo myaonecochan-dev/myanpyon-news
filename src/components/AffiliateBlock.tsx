@@ -11,8 +11,92 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <style>
-                body { margin: 0; padding: 0; overflow: hidden; background: transparent; }
+                body { margin: 0; padding: 0; overflow: hidden; background: transparent; font-family: sans-serif; }
                 base { target: "_blank"; }
+
+                /* CSS HACK for MOSHIMO MEDIUM SIZE */
+                /* Force it to look like the Small/Manual horizontal card */
+
+                div[id^="msmaflink"] {
+                    display: flex !important;
+                    flex-direction: row !important;
+                    align-items: flex-start !important; /* Align top so text doesn't float weirdly */
+                    width: 100% !important;
+                    padding: 8px !important;
+                    box-sizing: border-box !important;
+                    gap: 10px !important;
+                }
+
+                /* IMAGE: Force small square */
+                div[class*="image"], div[class*="img"] {
+                    width: 90px !important;
+                    height: auto !important;
+                    flex-shrink: 0 !important;
+                    margin: 0 !important;
+                    float: none !important;
+                }
+                
+                img {
+                    width: 100% !important;
+                    height: auto !important;
+                    object-fit: contain !important;
+                    border: 1px solid #eee !important;
+                    border-radius: 4px !important;
+                }
+
+                /* DESCRIPTION container */
+                div[class*="txt"], div[class*="box"] {
+                    flex: 1 !important;
+                    display: flex !important;
+                    flex-direction: column !important;
+                    justify-content: space-between !important;
+                    height: auto !important;
+                    min-height: 80px !important; /* Ensure space for text + button */
+                }
+
+                /* TITLE TEXT */
+                p, a[class*="link"] {
+                    font-size: 13px !important;
+                    font-weight: bold !important;
+                    color: #333 !important;
+                    text-decoration: none !important;
+                    text-align: left !important;
+                    line-height: 1.4 !important;
+                    margin: 0 0 8px 0 !important;
+                    
+                    /* Line Clamp */
+                    display: -webkit-box;
+                    -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                }
+
+                /* BUTTON */
+                div[class*="btn"], a[class*="btn"] {
+                    display: block !important;
+                    background: #BF0000 !important;
+                    color: white !important;
+                    text-align: center !important;
+                    padding: 8px 0 !important;
+                    border-radius: 4px !important;
+                    text-decoration: none !important;
+                    font-size: 12px !important;
+                    font-weight: bold !important;
+                    width: 100% !important;
+                    margin-top: auto !important;
+                    box-shadow: none !important;
+                    border: none !important;
+                }
+                
+                /* Hide Price (Compliance) */
+                div[class*="price"] {
+                    display: none !important;
+                }
+
+                /* Hide Header/Footer garbage */
+                div[class*="head"], div[class*="foot"], div[class*="credit"] { 
+                    display: none !important; 
+                }
             </style>
         </head>
         <body>
@@ -27,7 +111,7 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
             srcDoc={srcDoc}
             style={{
                 width: '100%',
-                height: '200px', // Giving it plenty of room to render naturally
+                height: '140px', /* Adjusted height for Medium content */
                 border: 'none',
                 overflow: 'hidden'
             }}
