@@ -80,3 +80,28 @@ Inserted poll.
 --- Done ---
 [2025/12/25 22:01:10.70] Finished. 
 ---------------------------------------------------------------- 
+---------------------------------------------------------------- 
+[2025/12/26  7:00:01.65] Starting MyanPyon Bot... 
+--- Trend Bot Started ---
+Checking Supabase connection...
+Connection OK. Current post count: 21
+Fetching trends from https://news.yahoo.co.jp/rss/topics/business.xml...
+ -> Found 8 trends.
+Processing target: 就活ルールの見直し検討へ 政府
+Generating content for: 就活ルールの見直し検討へ 政府...
+DEBUG: Parsed JSON keys: ['title', 'slug', 'description', 'tweet_text', 'reactions', 'poll', 'thumbnail_prompt', 'category', 'comment_myan', 'comment_pyon', 'content']
+DEBUG: AI generated slug: government-reviews-job-hunting-rules-2025
+DEBUG: Generated dedicated slug: government-reviews-job-hunt-rules
+DEBUG: Final Data comments (Primary): Myan=よし、ぴょん！オレたちも最強のブログチームとして就活してみようぜ！, Pyon=みゃんが履歴書を書けるようになってからのお話ですわね。
+Scraping OG Image from: https://news.yahoo.co.jp/pickup/6563850?source=rss
+Using AI generated thumbnail directly: https://image.pollinations.ai/prompt/A%20group%20of%20Japanese%20students%20in%20dark%20suits%20looking%20at%20a%20cracked,%20crumbling%20wall%20with%20the%20word%20'ルール'%20(Rule)%20written%20on%20it.?width=1200&height=630&nologo=true&seed=52577
+
+[Generated Tweet]: 就活ルールが変わるかもだって！？すげえ！オレも最強の会社にアタックしてみるぜー！どんな会社がいいかな？ワクワクすっぞ！
+
+--- X Posting Service ---
+Successfully posted to X! ID: 2004311415105245565
+Inserted post: 40f47146-cc5d-41b5-9ed0-5e4b97851f33
+Inserted poll.
+--- Done ---
+[2025/12/26  7:00:58.00] Finished. 
+---------------------------------------------------------------- 

@@ -6,3 +6,4 @@ python-dotenv
 Pillow
 feedparser
 tweepy
+python-Levenshtein

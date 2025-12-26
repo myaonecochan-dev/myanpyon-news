@@ -9,14 +9,14 @@ def create_manual_post():
     print("--- Manual Post Creator ---")
     
     # Define the "Trend" object manually with gathered details
+    # Define the "Trend" object manually with gathered details
     topic_data = {
-        "title": "スマホも「世界的メモリ不足」で値上がりへ AI需要でDRAM不足深刻",
-        "link": "https://news.yahoo.co.jp/", 
+        "title": "【生存確認】今日は2025年最後の「プレミアムフライデー」です…覚えてますか？ネットで「死語」「幻」と話題に",
+        "link": "https://news.yahoo.co.jp/search?p=premium+friday+2025", 
         "description": """
-        世界的なメモリ不足の影響で、スマートフォンの価格が今後値上がりする見通しだ。
-        調査会社によると、2025年から2026年にかけてAIサーバー向けの高性能メモリ需要が急増し、スマホ用メモリの生産ラインが圧迫されているという。
-        これによりメモリ価格が高騰し、スマホ本体価格も6.9%〜20%ほど上昇する可能性がある。
-        16GBメモリ搭載のハイエンド機が減り、4GBモデルが復活するなど「スペックダウン」の懸念も出ている。
+        本日12月26日は、2025年最後の金曜日、つまり「プレミアムフライデー」である。
+        かつて政府が推進したこのキャンペーンだが、現在では実施している企業はごくわずか。
+        ネット上では「プレ金？都市伝説でしょ」「仕事納めだし早く帰れるわけない」「まだ存在したのか」といった自虐や驚きの声が溢れている。
         """
     }
 
@@ -37,8 +37,8 @@ def create_manual_post():
         prompt_clean = ai_content["thumbnail_prompt"].replace(" ", "%20")
         thumb_url = f"https://image.pollinations.ai/prompt/{prompt_clean}?width=1200&height=630&nologo=true&seed={random.randint(0, 99999)}"
     else:
-        # Fallback prompt for this specific news
-        thumb_url = "https://image.pollinations.ai/prompt/Smartphone%20price%20chart%20going%20up,%20red%20arrow,%20memory%20chip%20background,%20tech%20news%20style?width=1200&height=630&nologo=true"
+        # Fallback prompt for this specific news (Lonely office or confused calendar)
+        thumb_url = "https://image.pollinations.ai/prompt/Empty%20japanese%20office%20at%203pm,%20lonely%20salaryman%20looking%20at%20watch,%20sunset%20light,%20melancholic%20anime%20style,%20premium%20friday%20poster%20peeling%20off?width=1200&height=630&nologo=true"
     
     print(f"Using Thumbnail: {thumb_url}")
 
@@ -49,15 +49,16 @@ def create_manual_post():
         "description": ai_content.get("description", ""),
         "content": ai_content.get("content", ""),
         "reactions": ai_content.get("reactions", []),
-        "category": ai_content.get("category", "trend"), 
-        "comment_myan": ai_content.get("comment_myan", ""),
-        "comment_pyon": ai_content.get("comment_pyon", ""),
+        "category": ai_content.get("category", "healing"), 
+        "comment_myan": str(ai_content.get("comment_myan") or ""),
+        "comment_pyon": str(ai_content.get("comment_pyon") or ""),
         "type": "article",
         "platform": "article",
         "imageUrl": thumb_url, 
         "tweet_text": ai_content.get("tweet_text", ""),
-        "slug": f"{ai_content.get('slug', 'sim-shortage-price-hike')}-{datetime.datetime.now().strftime('%m%d')}", # Ensure unique
-        "created_at": datetime.datetime.now().isoformat()
+        "slug": f"{ai_content.get('slug', 'year-end-holidays-2025-9-days-golden-calendar')}-{datetime.datetime.now().strftime('%m%d')}", # Ensure unique
+        "created_at": datetime.datetime.now().isoformat(),
+        "source_url": topic_data["link"] # Add source_url for duplicate prevention
     }
     
     # Debug print slug

@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { MetaHead } from '../components/MetaHead';
 import { PostCard } from '../components/PostCard';
 import { SkeletonCard } from '../components/SkeletonCard';
@@ -27,9 +28,22 @@ export const HomePage = ({ posts, onLoadMore, hasMore, loading }: HomePageProps)
             <div className="summary-box">
                 <h2>⚡ 今日の３行まとめ</h2>
                 <ul>
-                    <li>猫がピアノを弾く動画が100万再生突破！🎹</li>
-                    <li>新作ゲームのバグが「逆に面白い」と話題に🎮</li>
-                    <li>AIが書いた小説が文学賞の一次審査を通過📚</li>
+                    {posts.slice(0, 3).map((post) => (
+                        <li key={post.id}>
+                            <Link to={`/post/${post.slug || post.id}`} className="summary-link">
+                                {(() => {
+                                    const cat = post.category || 'trend';
+                                    const emojis: Record<string, string> = {
+                                        healing: '🍀',
+                                        surprise: '😲',
+                                        flame: '🔥',
+                                        trend: '📈'
+                                    };
+                                    return emojis[cat] || '✨';
+                                })()} {post.title.replace(/^【[^】]+】\s*/, '')}
+                            </Link>
+                        </li>
+                    ))}
                 </ul>
             </div>
 
@@ -60,28 +74,30 @@ export const HomePage = ({ posts, onLoadMore, hasMore, loading }: HomePageProps)
                 )}
             </div>
 
-            {hasMore && (
-                <div style={{ textAlign: 'center', marginTop: '2rem', marginBottom: '4rem' }}>
-                    <button
-                        onClick={onLoadMore}
-                        disabled={loading}
-                        style={{
-                            padding: '12px 30px',
-                            fontSize: '1.1rem',
-                            background: 'white',
-                            border: '2px solid var(--primary)',
-                            color: 'var(--primary)',
-                            borderRadius: '30px',
-                            cursor: loading ? 'wait' : 'pointer',
-                            fontWeight: 'bold',
-                            transition: 'all 0.2s',
-                            boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
-                        }}
-                    >
-                        {loading ? 'Reading...' : 'もっと読む ⤵'}
-                    </button>
-                </div>
-            )}
-        </div>
+            {
+                hasMore && (
+                    <div style={{ textAlign: 'center', marginTop: '2rem', marginBottom: '4rem' }}>
+                        <button
+                            onClick={onLoadMore}
+                            disabled={loading}
+                            style={{
+                                padding: '12px 30px',
+                                fontSize: '1.1rem',
+                                background: 'white',
+                                border: '2px solid var(--primary)',
+                                color: 'var(--primary)',
+                                borderRadius: '30px',
+                                cursor: loading ? 'wait' : 'pointer',
+                                fontWeight: 'bold',
+                                transition: 'all 0.2s',
+                                boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+                            }}
+                        >
+                            {loading ? 'Reading...' : 'もっと読む ⤵'}
+                        </button>
+                    </div>
+                )
+            }
+        </div >
     );
 };

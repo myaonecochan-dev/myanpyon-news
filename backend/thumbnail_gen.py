@@ -96,6 +96,8 @@ def generate_thumbnail(text, filename="thumbnail.png", bg_image_url=None):
         # Try to find a font (fallback to default if not found)
         # Windows paths
         font_paths = [
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+            "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
             "C:\\Windows\\Fonts\\meiryo.ttc",
             "C:\\Windows\\Fonts\\msgothic.ttc",
             "arial.ttf"

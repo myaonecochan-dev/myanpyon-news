@@ -1,0 +1,40 @@
+
+> myanpyonsokumato@0.0.0 build
+> vite build
+
+[36mvite v7.3.0 [32mbuilding client environment for production...[36m[39m
+transforming...
+[32m笨・[39m 27 modules transformed.
+笨・[39m Build failed in 1.40s
+error during build:
+[vite:esbuild] Transform failed with 2 errors:
+C:/AI/myanpyonsokumato/src/pages/HomePage.tsx:43:30: ERROR: Unexpected closing "Link" tag does not match opening "li" tag
+C:/AI/myanpyonsokumato/src/pages/HomePage.tsx:44:28: ERROR: Expected ")" but found "{"
+file: C:/AI/myanpyonsokumato/src/pages/HomePage.tsx:43:30
+
+Unexpected closing "Link" tag does not match opening "li" tag
+41 |                                      return emojis[cat] || '笨ｨ';
+42 |                                  })()} {post.title.replace(/^縲深^縲曽+縲曾s*/, '')}
+43 |                              </Link>
+   |                                ^
+44 |                              {' '}
+45 |                              {/* <span className="new-badge">New!</span> Optional */}
+
+Expected ")" but found "{"
+42 |                                  })()} {post.title.replace(/^縲深^縲曽+縲曾s*/, '')}
+43 |                              </Link>
+44 |                              {' '}
+   |                              ^
+45 |                              {/* <span className="new-badge">New!</span> Optional */}
+46 |                          </li>
+
+    at failureErrorWithLog (C:\AI\myanpyonsokumato\node_modules\esbuild\lib\main.js:1467:15)
+    at C:\AI\myanpyonsokumato\node_modules\esbuild\lib\main.js:736:50
+    at responseCallbacks.<computed> (C:\AI\myanpyonsokumato\node_modules\esbuild\lib\main.js:603:9)
+    at handleIncomingPacket (C:\AI\myanpyonsokumato\node_modules\esbuild\lib\main.js:658:12)
+    at Socket.readFromStdout (C:\AI\myanpyonsokumato\node_modules\esbuild\lib\main.js:581:7)
+    at Socket.emit (node:events:519:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+    at Readable.push (node:internal/streams/readable:392:5)
+    at Pipe.onStreamRead (node:internal/stream_base_commons:189:23)

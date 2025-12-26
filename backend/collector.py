@@ -10,13 +10,22 @@ import random
 from thumbnail_gen import generate_thumbnail
 from supabase import create_client, Client
 from dotenv import load_dotenv
+import re
+try:
+    from Levenshtein import ratio
+except ImportError:
+    ratio = None # Fallback if missing
 
 # Load env
 load_dotenv()
 
 # Initial configuration
-SUPABASE_URL = "https://ufawzveswbnaqvfvezbb.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVmYXd6dmVzd2JuYXF2ZnZlemJiIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NjU1MjQyNywiZXhwIjoyMDgyMTI4NDI3fQ.uf7mi1zUvLD9CmbAcwIgUNwHhQXUOg9cZ9Pk67C85iQ"
+SUPABASE_URL = os.environ.get("SUPABASE_URL") or "https://ufawzveswbnaqvfvezbb.supabase.co"
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY") or "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVmYXd6dmVzd2JuYXF2ZnZlemJiIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NjU1MjQyNywiZXhwIjoyMDgyMTI4NDI3fQ.uf7mi1zUvLD9CmbAcwIgUNwHhQXUOg9cZ9Pk67C85iQ"
+
+if not SUPABASE_KEY:
+    print("WARNING: SUPABASE_KEY is missing!")
+
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 # RSS Feeds List (Randomly select one to ensure variety)
 RSS_FEEDS = [
@@ -83,8 +92,119 @@ def fetch_rss_trends():
             return items
             
     except Exception as e:
-        print(f"Error fetching RSS: {e}")
-        return []
+        print(f"Error checking duplicates: {e}")
+    # Default to False (allow) but risky
+    return False
+
+def check_is_duplicate(title, link, threshold=0.8):
+    """
+    Checks if a post is a duplicate based on:
+    1. Exact Source URL match (Fast)
+    2. Fuzzy Title similarity (Slower, but robust against URL changes)
+    """
+    try:
+        # 1. Source URL Check 
+        if link:
+            res = supabase.table("posts").select("id").eq("source_url", link).execute()
+            if res.data and len(res.data) > 0:
+                print(f"DEBUG: Duplicate found via Source URL: {link}")
+                return True
+        
+        # 2. Title Fuzzy Check
+        # Fetch last 50 posts to compare titles
+        # (Fetching all is too heavy, 50 is reasonable for "recent" news)
+        res = supabase.table("posts").select("title").order("created_at", desc=True).limit(50).execute()
+        if not res.data:
+            return False
+            
+        for post in res.data:
+            db_title = post.get('title', '')
+            if not db_title: continue
+            
+            # Simple containment check first
+            if title in db_title or db_title in title:
+                 print(f"DEBUG: Duplicate found via Title Containment: {db_title}")
+                 return True
+                 
+            # Levenshtein check
+            if ratio:
+                sim = ratio(title, db_title)
+                if sim > threshold:
+                    print(f"DEBUG: Duplicate found via Levenshtein ({sim:.2f}): {db_title}")
+                    return True
+                    
+        return False
+
+    except Exception as e:
+        print(f"Error in duplicate check: {e}")
+        return False
+
+def fetch_mascot_comments_persistent(model, title, summary, safety_settings, max_retries=3):
+    """
+    Attempts to generate unique mascot comments with persistent retries.
+    If fails, returns generic comments.
+    """
+    print(f"DEBUG: Starting persistent comment generation (Max {max_retries} attempts)...")
+    
+    import google.generativeai as genai
+    
+    for attempt in range(max_retries):
+        try:
+            # Vary prompt slightly to break loops?
+            prompt_modifier = ""
+            if attempt > 0:
+                prompt_modifier = "Please be very creative and ensure valid JSON output."
+
+            comment_prompt = f"""
+            The following news article needs short mascot comments.
+            Title: {title}
+            Summary: {summary}
+            {prompt_modifier}
+            
+            Characters:
+            Myan (Cat): Energetic, dumb. "〜だぜ！" "〜にゃ！"
+            Pyon (Bunny): Cool, sarcastic. "〜ですわ"
+
+            Output JSON only:
+            {{
+                "comment_myan": "...",
+                "comment_pyon": "..."
+            }}
+            """
+            
+            # Increase temperature for retries to avoid sticking to refusal
+            gen_config = genai.GenerationConfig(temperature=0.7 + (attempt * 0.1))
+            
+            comment_resp = model.generate_content(
+                comment_prompt, 
+                safety_settings=safety_settings,
+                generation_config=gen_config
+            )
+            comment_text = comment_resp.text.replace("```json", "").replace("```", "")
+            comment_json = json.loads(comment_text)
+            
+            new_myan = comment_json.get("comment_myan")
+            new_pyon = comment_json.get("comment_pyon")
+            
+            # Strict Validation
+            is_myan_missing = new_myan is None or not str(new_myan).strip() or str(new_myan).lower() == "none"
+            is_pyon_missing = new_pyon is None or not str(new_pyon).strip() or str(new_pyon).lower() == "none"
+            
+            if not is_myan_missing and not is_pyon_missing:
+                print(f"DEBUG: Persistent comment generation success on attempt {attempt + 1}")
+                return new_myan, new_pyon
+            else:
+                print(f"DEBUG: Attempt {attempt + 1} produced empty comments. Retrying...")
+                
+        except Exception as e:
+            print(f"DEBUG: Attempt {attempt + 1} failed with error: {e}")
+            
+    print("DEBUG: All retry attempts failed. Using generic fallback.")
+    return (
+        "今日のニュースはこれだにゃ！要チェックだぜ！",
+        "詳しくは記事を読んでくださいね。しっかり理解しましょう。"
+    )
+
 
 def generate_content_with_gemini(trend_item):
     """
@@ -102,11 +222,23 @@ def generate_content_with_gemini(trend_item):
             raise ValueError("GEMINI_API_KEY not set")
             
         genai.configure(api_key=GEMINI_API_KEY)
+        
+        # Configure safety settings to allow controversial news (Flame/Surprise categories)
+        from google.generativeai.types import HarmCategory, HarmBlockThreshold
+        SAFETY_SETTINGS = {
+            HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
+            HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_NONE,
+            HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_NONE,
+            HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
+        }
+
         # Use a model confirmed to exist via list_models.py
         model = genai.GenerativeModel('gemini-2.5-pro')
         
+        today_str = datetime.date.today().strftime("%Y-%m-%d")
         prompt = f"""
         Act as a news commentary duo for a popular Japanese summary blog.
+        Current Date: {today_str}
         Topic: "{topic}"
         Context: "{trend_item.get('description', '')}"
 
@@ -133,7 +265,7 @@ def generate_content_with_gemini(trend_item):
         "title": Catchy title starting with 【話題】.
         "slug": English URL-friendly string (kebab-case, lowercase) representing the topic. E.g. "teacher-exam-odds-lowest" or "tokyo-game-show-2025".
         "tweet_text": Myan's tweet.
-        "description": Short news summary.
+        "description": Short news summary (MUST be in Japanese).
         "reactions": List of objects: [{{ "name": "名無しさん", "text": "...", "color": "green/blue/red" }}]
         "poll": {{ "question": "...", "option_a": "...", "option_b": "..." }}
         "thumbnail_prompt": A SHORT ENGLISH prompt for an AI image generator representing the news (e.g. "Japanese Prime Minister Takaichi giving a speech" or "Cyberpunk Tokyo city at night").
@@ -150,7 +282,11 @@ def generate_content_with_gemini(trend_item):
         "comment_myan": A short, energetic closing remark from Myan about this news (1 sentence). E.g. "Oishisou da nyan!"
         "comment_pyon": A short, cool/sarcastic closing remark from Pyon about this news (1 sentence). E.g. "Tabesugi chuui desu yo."
         "content": HTML format (Summary Box + Character Dialogue).
-           - Summary Box: <div class="news-summary-box">...</div>
+           - Summary Box:
+             <div class="news-summary-box">
+               <h3>ニュースのポイント</h3>
+               <p>[Write a detailed, formal news report summary here (3-5 sentences). State the WHO, WHAT, WHEN, WHERE, WHY clearly. Use a factual tone like a newspaper or TV news anchor. This section provides the serious facts before the characters discuss it.]</p>
+             </div>
            - Dialogue: MUST use this structure for images:
              <div class="chat-row chat-myan">
                <div class="chat-avatar"><img src="/mascot_cat.png" alt="Myan"></div>
@@ -162,7 +298,7 @@ def generate_content_with_gemini(trend_item):
              </div>
         """
         
-        response = model.generate_content(prompt)
+        response = model.generate_content(prompt, safety_settings=SAFETY_SETTINGS)
         text = response.text
         
         # Robust JSON extraction
@@ -171,6 +307,10 @@ def generate_content_with_gemini(trend_item):
             json_match = re.search(r'\{.*\}', text, re.DOTALL)
             if json_match:
                 data = json.loads(json_match.group(), strict=False)
+                if not isinstance(data, dict):
+                    print(f"DEBUG: Initial JSON is not a dict, it is {type(data)}. Triggers repair.")
+                    raise ValueError("JSON is not a dictionary")
+                    
                 print(f"DEBUG: Parsed JSON keys: {list(data.keys())}")
                 if "slug" in data:
                     print(f"DEBUG: AI generated slug: {data['slug']}")
@@ -209,7 +349,7 @@ def generate_content_with_gemini(trend_item):
                     - Return ONLY the slug string (no JSON, no code blocks).
                     Example: "teacher-exam-odds-lowest"
                     """
-                    slug_response = model.generate_content(slug_prompt)
+                    slug_response = model.generate_content(slug_prompt, safety_settings=SAFETY_SETTINGS)
                     clean_slug = slug_response.text.strip().lower().replace(" ", "-").replace('"', '').replace("'", "").replace("`", "")
                     # Ensure only valid chars
                     clean_slug = re.sub(r'[^a-z0-9-]', '', clean_slug)
@@ -220,37 +360,26 @@ def generate_content_with_gemini(trend_item):
                     # Fallback to None, will use ID
                 
                 # --- NEW: Ensure comments exist (Retry Logic - Primary Path) ---
-                if not data.get("comment_myan") or not data.get("comment_pyon"):
-                    print("DEBUG: Comments missing in initial generation (Primary). Retrying...")
-                    try:
-                        comment_prompt = f"""
-                        The following news article needs short mascot comments.
-                        Title: {trend_data['title']}
-                        Summary: {data.get('description', '')}
-                        
-                        Characters:
-                        Myan (Cat): Energetic, dumb. "〜だぜ！" "〜にゃ！"
-                        Pyon (Bunny): Cool, sarcastic. "〜ですわ"
+                raw_myan = data.get("comment_myan")
+                raw_pyon = data.get("comment_pyon")
+                
+                # Check for None, Empty String, or "None" string
+                is_myan_missing = raw_myan is None or not str(raw_myan).strip() or str(raw_myan).lower() == "none"
+                is_pyon_missing = raw_pyon is None or not str(raw_pyon).strip() or str(raw_pyon).lower() == "none"
 
-                        Output JSON only:
-                        {{
-                            "comment_myan": "...",
-                            "comment_pyon": "..."
-                        }}
-                        """
-                        comment_resp = model.generate_content(comment_prompt)
-                        comment_text = comment_resp.text.replace("```json", "").replace("```", "")
-                        comment_json = json.loads(comment_text)
-                        
-                        data["comment_myan"] = comment_json.get("comment_myan")
-                        data["comment_pyon"] = comment_json.get("comment_pyon")
-                        print("DEBUG: Retry comments success.")
-                    except Exception as e:
-                        print(f"DEBUG: Retry comments failed: {e}")
-                        data["comment_myan"] = "今日のニュースはこれだにゃ！要チェックだぜ！"
-                        data["comment_pyon"] = "詳しくは記事を読んでくださいね。しっかり理解しましょう。"
+                if is_myan_missing or is_pyon_missing:
+                    print("DEBUG: Comments missing (Primary). Invoking Persistent Retry Loop...")
+                    m, p = fetch_mascot_comments_persistent(
+                        model, 
+                        trend_data['title'], 
+                        data.get('description', ''), 
+                        SAFETY_SETTINGS
+                    )
+                    data["comment_myan"] = m
+                    data["comment_pyon"] = p
                 # ---------------------------------------------
                 
+                print(f"DEBUG: Final Data comments (Primary): Myan={data.get('comment_myan')}, Pyon={data.get('comment_pyon')}")
                 return data
             else:
                 print(f"No JSON found in response: {text}")
@@ -262,22 +391,26 @@ def generate_content_with_gemini(trend_item):
                 The following JSON is invalid. Fix it and return ONLY the valid JSON (no code blocks).
                 
                 Expected matching schema:
-                {
+                {{
                     "title": "...",
                     "content": "...",
                     "comment_myan": "...",
                     "comment_pyon": "...",
                     "slug": "..."
-                }
+                }}
 
                 Input:
                 {text}
                 """
-                repair_resp = model.generate_content(repair_prompt)
+                repair_resp = model.generate_content(repair_prompt, safety_settings=SAFETY_SETTINGS)
                 repair_text = repair_resp.text
                 repair_match = re.search(r'\{.*\}', repair_text, re.DOTALL)
                 if repair_match:
                     data = json.loads(repair_match.group(), strict=False)
+                    if not isinstance(data, dict):
+                         print(f"DEBUG: Repaired JSON is not a dict, it is {type(data)}. Abort.")
+                         return None
+                         
                     print("DEBUG: JSON repaired successfully.")
                     
                     # Duplicate logic from above (refactor ideally, but inline for now)
@@ -297,6 +430,26 @@ def generate_content_with_gemini(trend_item):
                         c = c.replace("bunny.png", "/mascot_bunny.png")
                         c = c.replace("/mascot_/mascot_bunny.png", "/mascot_bunny.png")
                         data["content"] = c
+
+                    # --- NEW: Ensure comments exist (Retry Logic - Repair Path) ---
+                    raw_myan = data.get("comment_myan")
+                    raw_pyon = data.get("comment_pyon")
+                    
+                    # Check for None, Empty String, or "None" string
+                    is_myan_missing = raw_myan is None or not str(raw_myan).strip() or str(raw_myan).lower() == "none"
+                    is_pyon_missing = raw_pyon is None or not str(raw_pyon).strip() or str(raw_pyon).lower() == "none"
+
+                    if is_myan_missing or is_pyon_missing:
+                        print("DEBUG: Comments missing (Repair). Invoking Persistent Retry Loop...")
+                        m, p = fetch_mascot_comments_persistent(
+                            model, 
+                            trend_data['title'], 
+                            data.get('description', ''), 
+                            SAFETY_SETTINGS
+                        )
+                        data["comment_myan"] = m
+                        data["comment_pyon"] = p
+                    # ---------------------------------------------
 
                     # Dedicated Slug Generation logic verification
                     if "slug" not in data or not data["slug"]:
@@ -324,7 +477,7 @@ def generate_content_with_gemini(trend_item):
                             - Return ONLY the slug string.
                             Example: "teacher-exam-odds-lowest"
                             """
-                            slug_response = model.generate_content(slug_prompt)
+                            slug_response = model.generate_content(slug_prompt, safety_settings=SAFETY_SETTINGS)
                             clean_slug = slug_response.text.strip().lower().replace(" ", "-").replace('"', '').replace("'", "").replace("`", "")
                             clean_slug = re.sub(r'[^a-z0-9-]', '', clean_slug)
                             print(f"DEBUG: Generated dedicated slug (in repair): {clean_slug}")
@@ -332,6 +485,7 @@ def generate_content_with_gemini(trend_item):
                         except Exception as e:
                             print(f"DEBUG: Failed to generate dedicated slug in repair: {e}")
                             
+                    print(f"DEBUG: Final Data comments (Repair): Myan={data.get('comment_myan')}, Pyon={data.get('comment_pyon')}")
                     return data
                 else:
                     return None
@@ -358,7 +512,10 @@ def insert_post_to_supabase(post_data, poll_data=None):
             "category": post_data["category"],
             "type": post_data["type"],
             "platform": post_data["platform"],
+            "platform": post_data["platform"],
             "image_url": post_data["imageUrl"],
+            "comment_myan": post_data.get("comment_myan"),
+            "comment_pyon": post_data.get("comment_pyon"),
             "tweet_text": post_data.get("tweet_text", ""),
             "reactions": post_data.get("reactions", []), # New Reactions column
             "created_at": post_data["created_at"],
@@ -423,25 +580,13 @@ def main():
     target_trend = None
     for trend in trends:
         # Check if source_url exists in DB
-        try:
-            # Note: We need to use quote or exact match. 
-            # supabase-py select returns object with 'data'.
-            # We assume 'source_url' column exists now.
-            res = supabase.table("posts").select("id").eq("source_url", trend['link']).execute()
-            if res.data and len(res.data) > 0:
-                print(f"Skipping duplicate: {trend['title']}")
-                continue
-            else:
-                target_trend = trend
-                break
-        except Exception as e:
-            print(f"Error checking duplicates: {e}")
-            # If check fails, maybe allow it? Or skip to be safe? 
-            # Let's try to proceed if it's just a connection blip, but risky.
-            # Assuming if column missing (user failed migration), this errors.
-            print("Assuming no duplicate (or error reading DB), proceeding...")
-            target_trend = trend
-            break
+        # Check duplication
+        if check_is_duplicate(trend['title'], trend['link']):
+             print(f"Skipping duplicate: {trend['title']}")
+             continue
+        else:
+             target_trend = trend
+             break
     
     if not target_trend:
         print("All trends processed or no valid trends found. Exiting.")
@@ -510,6 +655,15 @@ def main():
 
     # 5. Save
     insert_post_to_supabase(post, poll_data=poll_data)
+    
+    # 6. Update sitemap
+    print("\n--- Updating Sitemap ---")
+    try:
+        from generate_sitemap import generate_sitemap
+        generate_sitemap()
+    except Exception as e:
+        print(f"Sitemap update failed: {e}")
+        
     print("--- Done ---")
 
 if __name__ == "__main__":

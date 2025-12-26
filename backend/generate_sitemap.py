@@ -2,7 +2,7 @@ import os
 from supabase_client import supabase
 from datetime import datetime
 
-BASE_URL = "https://myanpyon.com"  # Update this if the domain changes
+BASE_URL = "https://myanpyonsokumato.com"  # Update this if the domain changes
 SITEMAP_PATH = "../public/sitemap.xml" # Assumes running from backend directory
 
 def generate_sitemap():

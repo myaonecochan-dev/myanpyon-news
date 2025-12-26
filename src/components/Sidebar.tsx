@@ -39,22 +39,27 @@ export const Sidebar: React.FC<SidebarProps> = ({ posts = [] }) => {
                 <h3 className="widget-title">デイリーランキング</h3>
                 {posts.length > 0 ? (
                     <ul className="ranking-list">
-                        {dailyRanking.map((post, index) => (
-                            <li key={post.id} className="ranking-item">
-                                <Link to={`/post/${post.id}`} className="ranking-link">
-                                    <span className={`rank-number rank-${index + 1}`}>{index + 1}</span>
-                                    {post.imageUrl ? (
-                                        <img src={post.imageUrl} alt={post.title} className="rank-thumbnail" />
-                                    ) : (
-                                        <div className="rank-thumbnail placeholder" />
-                                    )}
-                                    <div className="rank-content">
-                                        <p className="rank-title">{post.title}</p>
-                                        <span className="rank-meta">{(Math.random() * 1000).toFixed(0)} comments</span>
-                                    </div>
-                                </Link>
-                            </li>
-                        ))}
+                        {dailyRanking.map((post, index) => {
+                            // Generate a consistent pseudo-random number based on the post ID
+                            const idNum = post.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+                            const commentCount = (idNum * 13) % 800 + 120; // Range: 120 - 920
+                            return (
+                                <li key={post.id} className="ranking-item">
+                                    <Link to={`/post/${post.id}`} className="ranking-link">
+                                        <span className={`rank-number rank-${index + 1}`}>{index + 1}</span>
+                                        {post.imageUrl ? (
+                                            <img src={post.imageUrl} alt={post.title} className="rank-thumbnail" />
+                                        ) : (
+                                            <div className="rank-thumbnail placeholder" />
+                                        )}
+                                        <div className="rank-content">
+                                            <p className="rank-title">{post.title}</p>
+                                            <span className="rank-meta">{commentCount} comments</span>
+                                        </div>
+                                    </Link>
+                                </li>
+                            );
+                        })}
                     </ul>
                 ) : (
                     <p style={{ padding: '10px', fontSize: '0.9rem', color: '#666' }}>集計中...</p>
@@ -66,22 +71,26 @@ export const Sidebar: React.FC<SidebarProps> = ({ posts = [] }) => {
                 <h3 className="widget-title">月間ランキング</h3>
                 {posts.length > 0 ? (
                     <ul className="ranking-list">
-                        {monthlyRanking.map((post, index) => (
-                            <li key={post.id} className="ranking-item">
-                                <Link to={`/post/${post.id}`} className="ranking-link">
-                                    <span className={`rank-number rank-${index + 1}`}>{index + 1}</span>
-                                    {post.imageUrl ? (
-                                        <img src={post.imageUrl} alt={post.title} className="rank-thumbnail" />
-                                    ) : (
-                                        <div className="rank-thumbnail placeholder" />
-                                    )}
-                                    <div className="rank-content">
-                                        <p className="rank-title">{post.title}</p>
-                                        <span className="rank-meta">{(Math.random() * 5000).toFixed(0)} comments</span>
-                                    </div>
-                                </Link>
-                            </li>
-                        ))}
+                        {monthlyRanking.map((post, index) => {
+                            const idNum = post.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+                            const commentCount = (idNum * 17) % 3000 + 500; // Range: 500 - 3500
+                            return (
+                                <li key={post.id} className="ranking-item">
+                                    <Link to={`/post/${post.id}`} className="ranking-link">
+                                        <span className={`rank-number rank-${index + 1}`}>{index + 1}</span>
+                                        {post.imageUrl ? (
+                                            <img src={post.imageUrl} alt={post.title} className="rank-thumbnail" />
+                                        ) : (
+                                            <div className="rank-thumbnail placeholder" />
+                                        )}
+                                        <div className="rank-content">
+                                            <p className="rank-title">{post.title}</p>
+                                            <span className="rank-meta">{commentCount} comments</span>
+                                        </div>
+                                    </Link>
+                                </li>
+                            );
+                        })}
                     </ul>
                 ) : null}
             </div>
