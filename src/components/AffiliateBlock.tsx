@@ -1,5 +1,27 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { supabase } from '../lib/supabaseClient';
+
+const SafeMoshimoScript: React.FC<{ html: string }> = ({ html }) => {
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!containerRef.current || !html) return;
+
+        // Clear previous content
+        containerRef.current.innerHTML = html;
+
+        // Find and execute scripts
+        const scripts = containerRef.current.getElementsByTagName('script');
+        Array.from(scripts).forEach(script => {
+            const newScript = document.createElement('script');
+            Array.from(script.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+            newScript.appendChild(document.createTextNode(script.innerHTML));
+            script.parentNode?.replaceChild(newScript, script);
+        });
+    }, [html]);
+
+    return <div ref={containerRef} />;
+};
 
 interface Product {
     id: string;
@@ -101,11 +123,9 @@ export const AffiliateBlock: React.FC<AffiliateBlockProps> = ({ postKeywords = [
                 {products.map((product) => (
                     <div key={product.id} className="product-item">
                         {product.moshimo_html ? (
-                            <div
-                                className="moshimo-container"
-                                dangerouslySetInnerHTML={{ __html: product.moshimo_html }}
-                                style={{ background: '#f9f9f9', padding: '10px', borderRadius: '8px' }}
-                            />
+                            <div className="moshimo-container">
+                                <SafeMoshimoScript html={product.moshimo_html} />
+                            </div>
                         ) : (
                             <div style={{
                                 display: 'flex',
