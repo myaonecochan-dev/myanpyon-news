@@ -11,8 +11,81 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <style>
-                body { margin: 0; padding: 0; overflow: hidden; background: transparent; }
+                body { margin: 0; padding: 0; overflow: hidden; background: transparent; font-family: sans-serif; }
                 base { target: "_blank"; }
+
+                /* FORCE HORIZONTAL LAYOUT */
+                
+                div[id^="msmaflink"] {
+                    display: flex !important;
+                    flex-direction: row !important;
+                    align-items: center !important;
+                    width: 100% !important;
+                    padding: 5px !important;
+                    box-sizing: border-box !important;
+                }
+
+                /* Image */
+                div[class*="image"], div[class*="img"], .msm-custom-image {
+                    width: 80px !important;
+                    height: auto !important;
+                    flex-shrink: 0 !important;
+                    margin-right: 15px !important;
+                    margin-bottom: 0 !important;
+                    float: none !important;
+                }
+                
+                img {
+                    width: 100% !important;
+                    height: auto !important;
+                    object-fit: contain !important;
+                    border: 1px solid #eee !important;
+                    border-radius: 4px !important;
+                }
+
+                /* Text */
+                div[class*="txt"], div[class*="box"], .msm-custom-txt {
+                    flex: 1 !important;
+                    display: flex !important;
+                    flex-direction: column !important;
+                    justify-content: space-between !important;
+                    text-align: left !important;
+                }
+
+                p, a[class*="link"], .msm-custom-link {
+                    font-size: 13px !important;
+                    font-weight: bold !important;
+                    color: #333 !important;
+                    text-decoration: none !important;
+                    line-height: 1.4 !important;
+                    margin-bottom: 8px !important;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                }
+
+                /* Button */
+                div[class*="btn"], a[class*="btn"], div.shop-item {
+                    display: block !important;
+                    background: #BF0000 !important;
+                    color: white !important;
+                    text-align: center !important;
+                    padding: 6px !important;
+                    border-radius: 4px !important;
+                    text-decoration: none !important;
+                    font-size: 11px !important;
+                    font-weight: bold !important;
+                    width: 100% !important;
+                    margin-top: auto !important;
+                    box-shadow: none !important;
+                    border: none !important;
+                }
+
+                div[class*="head"], div[class*="credit"] { 
+                    display: none !important; 
+                }
+
             </style>
         </head>
         <body>
@@ -27,7 +100,7 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
             srcDoc={srcDoc}
             style={{
                 width: '100%',
-                height: '100%',
+                height: '130px',
                 border: 'none',
                 overflow: 'hidden'
             }}
