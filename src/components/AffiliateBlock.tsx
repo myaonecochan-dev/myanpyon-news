@@ -15,57 +15,49 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
                 base { target: "_blank"; }
 
                 /* CSS HACK for MOSHIMO MEDIUM SIZE */
-                
-                /* 1. Main Container Layout */
+                /* Use FLOAT to force Image Left, Text Right (Robust against nesting) */
+
                 div[id^="msmaflink"] {
                     width: 100% !important;
                     padding: 5px !important;
                     box-sizing: border-box !important;
+                    overflow: visible !important; /* Allow content to flow */
                 }
 
-                /* 2. FORCE inner wrapper to be horizontal */
-                /* Moshimo often wraps content in a direct child div */
-                div[id^="msmaflink"] > div, 
-                div[class^="msm"] { 
-                    display: flex !important;
-                    flex-direction: row !important;
-                    align-items: center !important; /* Vertically center image and text */
-                    justify-content: flex-start !important;
-                    gap: 15px !important;
-                    width: 100% !important;
-                    margin: 0 !important;
-                }
-
-                /* IMAGE: Force small square */
+                /* IMAGE CONTAINER: Float Left */
                 div[class*="image"], div[class*="img"] {
+                    float: left !important;
                     width: 90px !important;
-                    height: 90px !important; /* Fixed height to match width */
-                    flex-shrink: 0 !important;
-                    margin: 0 !important;
-                    float: none !important;
-                    display: flex !important;
-                    align-items: center !important;
-                    justify-content: center !important;
+                    height: 90px !important;
+                    margin: 0 10px 0 0 !important;
+                    padding: 0 !important;
+                    display: block !important;
                 }
                 
                 img {
-                    width: 100% !important;
-                    height: 100% !important;
+                    width: 90px !important;
+                    height: 90px !important;
                     object-fit: contain !important;
                     border: 1px solid #eee !important;
                     border-radius: 4px !important;
-                    margin: 0 !important;
                 }
 
-                /* DESCRIPTION container */
+                /* TEXT CONTAINER: Float Right (Fill remaining) */
                 div[class*="txt"], div[class*="box"] {
-                    flex: 1 !important;
-                    display: flex !important;
-                    flex-direction: column !important;
-                    justify-content: center !important; /* Center text vertically too */
-                    min-width: 0 !important; /* CSS Grid/Flex text truncation fix */
+                    float: none !important; /* Don't float the container itself, just let it flow? Or float right? */
+                    /* Best practice for "rest of width": overflow hidden or calc width */
+                    width: auto !important;
+                    overflow: hidden !important; /* Triggers BFC to sit next to float */
                     padding: 0 !important;
                     margin: 0 !important;
+                    display: block !important; /* Override flex if present */
+                }
+
+                /* Clearfix for main container children if needed */
+                div[id^="msmaflink"]::after {
+                    content: "";
+                    display: table;
+                    clear: both;
                 }
 
                 /* TITLE TEXT */
@@ -76,13 +68,13 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
                     text-decoration: none !important;
                     text-align: left !important;
                     line-height: 1.4 !important;
-                    margin: 0 0 8px 0 !important;
+                    margin: 4px 0 8px 0 !important;
                     
-                    /* Line Clamp */
                     display: -webkit-box;
                     -webkit-line-clamp: 2;
                     -webkit-box-orient: vertical;
                     overflow: hidden;
+                    white-space: normal !important;
                 }
 
                 /* BUTTON */
@@ -97,9 +89,10 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
                     font-size: 12px !important;
                     font-weight: bold !important;
                     width: 100% !important;
-                    margin-top: auto !important;
+                    margin: 0 !important;
                     box-shadow: none !important;
                     border: none !important;
+                    position: static !important;
                 }
                 
                 /* Hide Price (Compliance) */
