@@ -15,14 +15,14 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
                 base { target: "_blank"; }
 
                 /* CSS HACK for MOSHIMO MEDIUM SIZE */
-                /* CONTAINER: Disable clicks on the wrapper/slider to prevent JS interception */
+                /* CONTAINER: Re-enable clicks (My previous fix broke them if they were JS-bound) */
                 body div[id^="msmaflink"] {
                     width: 100% !important;
-                    padding: 0 !important; /* Managed by body padding now */
+                    padding: 0 !important;
                     box-sizing: border-box !important;
                     overflow: visible !important;
                     position: relative !important;
-                    pointer-events: none !important; /* Disable swipes/clicks on container */
+                    pointer-events: auto !important; /* RESTORE CLICKS */
                 }
 
                 /* IMAGE CONTAINER */
@@ -35,7 +35,7 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
                     display: block !important;
                     position: relative !important;
                     z-index: 1 !important;
-                    pointer-events: none !important; 
+                    pointer-events: auto !important; /* Ensure image link is clickable */
                 }
                 
                 /* Link inside image needs to be clickable */
@@ -64,7 +64,7 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
                     padding: 0 !important;
                     margin: 0 !important;
                     display: block !important;
-                    pointer-events: none !important;
+                    pointer-events: auto !important;
                 }
 
                 /* Clearfix */
@@ -74,7 +74,7 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
                     clear: both;
                 }
 
-                /* HIDE ARROWS - SUPER NUCLEAR OPTION */
+                /* HIDE ARROWS - CSS Backup */
                 /* Target known slider arrow classes and generic absolute divs that might be overlays */
                 body div[class*="arrow"], 
                 body div[class*="prev"], 
@@ -84,9 +84,6 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
                 body div[class*="nav"],
                 body div[class*="control"] {
                     display: none !important;
-                    opacity: 0 !important;
-                    pointer-events: none !important;
-                    visibility: hidden !important;
                 }
                 
                 /* Hide images that look like arrows if they use img tags */
@@ -94,14 +91,10 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
                      display: none !important;
                 }
 
-                /* CLICKABILITY FIX - The 'a' tag is the holy grail */
-                /* Ensure links are clickable and on top */
-                body a, body a:visited, body a:hover {
-                    pointer-events: auto !important; /* Only the link captures clicks */
+                /* LINKS */
+                body a {
+                    color: inherit !important;
                     cursor: pointer !important;
-                    position: relative !important;
-                    z-index: 2147483647 !important; /* MAX INT Z-Index */
-                    color: inherit !important; 
                 }
 
                 /* TITLE TEXT */
@@ -118,7 +111,6 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
                     -webkit-box-orient: vertical;
                     overflow: hidden;
                     white-space: normal !important;
-                    pointer-events: auto !important; /* Enable text click */
                 }
 
                 /* BUTTON */
@@ -140,11 +132,10 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
                     box-shadow: none !important;
                     border: none !important;
                     position: relative !important;
-                    z-index: 2147483647 !important;
+                    z-index: 10 !important;
                     height: auto !important;
                     line-height: 1.5 !important;
                     cursor: pointer !important;
-                    pointer-events: auto !important;
                 }
 
                 
