@@ -304,6 +304,8 @@
     gap: 1rem;
     justify-content: center;
     margin-top: 1.5rem;
+    flex-wrap: wrap;
+    /* Allow wrapping on small screens */
 }
 
 .share-btn {
@@ -316,8 +318,15 @@
     transition: transform 0.2s, filter 0.2s;
     display: flex;
     align-items: center;
+    justify-content: center;
+    /* Center content */
     gap: 8px;
     font-size: 1rem;
+    flex: 1;
+    /* Grow to fill space */
+    min-width: 140px;
+    /* Minimum clickable area */
+    max-width: 200px;
 }
 
 .share-btn:hover {

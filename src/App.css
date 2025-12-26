@@ -318,43 +318,60 @@
 /* Mobile Responsiveness */
 @media (max-width: 900px) {
   .header-inner {
+    flex-direction: wrap;
+    /* Changed to allow wrapping if needed, but column is safer for stack */
     flex-direction: column;
-    /* Stack Title and Nav */
-    gap: 1rem;
-    align-items: center;
+    gap: 0.5rem;
+    padding-bottom: 0.5rem;
   }
 
   .header-branding {
     width: 100%;
+    justify-content: space-between;
+    /* Put Logo left, maybe Toggle right? */
+    padding: 0 5px;
+  }
+
+  /* Make ThemeToggle absolute or integrated in header-branding for space saving? 
+     Let's keep it simple: Stack Logo, then Nav. Toggle can go into Logo row?
+  */
+
+  .header-branding {
+    position: relative;
     justify-content: center;
   }
 
-  .header-mascot {
-    max-width: 60px;
-    /* Constrain mascot size */
-    height: auto;
-  }
-
+  /* Update: User mentioned tabs cut off. Ensure side padding */
   .category-nav {
     width: 100%;
-    /* Full width for scrolling */
+    padding: 0 10px 4px 10px;
+    /* Add side padding to avoid edge touch */
     justify-content: flex-start;
+    /* Start from left to verify scroll intent */
+    mask-image: linear-gradient(to right, transparent, black 10px, black 90%, transparent);
+    /* Optional: fade edge? No, keep simple */
+  }
+
+  /* Affiliate Grid Mobile Override */
+  .affiliate-grid {
+    grid-template-columns: 1fr !important;
+    /* Force single column */
   }
 
   .main-layout {
     flex-direction: column;
-    /* Stack Content and Sidebar */
-    gap: 3rem;
+    gap: 2rem;
   }
 
-  .content-area {
-    width: 100%;
-  }
-
-  /* Force Single Column Grid on Mobile */
   .video-grid {
     grid-template-columns: 1fr;
-    gap: 0.5rem;
-    /* Tight spacing for mobile list (8px) */
+    gap: 1rem;
   }
+}
+
+/* Affiliate Grid Base (Desktop) */
+.affiliate-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
 }
