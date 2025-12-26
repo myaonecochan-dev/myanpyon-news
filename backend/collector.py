@@ -266,7 +266,7 @@ def generate_content_with_gemini(trend_item):
         }
 
         # Use a cost-effective model (Flash) to save money
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        model = genai.GenerativeModel('gemini-2.5-flash')
         
         today_str = datetime.date.today().strftime("%Y-%m-%d")
         prompt = f"""
