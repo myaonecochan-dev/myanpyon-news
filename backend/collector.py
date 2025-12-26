@@ -265,8 +265,8 @@ def generate_content_with_gemini(trend_item):
             HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
         }
 
-        # Use a model confirmed to exist via list_models.py
-        model = genai.GenerativeModel('gemini-2.5-pro')
+        # Use a cost-effective model (Flash) to save money
+        model = genai.GenerativeModel('gemini-1.5-flash')
         
         today_str = datetime.date.today().strftime("%Y-%m-%d")
         prompt = f"""
@@ -659,14 +659,27 @@ def main():
     print(f"Using remote thumbnail (Forced): {ai_thumb_url}")
     thumb_url = ai_thumb_url 
     
-    # Ensure Fallback Poll (CRITICAL FIX)
-    if not poll_data or not isinstance(poll_data, dict) or "question" not in poll_data:
-        print("WARNING: Poll data missing or invalid. Using fallback.")
+    # Ensure Fallback Poll (CRITICAL FIX - STRICT CHECK)
+    is_poll_valid = (
+        poll_data 
+        and isinstance(poll_data, dict) 
+        and "question" in poll_data
+        and "option_a" in poll_data
+        and "option_b" in poll_data
+    )
+    
+    if not is_poll_valid:
+        print(f"WARNING: Poll data invalid (Has: {poll_data.keys() if poll_data else 'None'}). Using fallback.")
         poll_data = {
             "question": "このニュース、どう思いますか？",
-            "option_a": "興味深い！",
-            "option_b": "ふーん"
+            "option_a": "驚いた！",
+            "option_b": "想定内"
         }
+        
+    # CRITICAL: Final Safety Check for Image
+    if not thumb_url:
+        print("CRITICAL WARNING: thumb_url was None. Forcing fallback.")
+        thumb_url = "https://image.pollinations.ai/prompt/news%20breaking%20japan?width=1200&height=630&nologo=true"
 
     # 4. Assembled Post Object
     post = {
