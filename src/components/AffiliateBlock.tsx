@@ -14,15 +14,14 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
                 body { margin: 0; padding: 10px; box-sizing: border-box; overflow: hidden; background: transparent; font-family: sans-serif; }
                 base { target: "_blank"; }
 
-                /* CSS HACK for MOSHIMO MEDIUM SIZE */
-                /* CONTAINER: Re-enable clicks (My previous fix broke them if they were JS-bound) */
+                /* CONTAINER */
                 body div[id^="msmaflink"] {
                     width: 100% !important;
                     padding: 0 !important;
                     box-sizing: border-box !important;
                     overflow: visible !important;
                     position: relative !important;
-                    pointer-events: auto !important; /* RESTORE CLICKS */
+                    cursor: pointer !important;
                 }
 
                 /* IMAGE CONTAINER */
@@ -30,23 +29,13 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
                     float: left !important;
                     width: 90px !important;
                     height: 90px !important;
-                    margin: 0 15px 0 0 !important; /* More gap */
+                    margin: 0 15px 0 0 !important;
                     padding: 0 !important;
                     display: block !important;
                     position: relative !important;
                     z-index: 1 !important;
-                    pointer-events: auto !important; /* Ensure image link is clickable */
                 }
                 
-                /* Link inside image needs to be clickable */
-                body div[class*="image"] a, body div[class*="img"] a {
-                    display: block !important;
-                    width: 100% !important;
-                    height: 100% !important;
-                    pointer-events: auto !important; /* Re-enable click */
-                    cursor: pointer !important;
-                }
-
                 body img {
                     width: 90px !important;
                     height: 90px !important;
@@ -54,6 +43,7 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
                     border: 1px solid #eee !important;
                     border-radius: 4px !important;
                     margin: 0 !important;
+                    pointer-events: none !important; /* Let click pass to link */
                 }
 
                 /* TEXT CONTAINER */
@@ -64,7 +54,6 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
                     padding: 0 !important;
                     margin: 0 !important;
                     display: block !important;
-                    pointer-events: auto !important;
                 }
 
                 /* Clearfix */
@@ -72,29 +61,6 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
                     content: "";
                     display: table;
                     clear: both;
-                }
-
-                /* HIDE ARROWS - CSS Backup */
-                /* Target known slider arrow classes and generic absolute divs that might be overlays */
-                body div[class*="arrow"], 
-                body div[class*="prev"], 
-                body div[class*="next"],
-                body .slick-arrow,
-                body button, /* Hide ALL buttons (usually arrows) */
-                body div[class*="nav"],
-                body div[class*="control"] {
-                    display: none !important;
-                }
-                
-                /* Hide images that look like arrows if they use img tags */
-                body img[src*="arrow"], body img[class*="arrow"] {
-                     display: none !important;
-                }
-
-                /* LINKS */
-                body a {
-                    color: inherit !important;
-                    cursor: pointer !important;
                 }
 
                 /* TITLE TEXT */
@@ -124,11 +90,8 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
                     text-decoration: none !important;
                     font-size: 11px !important;
                     font-weight: bold !important;
-                    
-                    /* GAP ADJUSTMENT */
-                    width: 96% !important; /* Slightly less than 100% to create right gap */
-                    margin: 0 auto 0 0 !important; /* Align left, gap on right */
-                    
+                    width: 96% !important;
+                    margin: 0 auto 0 0 !important;
                     box-shadow: none !important;
                     border: none !important;
                     position: relative !important;
@@ -137,21 +100,63 @@ const MoshimoIframe: React.FC<{ html: string }> = ({ html }) => {
                     line-height: 1.5 !important;
                     cursor: pointer !important;
                 }
-
-                
-                /* Hide Price (Compliance) */
-                div[class*="price"] {
-                    display: none !important;
-                }
-
-                /* Hide Header/Footer garbage */
-                div[class*="head"], div[class*="foot"], div[class*="credit"] { 
-                    display: none !important; 
-                }
             </style>
         </head>
         <body>
             ${html}
+            <script>
+                // THE SURGEON SCRIPT //
+                // 1. Force Click Handling (Capture Phase)
+                // Intercepts clicks BEFORE Moshimo's broken script sees them
+                document.addEventListener('click', function(e) {
+                    var target = e.target.closest('a');
+                    if (target && target.href) {
+                        e.preventDefault(); // Stop Moshimo
+                        e.stopPropagation(); 
+                        window.open(target.href, '_blank');
+                    }
+                }, true);
+
+                // 2. Nuclear Arrow Removal (MutationObserver)
+                // Watches for ANY new element and deletes it if it looks like an arrow/button
+                var observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        mutation.addedNodes.forEach(function(node) {
+                            if (node.nodeType === 1) { // Element
+                                // Check tag and classes
+                                var tag = node.tagName;
+                                var cls = node.className || "";
+                                if (typeof cls !== 'string') cls = ""; // SVG anim sometimes weird
+                                
+                                if (tag === 'BUTTON' || 
+                                    cls.indexOf('arrow') > -1 || 
+                                    cls.indexOf('slick') > -1 ||
+                                    cls.indexOf('nav') > -1) {
+                                    node.style.display = 'none';
+                                    node.remove();
+                                }
+                                
+                                // Also search inside deep structures
+                                if (node.querySelectorAll) {
+                                    var badies = node.querySelectorAll('button, .slick-arrow, .slick-prev, .slick-next, [class*="arrow"]');
+                                    badies.forEach(function(b) { b.remove(); });
+                                }
+                            }
+                        });
+                    });
+                });
+                
+                // Start watching
+                observer.observe(document.body, { childList: true, subtree: true });
+
+                // initial cleanup
+                var initBadies = document.querySelectorAll('button, .slick-arrow, .slick-prev, .slick-next, [class*="arrow"]');
+                initBadies.forEach(function(b) { b.remove(); });
+
+                // 3. Force Cursors
+                var links = document.querySelectorAll('a');
+                links.forEach(function(a) { a.style.cursor = 'pointer'; });
+            </script>
         </body>
         </html>
     `;
