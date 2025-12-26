@@ -96,11 +96,25 @@ def fetch_rss_trends():
     # Default to False (allow) but risky
     return False
 
-def check_is_duplicate(title, link, threshold=0.8):
+def normalize_title(title):
+    """
+    Cleans title for better comparison:
+    - Removes 【...】 content
+    - Removes punctuation and spaces
+    """
+    if not title: return ""
+    # Remove metadata in brackets
+    title = re.sub(r'【[^】]+】', '', title)
+    title = re.sub(r'\[[^\]]+\]', '', title)
+    # Remove punctuation and whitespace
+    title = re.sub(r'[！？?!\s「」『』…、。・：:;]', '', title)
+    return title.strip().lower()
+
+def check_is_duplicate(title, link, threshold=0.7):
     """
     Checks if a post is a duplicate based on:
     1. Exact Source URL match (Fast)
-    2. Fuzzy Title similarity (Slower, but robust against URL changes)
+    2. Normalized Title containment or similarity
     """
     try:
         # 1. Source URL Check 
@@ -110,9 +124,11 @@ def check_is_duplicate(title, link, threshold=0.8):
                 print(f"DEBUG: Duplicate found via Source URL: {link}")
                 return True
         
-        # 2. Title Fuzzy Check
+        # 2. Title Normalized Check
+        n_title = normalize_title(title)
+        if not n_title: return False
+
         # Fetch last 50 posts to compare titles
-        # (Fetching all is too heavy, 50 is reasonable for "recent" news)
         res = supabase.table("posts").select("title").order("created_at", desc=True).limit(50).execute()
         if not res.data:
             return False
@@ -121,16 +137,20 @@ def check_is_duplicate(title, link, threshold=0.8):
             db_title = post.get('title', '')
             if not db_title: continue
             
-            # Simple containment check first
-            if title in db_title or db_title in title:
-                 print(f"DEBUG: Duplicate found via Title Containment: {db_title}")
+            n_db_title = normalize_title(db_title)
+            if not n_db_title: continue
+
+            # Simple containment check on normalized strings
+            if n_title in n_db_title or n_db_title in n_title:
+                 print(f"DEBUG: Duplicate found via Normalized Title Containment: {n_db_title}")
                  return True
                  
-            # Levenshtein check
+            # Levenshtein check on normalized strings
             if ratio:
-                sim = ratio(title, db_title)
+                sim = ratio(n_title, n_db_title)
+                # Lowered threshold slightly for normalized strings (0.7 is usually safe)
                 if sim > threshold:
-                    print(f"DEBUG: Duplicate found via Levenshtein ({sim:.2f}): {db_title}")
+                    print(f"DEBUG: Duplicate found via Normalized Levenshtein ({sim:.2f}): {n_db_title}")
                     return True
                     
         return False
