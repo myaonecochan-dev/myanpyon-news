@@ -459,13 +459,26 @@
 /* Dark mode adjustment for summary box */
 @media (prefers-color-scheme: dark) {
     .news-summary-box {
-        background: rgba(30, 30, 30, 0.8);
+        background: rgba(30, 30, 30, 0.95);
         border-color: var(--primary);
     }
 
-    .news-summary-box li {
-        color: #ddd;
+    .news-summary-box li,
+    .news-summary-box p,
+    .news-summary-box div {
+        color: #f0f0f0;
     }
+}
+
+[data-theme="dark"] .news-summary-box {
+    background: rgba(30, 30, 30, 0.95);
+    border-color: var(--primary);
+}
+
+[data-theme="dark"] .news-summary-box li,
+[data-theme="dark"] .news-summary-box p,
+[data-theme="dark"] .news-summary-box div {
+    color: #f0f0f0;
 }
 
 /* Intro Text */
