@@ -73,6 +73,12 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
+[data-theme="dark"] .comment-section {
+    background: var(--bg-card);
+    border: 1px dashed var(--border-color);
+    /* Add border to match other cards */
+}
+
 [data-theme="dark"] .comment-item {
     background: #2a2a2a;
     /* Slightly lighter than card bg */
