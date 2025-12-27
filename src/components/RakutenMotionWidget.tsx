@@ -21,7 +21,7 @@ const RakutenMotionWidget: React.FC = () => {
                 style={{
                     width: '100%',
                     maxWidth: '728px',
-                    height: '200px',
+                    height: '260px', /* Increased to fit 250px widget + margins */
                     border: 'none',
                     overflow: 'hidden'
                 }}
