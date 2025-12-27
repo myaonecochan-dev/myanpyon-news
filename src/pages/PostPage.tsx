@@ -10,6 +10,7 @@ import { CommentSection } from '../components/CommentSection';
 import { MascotChat } from '../components/MascotChat';
 import { PollWidget } from '../components/PollWidget';
 import { NetizenReactions } from '../components/NetizenReactions';
+import RakutenMotionWidget from '../components/RakutenMotionWidget';
 import './PostPage.css';
 
 declare global {
@@ -277,6 +278,9 @@ export const PostPage = ({ posts }: PostPageProps) => {
 
                 {/* Affiliate Block */}
                 <AffiliateBlock postKeywords={post.product_keywords} />
+
+                {/* Rakuten Motion Widget */}
+                <RakutenMotionWidget />
 
                 {/* Mascot Chat Area */}
                 <MascotChat myanComment={post.comment_myan} pyonComment={post.comment_pyon} />
