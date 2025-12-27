@@ -30,16 +30,19 @@ if not SUPABASE_KEY:
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 # RSS Feeds List (Randomly select one to ensure variety)
 RSS_FEEDS = [
-    "https://news.yahoo.co.jp/rss/topics/top-picks.xml", # Major News
-    "https://news.yahoo.co.jp/rss/topics/domestic.xml",  # Domestic
-    "https://news.yahoo.co.jp/rss/topics/world.xml",     # World
-    "https://news.yahoo.co.jp/rss/topics/business.xml",  # Economy
-    "https://news.yahoo.co.jp/rss/topics/it.xml",        # IT
-    "https://news.yahoo.co.jp/rss/topics/science.xml",   # Science
-    "https://nlab.itmedia.co.jp/rss/2.0/nl_animals.xml", # Netlab Animals (Cats/Dogs)
-    "https://news.yahoo.co.jp/rss/topics/life.xml"       # Life/Pets
+    "https://news.yahoo.co.jp/rss/topics/entertainment.xml", # Entertainment
+    "https://news.yahoo.co.jp/rss/topics/sports.xml",        # Sports
+    "https://news.yahoo.co.jp/rss/topics/top-picks.xml",     # Top Picks
+    "https://news.yahoo.co.jp/rss/topics/domestic.xml",      # Domestic
+    "https://news.yahoo.co.jp/rss/topics/world.xml",         # World
+    "https://news.yahoo.co.jp/rss/topics/business.xml",      # Economy
+    "https://news.yahoo.co.jp/rss/topics/it.xml",            # IT
+    "https://news.yahoo.co.jp/rss/topics/science.xml",       # Science
+    "https://nlab.itmedia.co.jp/rss/2.0/nl_animals.xml",     # Animals
+    "https://news.yahoo.co.jp/rss/topics/life.xml"           # Life
 ]
-RSS_URL = random.choice(RSS_FEEDS)
+# Remove single RSS_URL selection
+# RSS_URL = random.choice(RSS_FEEDS) # DELETED
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 
 def fetch_og_image(url):
@@ -62,15 +65,15 @@ def fetch_og_image(url):
         print(f"Error scraping OG image: {e}")
         return None
 
-def fetch_rss_trends():
+def fetch_rss_trends(feed_url):
     """
-    Fetches trending topics from Yahoo News RSS.
+    Fetches trending topics from a specific RSS URL.
     Returns a list of dicts: {'title': str, 'link': str, 'description': str}
     """
-    print(f"Fetching trends from {RSS_URL}...")
+    print(f"Fetching trends from {feed_url}...")
     try:
         req = urllib.request.Request(
-            RSS_URL, 
+            feed_url, 
             headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
         )
         with urllib.request.urlopen(req) as response:
@@ -618,28 +621,35 @@ def main():
         print("!! PLEASE ENSURE YOU RAN THE SQL TO CREATE THE 'posts' TABLE !!")
         return
 
-    # 1. Fetch
-    trends = fetch_rss_trends()
-    if not trends:
-        print("No trends found. Exiting.")
-        return
-
-    # 2. Pick a random trend (or top one)
-    # Let's pick the top one that isn't already in our 'processed' list
-    # NEW: Check duplication by source_url
+    # 1. Fetch & Select Loop
     target_trend = None
-    for trend in trends:
-        # Check if source_url exists in DB
-        # Check duplication
-        if check_is_duplicate(trend['title'], trend['link']):
-             print(f"Skipping duplicate: {trend['title']}")
-             continue
-        else:
-             target_trend = trend
-             break
+    
+    # Shuffle feeds to ensure variety each time
+    random.shuffle(RSS_FEEDS)
+    
+    for feed_url in RSS_FEEDS:
+        print(f"--- Checking Feed: {feed_url} ---")
+        trends = fetch_rss_trends(feed_url)
+        
+        if not trends:
+            continue
+
+        # Check duplicates for items in this feed
+        for trend in trends:
+            if check_is_duplicate(trend['title'], trend['link']):
+                 # print(f"Skipping duplicate: {trend['title']}")
+                 continue
+            else:
+                 target_trend = trend
+                 print(f"Found unique trend in {feed_url}!")
+                 break
+        
+        if target_trend:
+            break
     
     if not target_trend:
-        print("All trends processed or no valid trends found. Exiting.")
+        print("All feeds checked. No new unique trends found in ANY feed.")
+        print("Exiting.")
         return
 
     print(f"Processing target: {target_trend['title']}")
