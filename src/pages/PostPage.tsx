@@ -55,6 +55,8 @@ export const PostPage = ({ posts }: PostPageProps) => {
 
                 if (data) {
                     console.log("[PostPage] Fresh Post Data Loaded:", data.title);
+                    console.log("[PostPage] Content Start:", data.content ? data.content.substring(0, 50) : "No Content");
+
                     // Map DB to Post type
                     const p: Post = {
                         id: data.id,
@@ -242,7 +244,7 @@ export const PostPage = ({ posts }: PostPageProps) => {
                 </Link>
             </div>
 
-            <article className="post-detail">
+            <article className="post-detail" key={post.id + (fetchedPost ? '-fresh' : '')}>
                 <header className="post-header">
                     <span className={`category-badge-lg ${post.category}`}>
                         {post.category.toUpperCase()}
