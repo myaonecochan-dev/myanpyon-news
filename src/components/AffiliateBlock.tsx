@@ -362,7 +362,7 @@ export const AffiliateBlock: React.FC<AffiliateBlockProps> = ({ postKeywords = [
                 ))}
             </div>
 
-            <p style={{ fontSize: '0.75rem', color: '#999', marginTop: '15px', textAlign: 'right' }}>
+            <p style={{ fontSize: '0.7rem', letterSpacing: '-0.02em', whiteSpace: 'nowrap', color: '#999', marginTop: '15px', textAlign: 'right' }}>
                 ※ 当サイトはアフィリエイトプログラムに参加しています
             </p>
         </div>
