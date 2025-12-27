@@ -34,7 +34,9 @@ RSS_FEEDS = [
     "https://news.yahoo.co.jp/rss/topics/world.xml",     # World
     "https://news.yahoo.co.jp/rss/topics/business.xml",  # Economy
     "https://news.yahoo.co.jp/rss/topics/it.xml",        # IT
-    "https://news.yahoo.co.jp/rss/topics/science.xml"    # Science
+    "https://news.yahoo.co.jp/rss/topics/science.xml",   # Science
+    "https://nlab.itmedia.co.jp/rss/2.0/nl_animals.xml", # Netlab Animals (Cats/Dogs)
+    "https://news.yahoo.co.jp/rss/topics/life.xml"       # Life/Pets
 ]
 RSS_URL = random.choice(RSS_FEEDS)
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
