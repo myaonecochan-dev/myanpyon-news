@@ -9,6 +9,15 @@ const RakutenMotionWidget: React.FC = () => {
         overflow: 'hidden',
         transition: 'all 0.3s ease'
     });
+    const [wrapperStyle, setWrapperStyle] = useState<React.CSSProperties>({
+        margin: '2rem auto',
+        maxWidth: '100%',
+        textAlign: 'center',
+        height: '200px',
+        display: 'flex',
+        justifyContent: 'center',
+        overflow: 'hidden'
+    });
 
     // Default to Desktop file
     const [widgetUrl, setWidgetUrl] = useState('/rakuten_widget_pc.html?v=3');
@@ -28,18 +37,38 @@ const RakutenMotionWidget: React.FC = () => {
                     marginBottom: '-10px',
                     transition: 'all 0.3s ease'
                 });
+                // Reset wrapper style for mobile
+                setWrapperStyle({
+                    margin: '2rem auto',
+                    maxWidth: '100%',
+                    textAlign: 'center',
+                    height: '200px',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    overflow: 'hidden'
+                });
             } else {
                 // PC: Load the dedicated PC file (728x200)
                 setWidgetUrl('/rakuten_widget_pc.html?v=3');
                 setIframeStyle({
-                    width: '100%',
-                    maxWidth: '728px',
+                    width: '728px', // Force correct width
+                    maxWidth: '100%', // Allow shrinking if really needed but try to hold 728
                     height: '200px',
                     border: 'none',
                     overflow: 'hidden',
                     transform: 'none',
                     marginBottom: '0',
                     transition: 'all 0.3s ease'
+                });
+                // Negative margin for PC to break out of padding
+                setWrapperStyle({
+                    margin: '2rem -2rem', // Break out of container padding
+                    maxWidth: 'none',
+                    textAlign: 'center',
+                    height: '200px',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    overflow: 'hidden'
                 });
             }
         };
@@ -50,17 +79,8 @@ const RakutenMotionWidget: React.FC = () => {
     }, []);
 
     return (
-        <div className="rakuten-motion-widget-wrapper" style={{
-            margin: '2rem auto',
-            maxWidth: '100%',
-            textAlign: 'center',
-            // Dynamic height container
-            height: '200px',
-            display: 'flex',
-            justifyContent: 'center',
-            overflow: 'hidden'
-        }}>
-            <div style={{ position: 'relative' }}>
+        <div className="rakuten-motion-widget-wrapper" style={wrapperStyle}>
+            <div style={{ position: 'relative', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <div style={{
                     marginBottom: '10px',
                     fontSize: '0.85rem',
