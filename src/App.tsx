@@ -172,11 +172,11 @@ const AppContent = () => {
             style={{ textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center', gap: '15px' }}
           >
             <img src="/mascot_cat.png" alt="Mofu" className="header-mascot" style={{ height: '50px', width: 'auto' }} />
-            <img src="/mascot_bunny.png" alt="Pyon" className="header-mascot" style={{ height: '50px', width: 'auto' }} />
             <div className="header-text">
               <h1>{getHeaderTitle()}</h1>
               <span className="subtitle">{getHeaderSubtitle(category)}</span>
             </div>
+            <img src="/mascot_bunny.png" alt="Pyon" className="header-mascot" style={{ height: '50px', width: 'auto' }} />
           </Link>
 
           <nav className="category-nav">
