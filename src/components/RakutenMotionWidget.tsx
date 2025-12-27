@@ -8,7 +8,7 @@ const RakutenMotionWidget: React.FC = () => {
             // Match the logic in rakuten_widget.html
             // Mobile (468x60) needs less height (around 80px), PC (728x200) needs 200px
             if (window.innerWidth < 600) {
-                setIframeHeight('100px'); // 60px content + margin
+                setIframeHeight('75px'); // Tight fit for 60px banner
             } else {
                 setIframeHeight('200px');
             }
