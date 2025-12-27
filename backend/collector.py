@@ -125,16 +125,22 @@ def check_is_duplicate(title, link, threshold=0.7):
                 print(f"DEBUG: Duplicate found via Source URL: {link}")
                 return True
         
-        # 2. Title Normalized Check
+    # 2. Title Normalized Check
         n_title = normalize_title(title)
         if not n_title: return False
 
-        # Extract "keywords" (simple: strings of 2+ chars excluding common particles)
-        # For Japanese, a simple bigram or word-like chunking can work
-        title_keywords = set(re.findall(r'[一-龠ぁ-ゔァ-ヴー]{2,}', n_title))
+        # Extract Features:
+        # 1. Alphanumeric Words (keep them as whole keywords like "H3", "PS5")
+        regex_alpha = r'[a-zA-Z0-9]{2,}'
+        title_alpha = set(re.findall(regex_alpha, n_title))
+        
+        # 2. Bigrams (2-grams) for the whole string (Robust for Japanese)
+        title_bigrams = set(n_title[i:i+2] for i in range(len(n_title) - 1))
+        
+        title_features = title_alpha.union(title_bigrams)
 
-        # Fetch last 50 posts to compare
-        res = supabase.table("posts").select("title").order("created_at", desc=True).limit(50).execute()
+        # Fetch last 100 posts to compare (Increased from 50 to cover more ground)
+        res = supabase.table("posts").select("title").order("created_at", desc=True).limit(100).execute()
         if not res.data:
             return False
             
@@ -157,13 +163,16 @@ def check_is_duplicate(title, link, threshold=0.7):
                     print(f"DEBUG: Duplicate found via Normalized Levenshtein ({sim:.2f}): {n_db_title}")
                     return True
 
-            # C. Keyword Overlap (Robust for same news, different title)
-            db_keywords = set(re.findall(r'[一-龠ぁ-ゔァ-ヴー]{2,}', n_db_title))
-            overlap = title_keywords.intersection(db_keywords)
+            # C. Feature Overlap Check (Bigrams + Alpha)
+            db_alpha = set(re.findall(regex_alpha, n_db_title))
+            db_bigrams = set(n_db_title[i:i+2] for i in range(len(n_db_title) - 1))
+            db_features = db_alpha.union(db_bigrams)
             
-            # If 3 or more substantial keywords (min 2 chars) overlap, it's likely the same news
-            if len(overlap) >= 3:
-                print(f"DEBUG: Duplicate found via Keyword Overlap ({list(overlap)}): {n_db_title}")
+            overlap = title_features.intersection(db_features)
+            
+            # Threshold: 5 shared bigrams/words is a strong indicator of same topic
+            if len(overlap) >= 5:
+                print(f"DEBUG: Duplicate found via Feature Overlap ({list(overlap)}): {n_db_title}")
                 return True
                     
         return False
@@ -315,12 +324,13 @@ def generate_content_with_gemini(trend_item):
         "category": "trend" | "healing" | "surprise" | "flame".
         "comment_myan": Energy burst closing.
         "comment_pyon": Calm closing.
-        "content": HTML format (Summary Box + Character Dialogue).
-           - Summary Box:
-             <div class="news-summary-box">
-               <h3>ニュースのポイント</h3>
-               <p>[Write a factual, dry summary here (3-5 sentences). This is the ONLY place for neutral facts.]</p>
-             </div>
+                "content": HTML format (Summary Box + Character Dialogue).
+                   **IMPORTANT**: Do NOT include the Article Title or <h1> tag. Start directly with the Summary Box.
+                   - Summary Box:
+                     <div class="news-summary-box">
+                       <h3>ニュースのポイント</h3>
+                       <p>[Write a factual, dry summary here (3-5 sentences). This is the ONLY place for neutral facts.]</p>
+                     </div>
            - Dialogue:
              <div class="chat-row chat-myan">
                <div class="chat-avatar"><img src="/mascot_cat.png" alt="Myan"></div>
@@ -660,6 +670,8 @@ def main():
     thumb_url = ai_thumb_url 
     
     # Ensure Fallback Poll (CRITICAL FIX - STRICT CHECK)
+    poll_data = ai_content.get("poll")
+    
     is_poll_valid = (
         poll_data 
         and isinstance(poll_data, dict) 

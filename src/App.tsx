@@ -75,7 +75,9 @@ const AppContent = () => {
             platform: item.platform as any || 'article',
             youtubeId: item.platform === 'youtube' ? item.video_id : undefined,
             embedId: item.platform !== 'youtube' ? item.video_id : undefined, // Map video_id to embedId for TikTok/Twitter
-            imageUrl: item.image_url,
+            imageUrl: item.image_url || item.thumb_url, // Fallback to thumb_url if image_url is missing
+            reactions: item.reactions || [], // Ensure reactions are mapped
+            poll: item.poll_data, // Map poll_data from DB to Post interface
             created_at: item.created_at,
             slug: item.slug,
             comment_myan: item.comment_myan,
