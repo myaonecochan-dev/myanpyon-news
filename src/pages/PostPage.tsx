@@ -186,7 +186,7 @@ export const PostPage = ({ posts }: PostPageProps) => {
                 <MascotChat myanComment={post.comment_myan} pyonComment={post.comment_pyon} />
 
                 {/* Comment Section */}
-                <CommentSection postId={post.id} />
+                <CommentSection postId={post.id} postTitle={post.title} />
 
                 {/* Donation Widget */}
                 <DonationWidget />

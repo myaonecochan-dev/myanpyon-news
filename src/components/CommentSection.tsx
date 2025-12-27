@@ -11,18 +11,20 @@ interface Comment {
 
 interface CommentSectionProps {
     postId: string;
+    postTitle?: string;
 }
 
-export const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
+export const CommentSection: React.FC<CommentSectionProps> = ({ postId, postTitle }) => {
     const [comments, setComments] = useState<Comment[]>([]);
     const [newComment, setNewComment] = useState('');
     const [authorName, setAuthorName] = useState('名無しさん');
     const [loading, setLoading] = useState(true);
 
-    const fetchComments = async () => {
+    const fetchComments = async (currentPostId?: string) => {
+        const targetId = currentPostId || postId;
         setLoading(true);
         // Ensure postId is valid UUID before querying to avoid 400 errors
-        if (!postId || postId.length < 20) {
+        if (!targetId || targetId.length < 20) {
             setLoading(false);
             return;
         }
@@ -30,7 +32,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
         const { data, error } = await supabase
             .from('comments')
             .select('*')
-            .eq('post_id', postId)
+            .eq('post_id', targetId)
             .order('created_at', { ascending: false });
 
         if (error) {
@@ -55,13 +57,26 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
             alert('コメントの投稿に失敗しました: ' + error.message);
             console.error(error);
         } else {
+            // Notify Discord (Fire and Forget)
+            fetch('/api/notify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    author: authorName || '名無しさん',
+                    content: newComment,
+                    post_title: postTitle,
+                    post_id: postId
+                })
+            }).catch(err => console.error("Notification Failed", err));
+
             setNewComment('');
-            fetchComments(); // Refresh list immediately
+            fetchComments(postId); // Refresh list immediately
         }
     };
 
     useEffect(() => {
         fetchComments();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [postId]);
 
     return (
