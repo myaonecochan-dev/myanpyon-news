@@ -74,7 +74,7 @@ export const PostPage = ({ posts }: PostPageProps) => {
         if (post.type === 'video' && post.platform === 'twitter') {
             return (
                 <div className="video-wrapper twitter-embed">
-                    {/* Placeholder for Twitter Embed */}
+                    <div className="post-content-text" dangerouslySetInnerHTML={{ __html: post.content || '' }} />
                     <div style={{ display: 'flex', justifyContent: 'center', margin: '2rem 0' }}>
                         <blockquote className="twitter-tweet">
                             <a href={`https://twitter.com/x/status/${post.embedId}`}></a>
