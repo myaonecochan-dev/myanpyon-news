@@ -315,11 +315,31 @@
   width: 100%;
 }
 
+/* Mobile Layout for Post Page */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 1rem;
+  }
+}
+
+/* Affiliate Block Styles */
+.affiliate-block {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  margin-top: 30px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="dark"] .affiliate-block {
+  background: var(--bg-card);
+  border-color: var(--border-color);
+}
+
 /* Mobile Responsiveness */
 @media (max-width: 900px) {
   .header-inner {
-    flex-direction: wrap;
-    /* Changed to allow wrapping if needed, but column is safer for stack */
     flex-direction: column;
     gap: 0.5rem;
     padding-bottom: 0.5rem;

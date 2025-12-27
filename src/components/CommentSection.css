@@ -62,37 +62,58 @@
     display: flex;
     flex-direction: column;
     gap: 15px;
+    margin-bottom: 2rem;
 }
 
 .comment-item {
     background: white;
-    padding: 15px;
-    border-radius: 12px;
-    border: 1px solid #eee;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] .comment-item {
+    background: #2a2a2a;
+    /* Slightly lighter than card bg */
+    border: 1px solid var(--border-color);
 }
 
 .comment-header {
     display: flex;
-    gap: 10px;
-    margin-bottom: 8px;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
     font-size: 0.85rem;
-    color: #666;
+    color: var(--text-sub);
+    /* was #666 */
     align-items: center;
+}
+
+.comment-number {
+    font-weight: bold;
+    color: var(--primary);
 }
 
 .comment-author {
     font-weight: bold;
-    color: #0072FF;
+    color: #444;
+}
+
+[data-theme="dark"] .comment-author {
+    color: #ddd;
 }
 
 .comment-content {
-    white-space: pre-wrap;
+    font-size: 1rem;
     line-height: 1.6;
-    color: #333;
+    color: var(--text-main);
+    /* was #333 */
+    white-space: pre-wrap;
 }
 
 .no-comments {
     text-align: center;
-    color: #999;
-    padding: 20px;
+    color: var(--text-sub);
+    /* was #888 */
+    padding: 2rem 0;
 }

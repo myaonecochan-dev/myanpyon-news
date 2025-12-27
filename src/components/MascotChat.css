@@ -10,6 +10,13 @@
     border: 2px dashed #eee;
 }
 
+[data-theme="dark"] .mascot-chat-container {
+    background: var(--bg-card);
+    /* was rgba(255, 255, 255, 0.6) */
+    border: 2px dashed var(--border-color);
+    /* was #eee */
+}
+
 .mascot-row {
     display: flex;
     align-items: flex-start;
@@ -55,7 +62,8 @@
     line-height: 1.5;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     max-width: 70%;
-    color: var(--text-main);
+    color: #333;
+    /* Explicitly dark text because bubbles are always light pastel */
     font-weight: 500;
 }
 
