@@ -393,6 +393,61 @@
     margin: 0;
 }
 
+/* Mobile Font Optimization */
+@media (max-width: 600px) {
+
+    /* Reduce Title Size */
+    .post-header h1 {
+        font-size: 1.5rem;
+        /* was 2rem */
+    }
+
+    /* Reduce Body Text */
+    .post-body {
+        font-size: 0.95rem;
+        /* was 1.1rem */
+        line-height: 1.7;
+    }
+
+    /* Reduce Headings */
+    .article-content h2 {
+        font-size: 1.3rem;
+        /* was 1.5rem */
+        margin: 1.5rem 0 0.8rem;
+    }
+
+    .article-content p {
+        margin-bottom: 1.2rem;
+    }
+
+    /* Reduce Chat Bubbles */
+    .chat-bubble {
+        font-size: 0.9rem;
+        /* was 1rem */
+        padding: 10px 16px;
+    }
+
+    /* Reduce Summary Box */
+    .news-summary-box h3 {
+        font-size: 1.1rem;
+    }
+
+    .news-summary-box li,
+    .news-summary-box p {
+        font-size: 0.9rem;
+    }
+
+    /* Reduce Thread Comments */
+    .thread-comment .body {
+        font-size: 0.9rem;
+        /* was 1.05rem */
+    }
+
+    .thread-comment .meta {
+        font-size: 0.75rem;
+    }
+}
+
 .news-summary-box li {
     margin-bottom: 0.5rem;
     line-height: 1.6;
