@@ -3,15 +3,53 @@ import { type Post } from '../data/posts';
 import { AdSenseDisplay } from './AdSenseDisplay';
 import './Sidebar.css';
 
+import { useState, useEffect } from 'react';
+import { supabase } from '../lib/supabaseClient';
+
 interface SidebarProps {
     posts?: Post[];
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ posts = [] }) => {
     // Simple logic: Use the first 3 posts as "Daily Ranking" and next 3 as "Monthly"
-    // In a real app, this would be based on view counts.
     const dailyRanking = posts.slice(0, 3);
     const monthlyRanking = posts.slice(3, 6);
+
+    const [counts, setCounts] = useState<Record<string, number>>({
+        all: 0,
+        trend: 0,
+        surprise: 0,
+        animals: 0,
+        flame: 0
+    });
+
+    useEffect(() => {
+        const fetchCounts = async () => {
+            const categories = ['trend', 'surprise', 'animals', 'flame'];
+            const newCounts: Record<string, number> = { all: 0, trend: 0, surprise: 0, animals: 0, flame: 0 };
+
+            try {
+                // Total
+                const { count: totalCount } = await supabase.from('posts').select('*', { count: 'exact', head: true });
+                newCounts.all = totalCount || 0;
+
+                // Categories (Parallel fetch for speed)
+                await Promise.all(categories.map(async (cat) => {
+                    const { count } = await supabase
+                        .from('posts')
+                        .select('*', { count: 'exact', head: true })
+                        .eq('category', cat);
+                    newCounts[cat] = count || 0;
+                }));
+
+                setCounts(newCounts);
+            } catch (err) {
+                console.error("Error fetching category counts:", err);
+            }
+        };
+
+        fetchCounts();
+    }, []);
 
     return (
         <aside className="app-sidebar">
@@ -115,13 +153,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ posts = [] }) => {
                         { id: 'animals', label: '癒やし', icon: '🐱' },
                         { id: 'flame', label: '炎上', icon: '🔥' }
                     ].map(cat => {
-                        const count = posts.filter(p => p.category === cat.id).length;
                         return (
                             <li key={cat.id}>
                                 <Link to={`/?cat=${cat.id}`} className="category-link">
                                     <span className="cat-icon">{cat.icon}</span>
                                     <span className="cat-label">{cat.label}</span>
-                                    <span className="cat-count">({count})</span>
+                                    <span className="cat-count">({counts[cat.id] || '-'})</span>
                                 </Link>
                             </li>
                         );
@@ -130,7 +167,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ posts = [] }) => {
                         <Link to="/?cat=all" className="category-link">
                             <span className="cat-icon">📂</span>
                             <span className="cat-label">すべて</span>
-                            <span className="cat-count">({posts.length})</span>
+                            <span className="cat-count">({counts.all || '-'})</span>
                         </Link>
                     </li>
                     <li style={{ marginTop: '10px', borderTop: '1px solid #eee', paddingTop: '10px' }}>
