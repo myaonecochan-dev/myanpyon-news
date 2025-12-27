@@ -13,7 +13,11 @@ import './PostPage.css';
 
 declare global {
     interface Window {
-        twttr: any;
+        twttr: {
+            widgets: {
+                load: () => void;
+            }
+        } | undefined;
     }
 }
 
