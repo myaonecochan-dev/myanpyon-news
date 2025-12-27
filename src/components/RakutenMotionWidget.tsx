@@ -10,14 +10,14 @@ const RakutenMotionWidget: React.FC = () => {
         transition: 'all 0.3s ease'
     });
 
-    // Default to desktop URL, update if mobile
-    const [widgetUrl, setWidgetUrl] = useState('/rakuten_widget.html?type=desktop&v=2');
+    // Default to Desktop file
+    const [widgetUrl, setWidgetUrl] = useState('/rakuten_widget_pc.html?v=3');
 
     useEffect(() => {
         const handleResize = () => {
             if (window.innerWidth < 600) {
-                // Mobile: 300x160 Zoomed
-                setWidgetUrl('/rakuten_widget.html?type=mobile&v=2');
+                // Mobile: Load the dedicated Mobile file (300x160)
+                setWidgetUrl('/rakuten_widget_mobile.html?v=3');
                 setIframeStyle({
                     width: '300px',
                     height: '160px',
@@ -29,8 +29,8 @@ const RakutenMotionWidget: React.FC = () => {
                     transition: 'all 0.3s ease'
                 });
             } else {
-                // PC: Standard 728x200
-                setWidgetUrl('/rakuten_widget.html?type=desktop&v=2');
+                // PC: Load the dedicated PC file (728x200)
+                setWidgetUrl('/rakuten_widget_pc.html?v=3');
                 setIframeStyle({
                     width: '100%',
                     maxWidth: '728px',
@@ -54,6 +54,7 @@ const RakutenMotionWidget: React.FC = () => {
             margin: '2rem auto',
             maxWidth: '100%',
             textAlign: 'center',
+            // Dynamic height container
             height: '200px',
             display: 'flex',
             justifyContent: 'center',
