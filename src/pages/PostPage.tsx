@@ -39,33 +39,46 @@ export const PostPage = ({ posts }: PostPageProps) => {
     useEffect(() => {
         const fetchSingle = async () => {
             if (!id) return;
-            const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
-            const q = supabase.from('posts').select('*');
-            if (isUuid) q.eq('id', id); else q.eq('slug', id);
+            console.log("[PostPage] Fetching fresh post for ID:", id);
 
-            const { data } = await q.single();
-            if (data) {
-                // Map DB to Post type
-                const p: Post = {
-                    id: data.id,
-                    title: data.title,
-                    description: data.description || (data.content ? data.content.substring(0, 100) : ''),
-                    content: data.content,
-                    category: data.category,
-                    type: data.type,
-                    platform: data.platform || 'article',
-                    youtubeId: data.platform === 'youtube' ? data.video_id : undefined,
-                    embedId: data.platform !== 'youtube' ? data.video_id : undefined,
-                    imageUrl: data.image_url || data.thumb_url,
-                    reactions: data.reactions || [],
-                    product_keywords: data.product_keywords || [],
-                    created_at: data.created_at,
-                    slug: data.slug,
-                    comment_myan: data.comment_myan,
-                    comment_pyon: data.comment_pyon,
-                    poll: data.poll_data
-                };
-                setFetchedPost(p);
+            try {
+                const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+                const q = supabase.from('posts').select('*');
+                if (isUuid) q.eq('id', id); else q.eq('slug', id);
+
+                const { data, error } = await q.single();
+
+                if (error) {
+                    console.error("[PostPage] Supabase Fetch Error:", error);
+                    return;
+                }
+
+                if (data) {
+                    console.log("[PostPage] Fresh Post Data Loaded:", data.title);
+                    // Map DB to Post type
+                    const p: Post = {
+                        id: data.id,
+                        title: data.title,
+                        description: data.description || (data.content ? data.content.substring(0, 100) : ''),
+                        content: data.content,
+                        category: data.category,
+                        type: data.type,
+                        platform: data.platform || 'article',
+                        youtubeId: data.platform === 'youtube' ? data.video_id : undefined,
+                        embedId: data.platform !== 'youtube' ? data.video_id : undefined,
+                        imageUrl: data.image_url || data.thumb_url,
+                        reactions: data.reactions || [],
+                        product_keywords: data.product_keywords || [],
+                        created_at: data.created_at,
+                        slug: data.slug,
+                        comment_myan: data.comment_myan,
+                        comment_pyon: data.comment_pyon,
+                        poll: data.poll_data
+                    };
+                    setFetchedPost(p);
+                }
+            } catch (err) {
+                console.error("[PostPage] Fetch Logic Error:", err);
             }
         };
         fetchSingle();
