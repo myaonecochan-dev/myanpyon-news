@@ -22,8 +22,13 @@
     <!-- MAF Rakuten Widget FROM HERE -->
     <script type="text/javascript">
         MafRakutenWidgetParam = function () {
-            var isMobile = window.innerWidth < 600;
-            var size = isMobile ? '300x160' : '728x200';
+            // Read query param ?type=mobile or ?type=desktop
+            var urlParams = new URLSearchParams(window.location.search);
+            var type = urlParams.get('type');
+
+            // Default to desktop (728x200) unless explicitly mobile
+            var size = (type === 'mobile') ? '300x160' : '728x200';
+
             return {
                 size: size,
                 design: 'slide',

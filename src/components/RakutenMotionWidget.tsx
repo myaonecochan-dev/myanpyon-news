@@ -10,23 +10,27 @@ const RakutenMotionWidget: React.FC = () => {
         transition: 'all 0.3s ease'
     });
 
+    // Default to desktop URL, update if mobile
+    const [widgetUrl, setWidgetUrl] = useState('/rakuten_widget.html?type=desktop');
+
     useEffect(() => {
         const handleResize = () => {
             if (window.innerWidth < 600) {
-                // Mobile: Zoom in the 300x160 widget to fill screen and make images bigger
-                // Scale 1.2x -> 300 * 1.2 = 360px width. Height 160 * 1.2 = 192px.
+                // Mobile: 300x160 Zoomed
+                setWidgetUrl('/rakuten_widget.html?type=mobile');
                 setIframeStyle({
-                    width: '300px', // Fixed base width for scaling
-                    height: '160px', // Fixed base height
+                    width: '300px',
+                    height: '160px',
                     border: 'none',
                     overflow: 'hidden',
-                    transform: 'scale(1.2)', // Zoom in 20%
+                    transform: 'scale(1.2)',
                     transformOrigin: 'top center',
-                    marginBottom: '-10px', // Compensate for bottom whitespace
-                    transition: 'all 0.3s ease' // Ensure transition is applied
+                    marginBottom: '-10px',
+                    transition: 'all 0.3s ease'
                 });
             } else {
                 // PC: Standard 728x200
+                setWidgetUrl('/rakuten_widget.html?type=desktop');
                 setIframeStyle({
                     width: '100%',
                     maxWidth: '728px',
@@ -35,7 +39,7 @@ const RakutenMotionWidget: React.FC = () => {
                     overflow: 'hidden',
                     transform: 'none',
                     marginBottom: '0',
-                    transition: 'all 0.3s ease' // Ensure transition is applied
+                    transition: 'all 0.3s ease'
                 });
             }
         };
@@ -50,8 +54,7 @@ const RakutenMotionWidget: React.FC = () => {
             margin: '2rem auto',
             maxWidth: '100%',
             textAlign: 'center',
-            // Dynamic height container to accommodate the scaled iframe
-            height: iframeStyle.transform && iframeStyle.transform !== 'none' ? '200px' : '200px',
+            height: '200px',
             display: 'flex',
             justifyContent: 'center',
             overflow: 'hidden'
@@ -71,7 +74,7 @@ const RakutenMotionWidget: React.FC = () => {
                 </div>
                 <iframe
                     title="Rakuten Motion Widget"
-                    src="/rakuten_widget.html"
+                    src={widgetUrl}
                     style={iframeStyle}
                     scrolling="no"
                     loading="lazy"
