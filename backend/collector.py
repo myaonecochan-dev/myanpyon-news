@@ -11,6 +11,7 @@ from thumbnail_gen import generate_thumbnail
 from supabase import create_client, Client
 from dotenv import load_dotenv
 import re
+import x_client
 try:
     from Levenshtein import ratio
 except ImportError:
@@ -717,6 +718,16 @@ def main():
     
     # 5. Save (Pass explicitly validated poll_data)
     insert_post_to_supabase(post, poll_data=poll_data)
+
+    # 5.5 Auto-Tweet
+    if post.get("slug"):
+        print("Attempting to tweet...")
+        link = f"https://myanpyonsokumato.com/post/{post['slug']}"
+        # Use descriptive tweet text or title
+        txt = post.get("tweet_text") or post['title']
+        # Truncate if too long (Title + Link + Hash)
+        full_tweet = f"{txt}\n{link}\n#猫 #トレンド"
+        x_client.post_tweet(full_tweet)
     
     # 6. Update sitemap
     print("\n--- Updating Sitemap ---")
