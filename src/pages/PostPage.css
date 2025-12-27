@@ -134,6 +134,8 @@
 
 .article-content p {
     margin-bottom: 1.5rem;
+    color: var(--text-main);
+    /* Ensure paragraphs use global text color */
 }
 
 /* Thread Styling */
@@ -145,8 +147,21 @@
     border: 1px dashed var(--border-color);
 }
 
+/* Thread Dark Mode override - needed because #fcfcfc is hardcoded */
+@media (prefers-color-scheme: dark) {
+    .thread-content {
+        background: var(--bg-card);
+    }
+}
+
+[data-theme="dark"] .thread-content {
+    background: var(--bg-card);
+}
+
+
 .thread-comment {
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--border-color);
+    /* was #eee */
     padding: 1rem 0;
 }
 
@@ -156,7 +171,8 @@
 
 .thread-comment .meta {
     font-size: 0.85rem;
-    color: #888;
+    color: var(--text-sub);
+    /* was #888 */
     margin-bottom: 0.4rem;
     font-family: 'Verdana', sans-serif;
     /* Monospace-ish mostly for IDs */
@@ -172,7 +188,8 @@
 .thread-comment .body {
     font-size: 1.05rem;
     line-height: 1.7;
-    color: #111;
+    color: var(--text-main);
+    /* was #111 */
     padding-left: 0.5rem;
     white-space: pre-wrap;
     /* Preserve newlines if any are plain text, though <br> is used */
