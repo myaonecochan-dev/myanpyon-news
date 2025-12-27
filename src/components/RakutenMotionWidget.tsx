@@ -20,19 +20,19 @@ const RakutenMotionWidget: React.FC = () => {
     });
 
     // Default to Desktop file
-    const [widgetUrl, setWidgetUrl] = useState('/rakuten_widget_pc.html?v=3');
+    const [widgetUrl, setWidgetUrl] = useState('/rakuten_widget_pc.html?v=4');
 
     useEffect(() => {
         const handleResize = () => {
             if (window.innerWidth < 600) {
                 // Mobile: Load the dedicated Mobile file (300x160)
-                setWidgetUrl('/rakuten_widget_mobile.html?v=3');
+                setWidgetUrl('/rakuten_widget_mobile.html?v=4');
                 setIframeStyle({
                     width: '300px',
                     height: '160px',
                     border: 'none',
                     overflow: 'hidden',
-                    transform: 'scale(1.2)',
+                    transform: 'scale(1.3)', // Zoom 30%
                     transformOrigin: 'top center',
                     marginBottom: '-10px',
                     transition: 'all 0.3s ease'
@@ -42,17 +42,17 @@ const RakutenMotionWidget: React.FC = () => {
                     margin: '2rem auto',
                     maxWidth: '100%',
                     textAlign: 'center',
-                    height: '200px',
+                    height: '190px', // Cropped height
                     display: 'flex',
                     justifyContent: 'center',
                     overflow: 'hidden'
                 });
             } else {
                 // PC: Load the dedicated PC file (728x200)
-                setWidgetUrl('/rakuten_widget_pc.html?v=3');
+                setWidgetUrl('/rakuten_widget_pc.html?v=4');
                 setIframeStyle({
                     width: '728px', // Force correct width
-                    maxWidth: '100%', // Allow shrinking if really needed but try to hold 728
+                    maxWidth: '100%',
                     height: '200px',
                     border: 'none',
                     overflow: 'hidden',
