@@ -13,10 +13,7 @@
             justify-content: center;
             align-items: center;
             overflow: hidden;
-            /* Use zoom instead of transform for better touch support on mobile */
-            width: 300px;
-            height: 160px;
-            zoom: 1.5;
+            /* Revert to standard styling, let the widget generate 300x250 naturally */
         }
     </style>
 </head>
@@ -25,7 +22,7 @@
     <script type="text/javascript">
         MafRakutenWidgetParam = function () {
             return {
-                size: '300x160',
+                size: '300x250',
                 design: 'slide',
                 recommend: 'on',
                 auto_mode: 'off',
