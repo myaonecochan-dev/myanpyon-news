@@ -119,22 +119,25 @@ export const AdminPage = () => {
                     {posts.map(post => (
                         <div key={post.id} style={{
                             padding: '1rem',
-                            background: 'white',
+                            background: 'var(--bg-card)',
                             borderRadius: '8px',
-                            border: '1px solid #eee',
+                            border: '1px solid var(--border-color)',
                             display: 'flex',
                             justifyContent: 'space-between',
-                            alignItems: 'center'
+                            alignItems: 'center',
+                            color: 'var(--text-main)'
                         }}>
                             <div>
-                                <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.1rem' }}>{post.title}</h3>
-                                <div style={{ fontSize: '0.85rem', color: '#666', display: 'flex', gap: '10px' }}>
+                                <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.1rem', color: 'var(--text-main)' }}>{post.title}</h3>
+                                <div style={{ fontSize: '0.85rem', color: 'var(--text-sub)', display: 'flex', gap: '10px' }}>
                                     <span style={{
                                         padding: '2px 8px',
-                                        background: '#f0f0f0',
+                                        background: 'var(--bg-body)',
+                                        border: '1px solid var(--border-color)',
                                         borderRadius: '4px',
                                         textTransform: 'uppercase',
-                                        fontSize: '0.7rem'
+                                        fontSize: '0.7rem',
+                                        color: 'var(--text-sub)'
                                     }}>{post.category}</span>
                                     <span>{post.type} / {post.platform}</span>
                                     <span>{new Date(post.created_at).toLocaleDateString()}</span>
