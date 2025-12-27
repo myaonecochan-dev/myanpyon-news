@@ -71,165 +71,191 @@ export const PostPage = ({ posts }: PostPageProps) => {
             );
         }
 
-        if (post.type === 'video' && post.platform === 'twitter') {
-            return (
-                <div className="video-wrapper twitter-embed">
-                    <div className="post-content-text" dangerouslySetInnerHTML={{ __html: post.content || '' }} />
-                    <div style={{ display: 'flex', justifyContent: 'center', margin: '2rem 0' }}>
-                        <blockquote className="twitter-tweet">
-                            <a href={`https://twitter.com/x/status/${post.embedId}`}></a>
-                        </blockquote>
-                        <script async src="https://platform.twitter.com/widgets.js"></script>
-                    </div>
-                </div>
-            );
-        }
+        // Fix Twitter Embed Loading
+        useEffect(() => {
+            if (post?.platform === 'twitter') {
+                const script = document.createElement('script');
+                script.src = "https://platform.twitter.com/widgets.js";
+                script.async = true;
+                document.body.appendChild(script);
 
-        if (post.type === 'image') {
-            return (
-                <div className="image-container">
-                    <img src={post.imageUrl} alt={post.title} />
-                </div>
-            );
-        }
+                // Re-scan if script already exists
+                if ((window as any).twttr && (window as any).twttr.widgets) {
+                    (window as any).twttr.widgets.load();
+                }
+            }
+        }, [post?.id, post?.platform]);
 
-        if (post.type === 'article') {
-            return (
-                <div className="article-content">
-                    {post.imageUrl && (
-                        <div className="image-container">
-                            <img src={post.imageUrl} alt={post.title} />
+        const renderContent = () => {
+            if (post.type === 'video' && post.platform === 'twitter') {
+                return (
+                    <div className="video-wrapper twitter-embed">
+                        {/* Featured Image (Thumbnail) */}
+                        {post.image_url && (
+                            <div className="post-featured-image-container" style={{ marginBottom: '20px', textAlign: 'center' }}>
+                                <img
+                                    src={post.image_url}
+                                    alt={post.title}
+                                    style={{ maxWidth: '100%', borderRadius: '12px', maxHeight: '400px', objectFit: 'cover' }}
+                                />
+                            </div>
+                        )}
+
+                        <div className="post-content-text" dangerouslySetInnerHTML={{ __html: post.content || '' }} />
+                        <div style={{ display: 'flex', justifyContent: 'center', margin: '2rem 0' }}>
+                            <blockquote className="twitter-tweet">
+                                <a href={`https://twitter.com/x/status/${post.embedId}`}></a>
+                            </blockquote>
                         </div>
-                    )}
-                    <div dangerouslySetInnerHTML={{ __html: post.content || '' }} />
-                </div>
-            );
-        }
+                    </div>
+                );
+            }
 
-        // Just display text content for fallback or thread
+            if (post.type === 'image') {
+                return (
+                    <div className="image-container">
+                        <img src={post.imageUrl} alt={post.title} />
+                    </div>
+                );
+            }
+
+            if (post.type === 'article') {
+                return (
+                    <div className="article-content">
+                        {post.imageUrl && (
+                            <div className="image-container">
+                                <img src={post.imageUrl} alt={post.title} />
+                            </div>
+                        )}
+                        <div dangerouslySetInnerHTML={{ __html: post.content || '' }} />
+                    </div>
+                );
+            }
+
+            // Just display text content for fallback or thread
+            return (
+                <div className="thread-content" dangerouslySetInnerHTML={{ __html: post.content || '' }} />
+            );
+        };
+
+        // Safe content truncate for description
+        const description = post.description
+            ? post.description
+            : post.content
+                ? post.content.substring(0, 100).replace(/<[^>]*>/g, '') + '...'
+                : `【${post.category}】${post.title}の話題まとめ動画！`;
+
+        // JSON-LD Structured Data
+        const structuredData = {
+            "@context": "https://schema.org",
+            "@type": "NewsArticle",
+            "headline": post.title,
+            "image": post.imageUrl ? [post.imageUrl] : [],
+            "datePublished": post.created_at,
+            "dateModified": post.created_at, // TODO: Add updated_at if available
+            "author": [{
+                "@type": "Person",
+                "name": "Myan & Pyon",
+                "url": "https://myanpyon.com"
+            }],
+            "description": description,
+            "mainEntityOfPage": {
+                "@type": "WebPage",
+                "@id": `https://myanpyon.com/post/${post.slug || post.id}`
+            }
+        };
+
         return (
-            <div className="thread-content" dangerouslySetInnerHTML={{ __html: post.content || '' }} />
+            <div className="post-page">
+                <MetaHead
+                    title={post.title}
+                    description={description}
+                    image={post.imageUrl}
+                    type="article"
+                    structuredData={structuredData}
+                />
+                <div className="nav-area">
+                    <Link to="/" className="back-link">
+                        ← Top Page
+                    </Link>
+                </div>
+
+                <article className="post-detail">
+                    <header className="post-header">
+                        <span className={`category-badge-lg ${post.category}`}>
+                            {post.category.toUpperCase()}
+                        </span>
+                        <h1>{post.title}</h1>
+                        <div className="post-meta">
+                            <span className="post-date">
+                                {new Date(post.created_at).toLocaleDateString()}
+                            </span>
+                            {' • '}
+                            <span className="post-author">Myan & Pyon</span>
+                        </div>
+                    </header>
+
+                    <div className="post-body">
+                        {renderContent()}
+
+                        {/* Interactive Poll */}
+                        <PollWidget postId={post.id} />
+
+                        {/* Netizen Reactions */}
+                        {post.reactions && <NetizenReactions reactions={post.reactions} />}
+                    </div>
+
+                    {/* Affiliate Block */}
+                    <AffiliateBlock postKeywords={post.product_keywords} />
+
+                    {/* Mascot Chat Area */}
+                    <MascotChat myanComment={post.comment_myan} pyonComment={post.comment_pyon} />
+
+                    {/* Comment Section */}
+                    <CommentSection postId={post.id} postTitle={post.title} />
+
+                    {/* Donation Widget */}
+                    <DonationWidget />
+
+                    {/* Article Bottom Ad */}
+                    <AdSenseDisplay slot="0987654321" style={{ height: '250px', marginTop: '30px' }} />
+
+                    <div className="post-footer">
+                        <h3>この記事をシェアする</h3>
+                        <div className="share-buttons">
+                            <button
+                                className="share-btn twitter"
+                                onClick={() => {
+                                    const url = `${window.location.origin}/post/${post.slug || post.id}`;
+                                    const text = `${post.title} | みゃんぴょんそくまと！！`;
+                                    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+                                }}
+                            >
+                                X (Twitter)
+                            </button>
+                            <button
+                                className="share-btn line"
+                                onClick={() => {
+                                    const url = `${window.location.origin}/post/${post.slug || post.id}`;
+                                    window.open(`https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(url)}`, '_blank');
+                                }}
+                            >
+                                LINE
+                            </button>
+                            <button
+                                className="share-btn copy"
+                                onClick={() => {
+                                    const url = `${window.location.origin}/post/${post.slug || post.id}`;
+                                    navigator.clipboard.writeText(url);
+                                    alert('リンクをコピーしました！');
+                                }}
+                                style={{ background: '#666', color: 'white' }}
+                            >
+                                リンクをコピー
+                            </button>
+                        </div>
+                    </div>
+                </article>
+            </div>
         );
     };
-
-    // Safe content truncate for description
-    const description = post.description
-        ? post.description
-        : post.content
-            ? post.content.substring(0, 100).replace(/<[^>]*>/g, '') + '...'
-            : `【${post.category}】${post.title}の話題まとめ動画！`;
-
-    // JSON-LD Structured Data
-    const structuredData = {
-        "@context": "https://schema.org",
-        "@type": "NewsArticle",
-        "headline": post.title,
-        "image": post.imageUrl ? [post.imageUrl] : [],
-        "datePublished": post.created_at,
-        "dateModified": post.created_at, // TODO: Add updated_at if available
-        "author": [{
-            "@type": "Person",
-            "name": "Myan & Pyon",
-            "url": "https://myanpyon.com"
-        }],
-        "description": description,
-        "mainEntityOfPage": {
-            "@type": "WebPage",
-            "@id": `https://myanpyon.com/post/${post.slug || post.id}`
-        }
-    };
-
-    return (
-        <div className="post-page">
-            <MetaHead
-                title={post.title}
-                description={description}
-                image={post.imageUrl}
-                type="article"
-                structuredData={structuredData}
-            />
-            <div className="nav-area">
-                <Link to="/" className="back-link">
-                    ← Top Page
-                </Link>
-            </div>
-
-            <article className="post-detail">
-                <header className="post-header">
-                    <span className={`category-badge-lg ${post.category}`}>
-                        {post.category.toUpperCase()}
-                    </span>
-                    <h1>{post.title}</h1>
-                    <div className="post-meta">
-                        <span className="post-date">
-                            {new Date(post.created_at).toLocaleDateString()}
-                        </span>
-                        {' • '}
-                        <span className="post-author">Myan & Pyon</span>
-                    </div>
-                </header>
-
-                <div className="post-body">
-                    {renderContent()}
-
-                    {/* Interactive Poll */}
-                    <PollWidget postId={post.id} />
-
-                    {/* Netizen Reactions */}
-                    {post.reactions && <NetizenReactions reactions={post.reactions} />}
-                </div>
-
-                {/* Affiliate Block */}
-                <AffiliateBlock postKeywords={post.product_keywords} />
-
-                {/* Mascot Chat Area */}
-                <MascotChat myanComment={post.comment_myan} pyonComment={post.comment_pyon} />
-
-                {/* Comment Section */}
-                <CommentSection postId={post.id} postTitle={post.title} />
-
-                {/* Donation Widget */}
-                <DonationWidget />
-
-                {/* Article Bottom Ad */}
-                <AdSenseDisplay slot="0987654321" style={{ height: '250px', marginTop: '30px' }} />
-
-                <div className="post-footer">
-                    <h3>この記事をシェアする</h3>
-                    <div className="share-buttons">
-                        <button
-                            className="share-btn twitter"
-                            onClick={() => {
-                                const url = `${window.location.origin}/post/${post.slug || post.id}`;
-                                const text = `${post.title} | みゃんぴょんそくまと！！`;
-                                window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
-                            }}
-                        >
-                            X (Twitter)
-                        </button>
-                        <button
-                            className="share-btn line"
-                            onClick={() => {
-                                const url = `${window.location.origin}/post/${post.slug || post.id}`;
-                                window.open(`https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(url)}`, '_blank');
-                            }}
-                        >
-                            LINE
-                        </button>
-                        <button
-                            className="share-btn copy"
-                            onClick={() => {
-                                const url = `${window.location.origin}/post/${post.slug || post.id}`;
-                                navigator.clipboard.writeText(url);
-                                alert('リンクをコピーしました！');
-                            }}
-                            style={{ background: '#666', color: 'white' }}
-                        >
-                            リンクをコピー
-                        </button>
-                    </div>
-                </div>
-            </article>
-        </div>
-    );
-};
