@@ -20,13 +20,13 @@ const RakutenMotionWidget: React.FC = () => {
     });
 
     // Default to Desktop file
-    const [widgetUrl, setWidgetUrl] = useState('/rakuten_widget_pc.html?v=4');
+    const [widgetUrl, setWidgetUrl] = useState('/rakuten_widget_pc.html?v=5');
 
     useEffect(() => {
         const handleResize = () => {
             if (window.innerWidth < 600) {
                 // Mobile: Load the dedicated Mobile file (300x160)
-                setWidgetUrl('/rakuten_widget_mobile.html?v=4');
+                setWidgetUrl('/rakuten_widget_mobile.html?v=5');
                 setIframeStyle({
                     width: '300px',
                     height: '160px',
@@ -42,18 +42,18 @@ const RakutenMotionWidget: React.FC = () => {
                     margin: '2rem auto',
                     maxWidth: '100%',
                     textAlign: 'center',
-                    height: '190px', // Cropped height
+                    height: '165px', // Tighter crop (was 190px)
                     display: 'flex',
                     justifyContent: 'center',
                     overflow: 'hidden'
                 });
             } else {
                 // PC: Load the dedicated PC file (728x200)
-                setWidgetUrl('/rakuten_widget_pc.html?v=4');
+                setWidgetUrl('/rakuten_widget_pc.html?v=5');
                 setIframeStyle({
                     width: '728px', // Force correct width
                     maxWidth: '100%',
-                    height: '200px',
+                    height: '230px', // Increased from 200px to show footer
                     border: 'none',
                     overflow: 'hidden',
                     transform: 'none',
@@ -65,7 +65,7 @@ const RakutenMotionWidget: React.FC = () => {
                     margin: '2rem -2rem', // Break out of container padding
                     maxWidth: 'none',
                     textAlign: 'center',
-                    height: '200px',
+                    height: '230px', // Match iframe height
                     display: 'flex',
                     justifyContent: 'center',
                     overflow: 'hidden'
