@@ -117,19 +117,21 @@ export const PostPage = ({ posts }: PostPageProps) => {
     const renderContent = () => {
         if (post.type === 'video' && post.platform === 'youtube') {
             return (
-                <div className="video-wrapper youtube-embed">
-                    <div className="video-container">
-                        <iframe
-                            src={`https://www.youtube.com/embed/${post.youtubeId}?autoplay=0`} // Autoplay 0 for better UX on refresh
-                            title={post.title}
-                            frameBorder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                        />
+                <>
+                    <div className="video-wrapper youtube-embed">
+                        <div className="video-container">
+                            <iframe
+                                src={`https://www.youtube.com/embed/${post.youtubeId}?autoplay=0`} // Autoplay 0 for better UX on refresh
+                                title={post.title}
+                                frameBorder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowFullScreen
+                            />
+                        </div>
                     </div>
                     {/* Render Content (Intro + Dialogue) */}
                     <div className="post-content-text" dangerouslySetInnerHTML={{ __html: post.content || '' }} style={{ marginTop: '2rem' }} />
-                </div>
+                </>
             );
         }
 
