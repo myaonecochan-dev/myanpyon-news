@@ -1,31 +1,47 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 
 const RakutenMotionWidget: React.FC = () => {
-    // Construct the HTML content for the iframe
-    // This perfectly isolates the aggressive Moshimo script
-    const srcDoc = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1">
-            <style>
-                body { margin: 0; padding: 0; display: flex; justify-content: center; background: transparent; }
-            </style>
-        </head>
-        <body>
-            <!-- MAF Rakuten Widget FROM HERE -->
-            <script type="text/javascript">
-                MafRakutenWidgetParam=function() { return{ size:'728x200',design:'slide',recommend:'on',auto_mode:'on',a_id:'5317132', border:'off'};};
-            </script>
-            <script type="text/javascript" src="https://image.moshimo.com/static/publish/af/rakuten/widget.js"></script>
-            <!-- MAF Rakuten Widget TO HERE -->
-        </body>
-        </html>
-    `;
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!containerRef.current) return;
+
+        // Clean up previous injection if any (though StrictMode might run this twice)
+        containerRef.current.innerHTML = '';
+
+        // 1. Define the parameter function on the window object
+        // This tells the Moshimo script what to render
+        (window as any).MafRakutenWidgetParam = function () {
+            return {
+                size: '728x200',
+                design: 'slide',
+                recommend: 'on',
+                auto_mode: 'on',
+                a_id: '5317132',
+                border: 'off'
+            };
+        };
+
+        // 2. Create the script element
+        const script = document.createElement('script');
+        script.src = "https://image.moshimo.com/static/publish/af/rakuten/widget.js";
+        script.type = "text/javascript";
+        script.async = true; // Non-blocking
+
+        // 3. Append to container
+        // The widget usually renders at the script's location
+        containerRef.current.appendChild(script);
+
+        return () => {
+            // Cleanup is tricky for external scripts, but we can clear the container
+            if (containerRef.current) {
+                containerRef.current.innerHTML = '';
+            }
+        };
+    }, []);
 
     return (
-        <div className="rakuten-motion-widget-wrapper" style={{ margin: '2rem auto', maxWidth: '100%', textAlign: 'center', overflow: 'hidden' }}>
+        <div className="rakuten-motion-widget-wrapper" style={{ margin: '2rem auto', maxWidth: '100%', textAlign: 'center', minHeight: '200px' }}>
             <h4 style={{
                 margin: '0 0 10px 0',
                 fontSize: '0.9rem',
@@ -38,18 +54,7 @@ const RakutenMotionWidget: React.FC = () => {
                 <span>👀</span>
                 <span>あなたにおすすめのアイテム</span>
             </h4>
-            <iframe
-                title="Rakuten Motion Widget"
-                srcDoc={srcDoc}
-                style={{
-                    width: '100%',
-                    maxWidth: '728px',
-                    height: '200px',
-                    border: 'none',
-                    overflow: 'hidden'
-                }}
-                scrolling="no"
-            />
+            <div ref={containerRef} style={{ display: 'flex', justifyContent: 'center' }} />
         </div>
     );
 };
