@@ -429,6 +429,21 @@
         font-size: 0.9rem;
         /* was 1rem */
         padding: 10px 16px;
+        line-height: 1.4;
+        /* Reduce line height */
+        max-width: 88%;
+        /* Widen bubble */
+    }
+
+    /* Small Avatar for Mobile */
+    .chat-avatar {
+        width: 50px;
+        height: 50px;
+    }
+
+    /* Tighter spacing */
+    .chat-row {
+        gap: 0.6rem;
     }
 
     /* Reduce Summary Box */
