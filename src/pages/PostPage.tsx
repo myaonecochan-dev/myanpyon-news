@@ -1,5 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { supabase } from '../lib/supabaseClient';
 import { type Post } from '../data/posts';
 import { MetaHead } from '../components/MetaHead';
 import { AdSenseDisplay } from '../components/AdSenseDisplay';
@@ -28,8 +29,47 @@ interface PostPageProps {
 export const PostPage = ({ posts }: PostPageProps) => {
     const { id } = useParams<{ id: string }>();
 
-    // Find post by ID or Slug
-    const post = posts.find(p => p.id === id || p.slug === id);
+    const [fetchedPost, setFetchedPost] = useState<Post | null>(null);
+
+    // Find post by ID or Slug (Optimistic)
+    const cachedPost = posts.find(p => p.id === id || p.slug === id);
+    const post = fetchedPost || cachedPost;
+
+    // Fetch fresh data for permalink support & stale cache fix
+    useEffect(() => {
+        const fetchSingle = async () => {
+            if (!id) return;
+            const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+            const q = supabase.from('posts').select('*');
+            if (isUuid) q.eq('id', id); else q.eq('slug', id);
+
+            const { data } = await q.single();
+            if (data) {
+                // Map DB to Post type
+                const p: Post = {
+                    id: data.id,
+                    title: data.title,
+                    description: data.description || (data.content ? data.content.substring(0, 100) : ''),
+                    content: data.content,
+                    category: data.category,
+                    type: data.type,
+                    platform: data.platform || 'article',
+                    youtubeId: data.platform === 'youtube' ? data.video_id : undefined,
+                    embedId: data.platform !== 'youtube' ? data.video_id : undefined,
+                    imageUrl: data.image_url || data.thumb_url,
+                    reactions: data.reactions || [],
+                    product_keywords: data.product_keywords || [],
+                    created_at: data.created_at,
+                    slug: data.slug,
+                    comment_myan: data.comment_myan,
+                    comment_pyon: data.comment_pyon,
+                    poll: data.poll_data
+                };
+                setFetchedPost(p);
+            }
+        };
+        fetchSingle();
+    }, [id]);
 
     useEffect(() => {
         window.scrollTo(0, 0);
