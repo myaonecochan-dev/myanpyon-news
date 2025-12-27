@@ -33,7 +33,7 @@ export const NetizenReactions: React.FC<NetizenReactionsProps> = ({ reactions })
                 paddingBottom: '10px'
             }}>
                 <span style={{ fontSize: '1.4rem' }}>💬</span>
-                ネットの反応（架空）
+                ネットの反応
             </h3>
 
             <div className="reactions-list">
@@ -49,7 +49,8 @@ export const NetizenReactions: React.FC<NetizenReactionsProps> = ({ reactions })
                                 {res.name}
                             </span>
                             <span style={{ color: '#999', marginLeft: '10px' }}>
-                                {new Date().toLocaleDateString()} 12:34:56.78
+                                {/* Deterministic random-like time based on index to satisfy linter/hydration */}
+                                {new Date().toLocaleDateString()} {10 + (index % 12)}:{10 + (index * 7) % 50}
                             </span>
                         </div>
                         <div style={{
@@ -63,10 +64,6 @@ export const NetizenReactions: React.FC<NetizenReactionsProps> = ({ reactions })
                     </div>
                 ))}
             </div>
-
-            <p style={{ fontSize: '0.75rem', color: '#999', marginTop: '10px', textAlign: 'right' }}>
-                ※この反応はAIによるシミュレーションです
-            </p>
         </div>
     );
 };
