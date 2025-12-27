@@ -100,10 +100,10 @@ export const PostPage = ({ posts }: PostPageProps) => {
             return (
                 <div className="video-wrapper twitter-embed">
                     {/* Featured Image (Thumbnail) */}
-                    {post.image_url && (
+                    {(post.imageUrl || (post as any).image_url) && (
                         <div className="post-featured-image-container" style={{ marginBottom: '20px', textAlign: 'center' }}>
                             <img
-                                src={post.image_url}
+                                src={post.imageUrl || (post as any).image_url}
                                 alt={post.title}
                                 style={{ maxWidth: '100%', borderRadius: '12px', maxHeight: '400px', objectFit: 'cover' }}
                             />
