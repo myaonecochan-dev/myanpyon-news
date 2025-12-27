@@ -20,40 +20,40 @@ const RakutenMotionWidget: React.FC = () => {
     });
 
     // Default to Desktop file
-    const [widgetUrl, setWidgetUrl] = useState('/rakuten_widget_pc.html?v=7');
+    const [widgetUrl, setWidgetUrl] = useState('/rakuten_widget_pc.html?v=8');
 
     useEffect(() => {
         const handleResize = () => {
             if (window.innerWidth < 600) {
                 // Mobile: Load the dedicated Mobile file (300x160)
-                setWidgetUrl('/rakuten_widget_mobile.html?v=7');
+                setWidgetUrl('/rakuten_widget_mobile.html?v=8');
                 setIframeStyle({
-                    width: '300px',
-                    height: '160px',
+                    // Match the internal scale (300 * 1.4 = 420, 160 * 1.4 = 224)
+                    width: '420px',
+                    height: '225px',
                     border: 'none',
                     overflow: 'hidden',
-                    transform: 'scale(1.5)', // Aggressive Zoom 50%
-                    transformOrigin: 'top center',
-                    marginBottom: '-10px',
+                    marginBottom: '0',
                     transition: 'all 0.3s ease'
+                    // Removed transform: scale() to fix swipe issues
                 });
                 // Reset wrapper style for mobile
                 setWrapperStyle({
                     margin: '2rem auto',
                     maxWidth: '100%',
                     textAlign: 'center',
-                    height: '220px', // Reveal controls (was 150px too aggressive)
+                    height: '225px', // Match iframe height
                     display: 'flex',
                     justifyContent: 'center',
                     overflow: 'hidden'
                 });
             } else {
                 // PC: Load the dedicated PC file (728x200)
-                setWidgetUrl('/rakuten_widget_pc.html?v=7');
+                setWidgetUrl('/rakuten_widget_pc.html?v=8');
                 setIframeStyle({
-                    width: '728px', // Force correct width
+                    width: '728px',
                     maxWidth: '100%',
-                    height: '230px', // Increased from 200px to show footer
+                    height: '230px',
                     border: 'none',
                     overflow: 'hidden',
                     transform: 'none',
